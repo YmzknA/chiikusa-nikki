@@ -22,6 +22,8 @@ services:
         UID: ${UID:-1000}
         GID: ${GID:-1000}
     command: ["./bin/dev"]
+    user: "${UID}:${GID}"
+    mem_limit: 2g
     tty: true
     stdin_open: true
     volumes:

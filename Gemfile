@@ -47,6 +47,10 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  gem "rspec-rails", "~> 6.0"
+  gem "shoulda-matchers", "~> 5.3"
+  gem "webdrivers", "~> 5.0"
 end
 
 group :development do
@@ -62,7 +66,7 @@ end
 
 gem "omniauth", "~> 2.1"
 
-gem "openai-ruby", "~> 0.1.0"
+gem "openai"
 
 gem "twitter", "~> 8.2"
 

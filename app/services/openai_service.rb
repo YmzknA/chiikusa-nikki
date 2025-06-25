@@ -2,10 +2,7 @@ require 'openai'
 
 class OpenaiService
   def initialize
-    OpenAI.configure do |config|
-      config.access_token = ENV.fetch("OPENAI_API_KEY")
-    end
-    @client = OpenAI::Client.new
+    @client = ::OpenAI::Client.new
   end
 
   def generate_til(notes)
@@ -26,13 +23,11 @@ class OpenaiService
     それでは、3つのTILを生成してください。
     PROMPT
 
-    response = @client.chat(parameters: {
-      model: "gpt-4-nano",
+    response = @client.chat(model: "gpt-4-nano",
       messages: [{ role: "user", content: prompt }],
       temperature: 0.7,
       max_tokens: 200,
-      n: 3
-    })
+      n: 3)
 
     response.dig("choices").map { |c| c.dig("message", "content") }
   end
