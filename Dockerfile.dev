@@ -16,17 +16,13 @@ RUN apt-get update -qq \
 && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 RUN apt-get update -qq && apt-get install -y build-essential libpq-dev libyaml-dev nodejs yarn vim
 
-RUN mkdir /myapp && chown -R user:user /myapp
-
-USER user
-
 WORKDIR /myapp
-COPY --chown=user:user Gemfile /myapp/Gemfile
-COPY --chown=user:user Gemfile.lock /myapp/Gemfile.lock
-RUN gem install bundler
-COPY --chown=user:user . /myapp
 
-COPY --chown=user:user bin/docker-entrypoint /usr/local/bin/
+COPY Gemfile* ./
+RUN bundle install
+
+COPY . .
+
+COPY bin/docker-entrypoint /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint
-
 ENTRYPOINT ["docker-entrypoint"]

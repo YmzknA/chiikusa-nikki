@@ -1,2 +1,46 @@
-<h1>Diaries#new</h1>
-<p>Find me in app/views/diaries/new.html.erb</p>
+<h1>新しい日記</h1>
+
+<%= form_with(model: @diary, url: diaries_path) do |form| %>
+  <% if @diary.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@diary.errors.count, "error") %> prohibited this diary from being saved:</h2>
+
+      <ul>
+        <% @diary.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :date %>
+    <%= form.date_select :date %>
+  </div>
+
+  <% @questions.each do |question| %>
+    <div>
+      <%= question.label %>
+      <div>
+        <% question.answers.each do |answer| %>
+          <%= form.radio_button "diary_answers[#{question.identifier}]", answer.id %>
+          <%= form.label "diary_answers_#{question.identifier}_#{answer.id}", answer.emoji %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :notes %>
+    <%= form.text_area :notes, placeholder: "箇条書きで入力..." %>
+  </div>
+
+  <div>
+    <%= form.label :is_public, "公開する" %>
+    <%= form.check_box :is_public %>
+  </div>
+
+  <div>
+    <%= form.submit "日記を作成" %>
+  </div>
+<% end %>

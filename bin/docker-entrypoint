@@ -1,16 +1,12 @@
 #!/bin/bash -e
 
-# Change ownership of the app directory to the user
+# Change ownership of the app directory to the user, excluding node_modules
 chown -R user:user /myapp
-
-# Enable jemalloc for reduced memory usage and latency.
-if [ -z "${LD_PRELOAD+x}" ] && [ -f /usr/lib/*/libjemalloc.so.2 ]; then
-  export LD_PRELOAD="$(echo /usr/lib/*/libjemalloc.so.2)"
-fi
+find /myapp -mindepth 1 -maxdepth 1 ! -name "node_modules" -exec chown -R user:user {} +
 
 # If running the rails server then create or migrate existing database
 if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
-  ./bin/rails db:prepare
+  gosu user bundle exec rails db:prepare
 fi
 
 exec gosu user "$@"
