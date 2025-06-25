@@ -1,8 +1,13 @@
 FROM ruby:3.3.6
+ARG UID=1000
+ARG GID=1000
+RUN groupadd -g $GID -o user
+RUN useradd -m -u $UID -g $GID -s /bin/bash user
+
 ENV LANG C.UTF-8
 ENV TZ Asia/Tokyo
 RUN apt-get update -qq \
-&& apt-get install -y ca-certificates curl gnupg \
+&& apt-get install -y ca-certificates curl gnupg gosu \
 && mkdir -p /etc/apt/keyrings \
 && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
 && NODE_MAJOR=20 \
@@ -10,9 +15,18 @@ RUN apt-get update -qq \
 && wget --quiet -O - /tmp/pubkey.gpg https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
 && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 RUN apt-get update -qq && apt-get install -y build-essential libpq-dev libyaml-dev nodejs yarn vim
-RUN mkdir /myapp
+
+RUN mkdir /myapp && chown -R user:user /myapp
+
+USER user
+
 WORKDIR /myapp
-COPY Gemfile /myapp/Gemfile
-COPY Gemfile.lock /myapp/Gemfile.lock
+COPY --chown=user:user Gemfile /myapp/Gemfile
+COPY --chown=user:user Gemfile.lock /myapp/Gemfile.lock
 RUN gem install bundler
-COPY . /myapp
+COPY --chown=user:user . /myapp
+
+COPY --chown=user:user bin/docker-entrypoint /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint
+
+ENTRYPOINT ["docker-entrypoint"]
