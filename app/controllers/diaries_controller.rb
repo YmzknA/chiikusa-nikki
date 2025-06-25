@@ -1,6 +1,10 @@
 class DiariesController < ApplicationController
   before_action :require_login
 
+  def index
+    @diaries = current_user.diaries.order(date: :desc)
+  end
+
   def new
     @diary = Diary.new
     @questions = Question.all

@@ -1,9 +1,16 @@
-<h1>Diaries#index</h1>
-<p>Find me in app/views/diaries/index.html.erb</p>
+<h1>日記一覧</h1>
 
-<% if logged_in? %>
-  <p>こんにちは、<%= current_user.username %>さん</p>
-  <%= link_to "ログアウト", logout_path, data: { turbo_method: :delete } %>
-<% else %>
-  <%= link_to "GitHubでログイン", "/auth/github" %>
+<%= link_to "新しい日記を書く", new_diary_path %>
+
+<% @diaries.each do |diary| %>
+  <div>
+    <h2><%= diary.date %></h2>
+    <p><%= diary.notes %></p>
+    <div>
+      <% diary.diary_answers.each do |diary_answer| %>
+        <span><%= diary_answer.question.label %>: <%= diary_answer.answer.emoji %></span>
+      <% end %>
+    </div>
+    <p>公開設定: <%= diary.is_public? ? "公開" : "非公開" %></p>
+  </div>
 <% end %>
