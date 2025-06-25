@@ -1,0 +1,9 @@
+<h1>Diaries#index</h1>
+<p>Find me in app/views/diaries/index.html.erb</p>
+
+<% if logged_in? %>
+  <p>こんにちは、<%= current_user.username %>さん</p>
+  <%= link_to "ログアウト", logout_path, data: { turbo_method: :delete } %>
+<% else %>
+  <%= link_to "GitHubでログイン", "/auth/github" %>
+<% end %>
