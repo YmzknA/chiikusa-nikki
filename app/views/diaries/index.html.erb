@@ -5,7 +5,14 @@
 <% @diaries.each do |diary| %>
   <div>
     <h2><%= diary.date %></h2>
-    <p><%= diary.notes %></p>
+    <% if diary.til_text.present? %>
+      <p><strong>TIL:</strong> <%= diary.til_text %></p>
+    <% elsif diary.til_candidates.any? %>
+      <p><%= diary.notes %></p>
+      <%= link_to "TILを選択する", edit_diary_path(diary) %>
+    <% else %>
+      <p><%= diary.notes %></p>
+    <% end %>
     <div>
       <% diary.diary_answers.each do |diary_answer| %>
         <span><%= diary_answer.question.label %>: <%= diary_answer.answer.emoji %></span>

@@ -1,0 +1,28 @@
+<h1>TILを選択</h1>
+
+<%= form_with(model: @diary, url: diary_path(@diary), method: :patch) do |form| %>
+  <% if @diary.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@diary.errors.count, "error") %> prohibited this diary from being saved:</h2>
+
+      <ul>
+        <% @diary.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <% @diary.til_candidates.each do |candidate| %>
+      <div>
+        <%= form.radio_button :til_text, candidate.content %>
+        <%= form.label "til_text_#{candidate.id}", candidate.content %>
+      </div>
+    <% end %>
+  </div>
+
+  <div>
+    <%= form.submit "日記を完成させる" %>
+  </div>
+<% end %>

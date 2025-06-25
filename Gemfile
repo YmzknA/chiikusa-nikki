@@ -61,3 +61,5 @@ group :test do
 end
 
 gem "omniauth", "~> 2.1"
+
+gem "openai-ruby", "~> 0.1.0"

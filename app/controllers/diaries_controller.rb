@@ -1,5 +1,6 @@
 class DiariesController < ApplicationController
   before_action :require_login
+  before_action :set_diary, only: [:edit, :update]
 
   def index
     @diaries = current_user.diaries.order(date: :desc)
@@ -18,17 +19,47 @@ class DiariesController < ApplicationController
         question = Question.find_by(identifier: question_identifier)
         @diary.diary_answers.create(question: question, answer_id: answer_id)
       end
-      redirect_to diaries_path, notice: "日記を作成しました"
+
+      # TIL候補の生成
+      if @diary.notes.present?
+        client = OpenaiService.new
+        til_candidates = client.generate_til(@diary.notes)
+        til_candidates.each_with_index do |content, index|
+          @diary.til_candidates.create(content: content, index: index)
+        end
+        redirect_to edit_diary_path(@diary), notice: "日記を作成しました。TILを選択してください。"
+      else
+        redirect_to diaries_path, notice: "日記を作成しました"
+      end
     else
       @questions = Question.all
       render :new
     end
   end
 
+  def edit
+  end
+
+  def update
+    if @diary.update(diary_update_params)
+      redirect_to diaries_path, notice: "日記を更新しました"
+    else
+      render :edit
+    end
+  end
+
   private
+
+  def set_diary
+    @diary = current_user.diaries.find(params[:id])
+  end
 
   def diary_params
     params.require(:diary).permit(:date, :notes, :is_public)
+  end
+
+  def diary_update_params
+    params.require(:diary).permit(:til_text)
   end
 
   def diary_answer_params
