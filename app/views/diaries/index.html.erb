@@ -1,23 +1,19 @@
-<h1>日記一覧</h1>
+<h1>日記カレンダー</h1>
 
 <%= link_to "新しい日記を書く", new_diary_path %>
 
-<% @diaries.each do |diary| %>
-  <div>
-    <h2><%= diary.date %></h2>
-    <% if diary.til_text.present? %>
-      <p><strong>TIL:</strong> <%= diary.til_text %></p>
-    <% elsif diary.til_candidates.any? %>
-      <p><%= diary.notes %></p>
-      <%= link_to "TILを選択する", edit_diary_path(diary) %>
-    <% else %>
-      <p><%= diary.notes %></p>
+<%= month_calendar(events: @diaries, attribute: :date) do |date, diaries| %>
+  <%= date.day %>
+
+  <% if diaries.any? %>
+    <% diary = diaries.first %>
+    <% mood_level = diary.diary_answers.find_by(question: Question.find_by(identifier: :mood))&.answer&.level || 3 %>
+    <%= link_to diary_path(diary) do %>
+      <div class="w-full h-full flex items-center justify-center">
+        <%= render "diaries/weed", mood_level: mood_level %>
+      </div>
     <% end %>
-    <div>
-      <% diary.diary_answers.each do |diary_answer| %>
-        <span><%= diary_answer.question.label %>: <%= diary_answer.answer.emoji %></span>
-      <% end %>
-    </div>
-    <p>公開設定: <%= diary.is_public? ? "公開" : "非公開" %></p>
-  </div>
+  <% else %>
+    <%= link_to "+", new_diary_path(date: date), class: "w-full h-full flex items-center justify-center text-gray-400 hover:text-gray-600" %>
+  <% end %>
 <% end %>

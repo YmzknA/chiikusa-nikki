@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_06_25_175535) do
+ActiveRecord::Schema[7.2].define(version: 2025_06_25_183053) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -22,6 +22,14 @@ ActiveRecord::Schema[7.2].define(version: 2025_06_25_175535) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["question_id"], name: "index_answers_on_question_id"
+  end
+
+  create_table "daily_weathers", force: :cascade do |t|
+    t.date "date"
+    t.jsonb "data"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["date"], name: "index_daily_weathers_on_date", unique: true
   end
 
   create_table "diaries", force: :cascade do |t|

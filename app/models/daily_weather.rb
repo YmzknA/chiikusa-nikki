@@ -1,0 +1,2 @@
+class DailyWeather < ApplicationRecord
+end

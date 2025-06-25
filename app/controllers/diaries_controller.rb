@@ -1,9 +1,12 @@
 class DiariesController < ApplicationController
   before_action :require_login
-  before_action :set_diary, only: [:edit, :update]
+  before_action :set_diary, only: [:show, :edit, :update]
 
   def index
     @diaries = current_user.diaries.order(date: :desc)
+  end
+
+  def show
   end
 
   def new

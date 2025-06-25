@@ -67,3 +67,5 @@ gem "openai-ruby", "~> 0.1.0"
 gem "twitter", "~> 8.2"
 
 gem "octokit", "~> 10.0"
+
+gem "simple_calendar", "~> 3.1"

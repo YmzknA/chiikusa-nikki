@@ -1,0 +1,18 @@
+<h1><%= @diary.date %>の日記</h1>
+
+<% if @diary.til_text.present? %>
+  <p><strong>TIL:</strong> <%= @diary.til_text %></p>
+<% else %>
+  <p><%= @diary.notes %></p>
+  <%= link_to "TILを選択する", edit_diary_path(@diary) if @diary.til_candidates.any? %>
+<% end %>
+
+<div>
+  <% @diary.diary_answers.each do |diary_answer| %>
+    <span><%= diary_answer.question.label %>: <%= diary_answer.answer.emoji %></span>
+  <% end %>
+</div>
+
+<p>公開設定: <%= @diary.is_public? ? "公開" : "非公開" %></p>
+
+<%= link_to "一覧に戻る", diaries_path %>
