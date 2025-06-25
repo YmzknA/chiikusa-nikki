@@ -15,4 +15,10 @@
 
 <p>公開設定: <%= @diary.is_public? ? "公開" : "非公開" %></p>
 
+<% if @diary.is_public? && @diary.til_text.present? %>
+  <%= link_to "https://twitter.com/intent/tweet?text=#{ERB::Util.url_encode(@diary.til_text)}&url=#{diary_url(@diary)}", target: "_blank" do %>
+    <p>Share on X!</p>
+  <% end %>
+<% end %>
+
 <%= link_to "一覧に戻る", diaries_path %>

@@ -68,7 +68,7 @@ gem "omniauth", "~> 2.1"
 
 gem "openai"
 
-gem "twitter", "~> 8.2"
+
 
 gem "octokit", "~> 10.0"
 
