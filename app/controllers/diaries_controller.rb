@@ -42,6 +42,14 @@ class DiariesController < ApplicationController
 
   def update
     if @diary.update(diary_update_params)
+      if params[:post_to_twitter] == "1"
+        client = TwitterService.new
+        client.post_til(@diary.til_text)
+      end
+      if params[:push_to_github] == "1"
+        client = GithubService.new(current_user)
+        client.push_til(@diary)
+      end
       redirect_to diaries_path, notice: "日記を更新しました"
     else
       render :edit

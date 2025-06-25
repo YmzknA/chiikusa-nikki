@@ -63,3 +63,7 @@ end
 gem "omniauth", "~> 2.1"
 
 gem "openai-ruby", "~> 0.1.0"
+
+gem "twitter", "~> 8.2"
+
+gem "octokit", "~> 10.0"

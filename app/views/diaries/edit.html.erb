@@ -23,6 +23,16 @@
   </div>
 
   <div>
+    <%= check_box_tag :post_to_twitter %>
+    <%= label_tag :post_to_twitter, "Xに投稿する" %>
+  </div>
+
+  <div>
+    <%= check_box_tag :push_to_github %>
+    <%= label_tag :push_to_github, "GitHubにPushする" %>
+  </div>
+
+  <div>
     <%= form.submit "日記を完成させる" %>
   </div>
 <% end %>
