@@ -18,6 +18,14 @@
   </head>
 
   <body>
+    <header>
+      <% if current_user %>
+        <p>こんにちは、<%= current_user.username %>さん</p>
+        <%= button_to "ログアウト", "/logout", method: :delete %>
+      <% else %>
+        <%= button_to "GitHubでログイン", "/auth/github", method: :post %>
+      <% end %>
+    </header>
     <%= yield %>
   </body>
 </html>

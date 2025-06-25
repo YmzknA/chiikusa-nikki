@@ -337,6 +337,7 @@ DEPENDENCIES
   debug
   jbuilder
   jsbundling-rails
+  omniauth (~> 2.1)
   omniauth-github
   pg (~> 1.1)
   puma (>= 5.0)
