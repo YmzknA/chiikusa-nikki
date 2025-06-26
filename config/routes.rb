@@ -5,7 +5,7 @@ Rails.application.routes.draw do
 
   root "home#index"
 
-  resources :diaries, only: [:new, :create, :index, :edit, :update, :show]
+  resources :diaries, only: [:new, :create, :index, :edit, :update, :show, :destroy]
   resource :profile, only: [:show, :edit, :update]
   get "/stats", to: "stats#index"
 end

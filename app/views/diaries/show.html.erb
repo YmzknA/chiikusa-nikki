@@ -108,7 +108,7 @@
               </div>
             <% end %>
           </div>
-          
+
           <% if @diary&.is_public? && @diary&.til_text.present? %>
             <%= link_to "https://twitter.com/intent/tweet?text=#{ERB::Util.url_encode(@diary.til_text)}&url=#{diary_url(@diary)}", target: "_blank", class: "btn btn-accent gap-2" do %>
               <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -118,19 +118,33 @@
             <% end %>
           <% end %>
         </div>
-        
+
         <!-- Add edit button if no content -->
         <% if @diary && (@diary.notes.blank? && @diary.til_text.blank?) %>
           <div class="divider"></div>
           <div class="card-actions justify-center">
             <%= link_to edit_diary_path(@diary), class: "btn btn-primary gap-2" do %>
-              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-              </svg>
+              <span class="material-symbols-outlined">
+                edit_square
+              </span>
               日記を編集する
             <% end %>
           </div>
         <% end %>
+
+        <!-- Add delete button if diary exists -->
+        <% if @diary %>
+          <div class="divider"></div>
+          <div class="card-actions justify-center">
+            <%= button_to diary_path(@diary), method: :delete, data: { turbo_confirm: "本当にこの日記を削除しますか？" }, class: "btn btn-error gap-2" do %>
+              <span class="material-symbols-outlined">
+                delete
+              </span>
+              日記を削除する
+            <% end %>
+          </div>
+        <% end %>
+
       </div>
     </div>
   </div>
