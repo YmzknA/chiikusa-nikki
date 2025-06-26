@@ -1,5 +1,4 @@
 class DiariesController < ApplicationController
-  before_action :require_login
   before_action :set_diary, only: [:show, :edit, :update]
 
   def index
@@ -73,9 +72,5 @@ class DiariesController < ApplicationController
     params.require(:diary_answers).permit(:mood, :motivation, :progress)
   end
 
-  def require_login
-    unless current_user
-      redirect_to root_path, alert: "ログインしてください"
-    end
   end
 end
