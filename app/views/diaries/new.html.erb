@@ -37,12 +37,12 @@
             </div>
             <div class="flex gap-2 flex-wrap">
               <% question.answers.each do |answer| %>
-                <div class="form-control">
-                  <%= form.radio_button "diary_answers[#{question.identifier}]", answer.id, class: "radio radio-primary hidden", id: "diary_answers_#{question.identifier}_#{answer.id}" %>
-                  <%= form.label "diary_answers_#{question.identifier}_#{answer.id}", class: "btn btn-outline btn-lg text-2xl hover:btn-primary transition-all duration-200" do %>
-                    <%= answer.emoji %>
-                  <% end %>
-                </div>
+                <button type="button" 
+                        class="btn btn-outline btn-lg text-2xl hover:btn-primary transition-all duration-200" 
+                        onclick="selectEmoji(this, '<%= question.identifier %>', '<%= answer.id %>')">
+                  <%= answer.emoji %>
+                </button>
+                <%= form.radio_button "diary_answers[#{question.identifier}]", answer.id, class: "hidden", id: "diary_answers_#{question.identifier}_#{answer.id}" %>
               <% end %>
             </div>
           </div>
@@ -67,3 +67,24 @@
     </div>
   </div>
 </div>
+
+<script>
+function selectEmoji(button, question, answerId) {
+  // Remove active state from all buttons in this question group
+  const questionGroup = button.parentElement;
+  questionGroup.querySelectorAll('button').forEach(btn => {
+    btn.classList.remove('btn-primary');
+    btn.classList.add('btn-outline');
+  });
+  
+  // Add active state to clicked button
+  button.classList.remove('btn-outline');
+  button.classList.add('btn-primary');
+  
+  // Check the corresponding radio button
+  const radioButton = document.getElementById(`diary_answers_${question}_${answerId}`);
+  if (radioButton) {
+    radioButton.checked = true;
+  }
+}
+</script>

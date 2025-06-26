@@ -1,10 +1,16 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
-.zen-kurenaido-regular {
-  font-family: "Zen Kurenaido", sans-serif;
+.m-plus-1p-regular {
+  font-family: "M PLUS 1p", sans-serif;
   font-weight: 400;
   font-style: normal;
+}
+
+/* Radio button styles for emoji selection */
+input[type="radio"]:checked + .emoji-label,
+label:has(input[type="radio"]:checked) {
+  @apply btn-primary;
 }
 
 
