@@ -12,26 +12,33 @@
     </div>
 
     <div class="neuro-card p-6">
-      <%= form_with(model: @diary, url: diaries_path, local: true, class: "space-y-6") do |form| %>
-        <% if @diary.errors.any? %>
-          <div class="neuro-error p-4 mb-4 rounded-2xl">
+      <%= form_with(model: @diary, url: diaries_path, local: true, data: { turbo: false, turbo_frame: "_top" }, class: "space-y-6") do |form| %>
+        <% if @existing_diary %>
+          <div class="neuro-input p-4 mb-4 rounded-2xl bg-warning border border-warning/20">
             <div class="flex items-start gap-3">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-error flex-shrink-0" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               <div>
-                <h3 class="font-bold text-error"><%= pluralize(@diary.errors.count, "つの") %>エラーがあります:</h3>
-                <ul class="list-disc list-inside mt-2 text-base-content/80">
-                  <% @diary.errors.each do |error| %>
-                    <li><%= error.full_message %></li>
-                  <% end %>
-                </ul>
+                <h3 class="font-bold text-primary">⚠️ この日の日記は既に作成されています</h3>
+                <p class="mt-2 text-base-content/80">
+                  <%= @date.strftime("%Y年%m月%d日") %>の日記は既に存在します。
+                  <%= link_to "既存の日記を編集", edit_diary_path(@existing_diary), class: "text-neutral underline hover:text-warning/80" %>
+                  するか、別の日付を選択してください。
+                </p>
               </div>
             </div>
           </div>
         <% end %>
 
         <div class="form-control">
-          <%= form.label :date, "日付", class: "block text-base-content font-semibold mb-2" %>
-          <%= form.date_field :date, value: @date, class: "neuro-input py-3 px-4 w-full max-w-42", required: true %>
+          <%= form.label :date, "日付", class: "block text-base-content font-semibold mb-2 #{'text-error' if @diary.errors[:date].any?}" %>
+          <%= form.date_field :date, value: (@diary.date || @date), 
+              class: "neuro-input py-3 px-4 w-full max-w-42 #{'border-error border-2 bg-error/5' if @diary.errors[:date].any?}", 
+              required: true,
+              data: { error: @diary.errors[:date].any? } %>
+          <% if @diary.errors[:date].any? %>
+            <p class="text-error text-sm mt-1 font-medium">
+              ⚠️ この日付を変更してください
+            </p>
+          <% end %>
         </div>
 
         <% @questions.each do |question| %>
