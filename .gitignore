@@ -43,3 +43,6 @@
 .claude/
 
 /CLAUDE.md
+
+# Ignore PR draft files
+pr.md
