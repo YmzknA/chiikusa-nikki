@@ -120,7 +120,7 @@
         </div>
 
         <!-- Add edit button if no content -->
-        <% if @diary && (@diary.notes.blank? && @diary.til_text.blank?) %>
+        <% if @diary %>
           <div class="divider"></div>
           <div class="card-actions justify-center">
             <%= link_to edit_diary_path(@diary), class: "btn btn-primary gap-2" do %>

@@ -1,5 +1,3 @@
-require "openai"
-
 class OpenaiService
   def initialize
     @client = ::OpenAI::Client.new(access_token: Rails.application.credentials.dig(:openai, :api_key))
