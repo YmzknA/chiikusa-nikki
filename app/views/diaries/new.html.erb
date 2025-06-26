@@ -1,21 +1,4 @@
 <div class="container mx-auto px-4 py-8 max-w-2xl">
-  <!-- Debug information for new diary form -->
-  <% if Rails.env.development? %>
-    <div class="alert alert-info mb-4">
-      <details>
-        <summary>Debug Info</summary>
-        <p>Questions Count: <%= @questions&.count %></p>
-        <% @questions&.each do |question| %>
-          <p>Q: <%= question.identifier %> - <%= question.label %> (Answers: <%= question.answers.count %>)</p>
-          <% question.answers.each do |answer| %>
-            <span>ID: <%= answer.id %> - <%= answer.emoji %> </span>
-          <% end %>
-        <% end %>
-        <p>Selected Answers: <%= @selected_answers.inspect %></p>
-      </details>
-    </div>
-  <% end %>
-
   <div class="flex items-center mb-8">
     <%= link_to diaries_path, class: "btn btn-ghost btn-circle mr-4" do %>
       <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,7 +27,7 @@
 
         <div class="form-control">
           <%= form.label :date, "日付", class: "label label-text font-semibold" %>
-          <%= form.date_select :date, {}, { class: "select select-bordered" } %>
+          <%= form.date_field :date, value: @date, class: "input input-bordered w-full max-w-xs", required: true %>
         </div>
 
         <% @questions.each do |question| %>
@@ -52,16 +35,16 @@
             <div class="label">
               <span class="label-text font-semibold"><%= question.label %></span>
             </div>
-            <div class="flex gap-2 flex-wrap" data-question="<%= question.identifier %>">
+            <div class="flex gap-2 flex-wrap">
               <% question.answers.each do |answer| %>
                 <% is_selected = @selected_answers&.dig(question.identifier.to_s) == answer.id.to_s %>
-                <button type="button" 
-                        class="btn <%= is_selected ? 'btn-primary' : 'btn-outline' %> btn-lg text-2xl hover:btn-primary transition-all duration-200" 
-                        onclick="selectEmoji(this, '<%= question.identifier %>', '<%= answer.id %>')">
-                  <%= answer.emoji %>
-                </button>
-                <%= radio_button_tag "diary_answers[#{question.identifier}]", answer.id, 
-                    is_selected, { class: "hidden", id: "diary_answers_#{question.identifier}_#{answer.id}" } %>
+                <label class="cursor-pointer">
+                  <%= radio_button_tag "diary_answers[#{question.identifier}]", answer.id, 
+                      is_selected, { class: "peer sr-only" } %>
+                  <div class="btn btn-outline btn-lg text-2xl hover:btn-primary transition-all duration-200 peer-checked:btn-primary peer-checked:bg-primary peer-checked:text-primary-content">
+                    <%= answer.emoji %>
+                  </div>
+                </label>
               <% end %>
             </div>
           </div>
@@ -69,7 +52,7 @@
 
         <div class="form-control">
           <%= form.label :notes, "今日学んだこと・感じたこと", class: "label label-text font-semibold" %>
-          <%= form.text_area :notes, placeholder: "・今日学んだ技術について\n・つまずいた問題や解決方法\n・新しい発見や気づき\n・明日やりたいこと", class: "textarea textarea-bordered h-32", rows: 6 %>
+          <%= form.text_area :notes, placeholder: "・今日学んだ技術について\n・つまずいた問題や解決方法\n・新しい発見や気づき\n   など", class: "textarea textarea-bordered h-32", rows: 6 %>
         </div>
 
         <div class="form-control">
@@ -86,66 +69,3 @@
     </div>
   </div>
 </div>
-
-<script>
-function selectEmoji(button, question, answerId) {
-  console.log('selectEmoji called:', { question, answerId });
-  
-  // Remove active state from all buttons in this question group
-  const questionGroup = button.parentElement;
-  questionGroup.querySelectorAll('button').forEach(btn => {
-    btn.classList.remove('btn-primary');
-    btn.classList.add('btn-outline');
-  });
-  
-  // Add active state to clicked button
-  button.classList.remove('btn-outline');
-  button.classList.add('btn-primary');
-  
-  // Check the corresponding radio button
-  const radioButtonId = `diary_answers_${question}_${answerId}`;
-  const radioButton = document.getElementById(radioButtonId);
-  console.log('Radio button found:', radioButton, 'ID:', radioButtonId);
-  
-  if (radioButton) {
-    radioButton.checked = true;
-    console.log('Radio button checked:', radioButton.checked);
-    
-    // Trigger change event to ensure form recognizes the selection
-    radioButton.dispatchEvent(new Event('change', { bubbles: true }));
-  } else {
-    console.error('Radio button not found with ID:', radioButtonId);
-  }
-}
-
-// Add form submission validation
-document.addEventListener('DOMContentLoaded', function() {
-  const form = document.querySelector('form');
-  if (form) {
-    form.addEventListener('submit', function(e) {
-      const questionGroups = document.querySelectorAll('[data-question]');
-      const missingAnswers = [];
-      
-      questionGroups.forEach(group => {
-        const question = group.dataset.question;
-        const checkedRadio = group.querySelector('input[type="radio"]:checked');
-        if (!checkedRadio) {
-          missingAnswers.push(question);
-        }
-      });
-      
-      if (missingAnswers.length > 0) {
-        console.log('Missing answers for questions:', missingAnswers);
-        // Don't prevent submission, but log for debugging
-      }
-      
-      // Log all form data for debugging
-      const formData = new FormData(form);
-      console.log('Form data being submitted:');
-      for (let [key, value] of formData.entries()) {
-        console.log(key + ': ' + value);
-      }
-    });
-  }
-});
-</script>

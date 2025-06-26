@@ -10,6 +10,7 @@ class DiariesController < ApplicationController
   def new
     @diary = Diary.new
     @questions = Question.all
+    @date = params[:date] || Date.current
   end
 
   def edit
