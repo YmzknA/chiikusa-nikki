@@ -72,6 +72,7 @@ class DiariesController < ApplicationController
         # 新しいDiaryAnswerを作成
         diary_answer_params.each do |question_identifier, answer_id|
           question = Question.find_by(identifier: question_identifier)
+          logger.swim(question.label)
 
           @diary.diary_answers.create(question: question, answer_id: answer_id) if question && answer_id.present?
         end
