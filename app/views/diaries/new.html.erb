@@ -1,46 +1,69 @@
-<h1>新しい日記</h1>
+<div class="container mx-auto px-4 py-8 max-w-2xl">
+  <div class="flex items-center mb-8">
+    <%= link_to diaries_path, class: "btn btn-ghost btn-circle mr-4" do %>
+      <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+      </svg>
+    <% end %>
+    <h1 class="text-3xl font-bold text-base-content">新しい日記 ✍️</h1>
+  </div>
 
-<%= form_with(model: @diary, url: diaries_path) do |form| %>
-  <% if @diary.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@diary.errors.count, "error") %> prohibited this diary from being saved:</h2>
-
-      <ul>
-        <% @diary.errors.each do |error| %>
-          <li><%= error.full_message %></li>
+  <div class="card bg-base-100 shadow-xl">
+    <div class="card-body">
+      <%= form_with(model: @diary, url: diaries_path, class: "space-y-6") do |form| %>
+        <% if @diary.errors.any? %>
+          <div class="alert alert-error">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <div>
+              <h3 class="font-bold"><%= pluralize(@diary.errors.count, "つの") %>エラーがあります:</h3>
+              <ul class="list-disc list-inside mt-2">
+                <% @diary.errors.each do |error| %>
+                  <li><%= error.full_message %></li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
         <% end %>
-      </ul>
-    </div>
-  <% end %>
 
-  <div>
-    <%= form.label :date %>
-    <%= form.date_select :date %>
-  </div>
+        <div class="form-control">
+          <%= form.label :date, "日付", class: "label label-text font-semibold" %>
+          <%= form.date_select :date, {}, { class: "select select-bordered" } %>
+        </div>
 
-  <% @questions.each do |question| %>
-    <div>
-      <%= question.label %>
-      <div>
-        <% question.answers.each do |answer| %>
-          <%= form.radio_button "diary_answers[#{question.identifier}]", answer.id %>
-          <%= form.label "diary_answers_#{question.identifier}_#{answer.id}", answer.emoji %>
+        <% @questions.each do |question| %>
+          <div class="form-control">
+            <div class="label">
+              <span class="label-text font-semibold"><%= question.label %></span>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+              <% question.answers.each do |answer| %>
+                <div class="form-control">
+                  <%= form.radio_button "diary_answers[#{question.identifier}]", answer.id, class: "radio radio-primary hidden", id: "diary_answers_#{question.identifier}_#{answer.id}" %>
+                  <%= form.label "diary_answers_#{question.identifier}_#{answer.id}", class: "btn btn-outline btn-lg text-2xl hover:btn-primary transition-all duration-200" do %>
+                    <%= answer.emoji %>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
         <% end %>
-      </div>
+
+        <div class="form-control">
+          <%= form.label :notes, "今日学んだこと・感じたこと", class: "label label-text font-semibold" %>
+          <%= form.text_area :notes, placeholder: "・今日学んだ技術について\n・つまずいた問題や解決方法\n・新しい発見や気づき\n・明日やりたいこと", class: "textarea textarea-bordered h-32", rows: 6 %>
+        </div>
+
+        <div class="form-control">
+          <label class="label cursor-pointer justify-start gap-4">
+            <%= form.check_box :is_public, class: "checkbox checkbox-primary" %>
+            <span class="label-text font-semibold">この日記を公開する</span>
+          </label>
+        </div>
+
+        <div class="form-control mt-8">
+          <%= form.submit "日記を作成", class: "btn btn-primary btn-lg w-full" %>
+        </div>
+      <% end %>
     </div>
-  <% end %>
-
-  <div>
-    <%= form.label :notes %>
-    <%= form.text_area :notes, placeholder: "箇条書きで入力..." %>
   </div>
-
-  <div>
-    <%= form.label :is_public, "公開する" %>
-    <%= form.check_box :is_public %>
-  </div>
-
-  <div>
-    <%= form.submit "日記を作成" %>
-  </div>
-<% end %>
+</div>

@@ -1,24 +1,95 @@
-<h1><%= @diary.date %>の日記</h1>
+<div class="container mx-auto px-4 py-8 max-w-2xl">
+  <div class="flex items-center mb-8">
+    <%= link_to diaries_path, class: "btn btn-ghost btn-circle mr-4" do %>
+      <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+      </svg>
+    <% end %>
+    <h1 class="text-3xl font-bold text-base-content"><%= @diary.date.strftime("%Y年%m月%d日") %>の日記 📖</h1>
+  </div>
 
-<% if @diary.til_text.present? %>
-  <p><strong>TIL:</strong> <%= @diary.til_text %></p>
-<% else %>
-  <p><%= @diary.notes %></p>
-  <%= link_to "TILを選択する", edit_diary_path(@diary) if @diary.til_candidates.any? %>
-<% end %>
+  <div class="space-y-6">
+    <%# TIL or Notes Section %>
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <% if @diary.til_text.present? %>
+          <h2 class="card-title text-primary gap-2">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+            </svg>
+            Today I Learned
+          </h2>
+          <p class="text-lg leading-relaxed"><%= @diary.til_text %></p>
+        <% else %>
+          <h2 class="card-title text-secondary gap-2">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+            学習メモ
+          </h2>
+          <div class="whitespace-pre-line text-base leading-relaxed"><%= @diary.notes %></div>
+          <% if @diary.til_candidates.any? %>
+            <div class="card-actions justify-end mt-4">
+              <%= link_to "TILを選択する", edit_diary_path(@diary), class: "btn btn-primary" %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
 
-<div>
-  <% @diary.diary_answers.each do |diary_answer| %>
-    <span><%= diary_answer.question.label %>: <%= diary_answer.answer.emoji %></span>
-  <% end %>
+    <%# Mood & Stats Section %>
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <h2 class="card-title text-accent gap-2">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+          今日の気分・状態
+        </h2>
+        <div class="flex gap-4 flex-wrap">
+          <% @diary.diary_answers.each do |diary_answer| %>
+            <div class="badge badge-lg badge-outline gap-2 p-4">
+              <span class="text-2xl"><%= diary_answer.answer.emoji %></span>
+              <span class="font-semibold"><%= diary_answer.question.label %></span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <%# Actions Section %>
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-2">
+            <% if @diary.is_public? %>
+              <div class="badge badge-success gap-2">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+                公開
+              </div>
+            <% else %>
+              <div class="badge badge-ghost gap-2">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+                </svg>
+                非公開
+              </div>
+            <% end %>
+          </div>
+          
+          <% if @diary.is_public? && @diary.til_text.present? %>
+            <%= link_to "https://twitter.com/intent/tweet?text=#{ERB::Util.url_encode(@diary.til_text)}&url=#{diary_url(@diary)}", target: "_blank", class: "btn btn-accent gap-2" do %>
+              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+              </svg>
+              Xでシェア
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-
-<p>公開設定: <%= @diary.is_public? ? "公開" : "非公開" %></p>
-
-<% if @diary.is_public? && @diary.til_text.present? %>
-  <%= link_to "https://twitter.com/intent/tweet?text=#{ERB::Util.url_encode(@diary.til_text)}&url=#{diary_url(@diary)}", target: "_blank" do %>
-    <p>Share on X!</p>
-  <% end %>
-<% end %>
-
-<%= link_to "一覧に戻る", diaries_path %>

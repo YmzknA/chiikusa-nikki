@@ -1,2 +1,46 @@
-<h1>Profiles#edit</h1>
-<p>Find me in app/views/profiles/edit.html.erb</p>
+<div class="container mx-auto px-4 py-8 max-w-2xl">
+  <div class="flex items-center mb-8">
+    <%= link_to profile_path, class: "btn btn-ghost btn-circle mr-4" do %>
+      <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+      </svg>
+    <% end %>
+    <h1 class="text-3xl font-bold text-base-content">プロフィール編集 ✏️</h1>
+  </div>
+
+  <div class="card bg-base-100 shadow-xl">
+    <div class="card-body">
+      <div class="alert alert-info">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span>プロフィール編集機能は開発中です。現在はGitHubの情報が自動的に反映されます。</span>
+      </div>
+
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text font-semibold">ユーザー名</span>
+        </label>
+        <input type="text" value="<%= current_user.username %>" class="input input-bordered" disabled />
+      </div>
+
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text font-semibold">メールアドレス</span>
+        </label>
+        <input type="email" value="<%= current_user.email %>" class="input input-bordered" disabled />
+      </div>
+
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text font-semibold">参加日</span>
+        </label>
+        <input type="text" value="<%= current_user.created_at.strftime("%Y年%m月%d日") %>" class="input input-bordered" disabled />
+      </div>
+
+      <div class="card-actions justify-end mt-6">
+        <%= link_to profile_path, class: "btn btn-primary" do %>
+          プロフィールに戻る
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
