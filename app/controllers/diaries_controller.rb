@@ -72,5 +72,4 @@ class DiariesController < ApplicationController
     params.require(:diary_answers).permit(:mood, :motivation, :progress)
   end
 
-  end
 end
