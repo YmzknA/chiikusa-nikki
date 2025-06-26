@@ -77,3 +77,4 @@ gem "openai"
 gem "octokit", "~> 10.0"
 
 gem "simple_calendar", "~> 3.1"
+gem "swimming_fish"
