@@ -1,1 +1,6 @@
 @import "tailwindcss";
+@plugin "daisyui";
+
+@theme {
+  --default-theme: lemonade;
+}
