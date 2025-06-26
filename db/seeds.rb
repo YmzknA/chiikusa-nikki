@@ -29,11 +29,11 @@ answers = {
     { level: 5, label: "", emoji: "💥" }
   ],
   progress: [
-    { level: 1, label: "", emoji: "🌰" },
-    { level: 2, label: "", emoji: "🌱" },
-    { level: 3, label: "", emoji: "🌿" },
-    { level: 4, label: "", emoji: "🌳" },
-    { level: 5, label: "", emoji: "🪹" }
+    { level: 1, label: "", emoji: "🪹" },
+    { level: 2, label: "", emoji: "🌰" },
+    { level: 3, label: "", emoji: "🌱" },
+    { level: 4, label: "", emoji: "🌿" },
+    { level: 5, label: "", emoji: "🌳" }
   ]
 }
 
