@@ -1,178 +1,114 @@
-<div class="container mx-auto px-4 py-8 max-w-2xl">
-  <!-- Debug information for edit diary form -->
-  <% if Rails.env.development? %>
-    <div class="alert alert-info mb-4">
-      <details>
-        <summary>Debug Info</summary>
-        <p>Diary ID: <%= @diary&.id %></p>
-        <p>Diary Date: <%= @diary&.date %></p>
-        <p>TIL Candidates Count: <%= @diary&.til_candidates&.count %></p>
-        <p>Current TIL Text: <%= @diary&.til_text %></p>
-        <% @diary&.til_candidates&.each_with_index do |candidate, index| %>
-          <p>Candidate <%= index + 1 %>: <%= candidate.content.truncate(50) %></p>
+<div class="min-h-screen lemonade-background p-4">
+  <div class="container mx-auto max-w-2xl">
+    <div class="neuro-card p-6 mb-6">
+      <div class="flex items-center">
+        <%= link_to diary_path(@diary), class: "neuro-button p-3 mr-4 inline-flex items-center justify-center" do %>
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
         <% end %>
-      </details>edit
+        <h1 class="text-3xl font-bold text-base-content">日記を編集 ✏️</h1>
+      </div>
     </div>
-  <% end %>
 
-  <div class="flex items-center mb-8">
-    <%= link_to diary_path(@diary), class: "btn btn-ghost btn-circle mr-4" do %>
-      <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-      </svg>
-    <% end %>
-  </div>
-
-  <div class="space-y-6">
-    <!-- Diary Content Edit Section -->
-    <div class="card bg-base-100 shadow-xl">
-      <div class="card-body">
-        <h2 class="card-title text-primary gap-2 mb-6">
-          <span class="material-symbols-outlined">
-            edit_square
-          </span>
-          日記内容の編集
-        </h2>
-
-        <%= form_with(model: @diary, url: diary_path(@diary), method: :patch, local: true, class: "space-y-6") do |form| %>
-          <% if @diary.errors.any? %>
-            <div class="alert alert-error">
-              <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+    <div class="neuro-card p-6">
+      <%= form_with(model: @diary, local: true, class: "space-y-6") do |form| %>
+        <% if @diary.errors.any? %>
+          <div class="neuro-error p-4 mb-4 rounded-2xl">
+            <div class="flex items-start gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-error flex-shrink-0" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               <div>
-                <h3 class="font-bold"><%= pluralize(@diary.errors.count, "つの") %>エラーがあります:</h3>
-                <ul class="list-disc list-inside mt-2">
+                <h3 class="font-bold text-error"><%= pluralize(@diary.errors.count, "つの") %>エラーがあります:</h3>
+                <ul class="list-disc list-inside mt-2 text-base-content/80">
                   <% @diary.errors.each do |error| %>
                     <li><%= error.full_message %></li>
                   <% end %>
                 </ul>
               </div>
             </div>
-          <% end %>
-
-          <!-- Notes Section -->
-          <div class="form-control">
-            <%= form.label :notes, "学習メモ", class: "label label-text font-semibold" %>
-            <%= form.text_area :notes, placeholder: "・今日学んだ技術について\n・つまずいた問題や解決方法\n・新しい発見や気づき\n・明日やりたいこと", class: "textarea textarea-bordered h-32", rows: 6 %>
-          </div>
-
-          <!-- Mood Questions Section -->
-          <% @questions&.each do |question| %>
-            <div class="form-control">
-              <div class="label">
-                <span class="label-text font-semibold"><%= question.label %></span>
-              </div>
-              <div class="flex gap-2 flex-wrap">
-                <% question.answers.each do |answer| %>
-                  <% is_selected = @selected_answers&.dig(question.identifier) == answer.id.to_s %>
-                  <label class="cursor-pointer">
-                    <%= radio_button_tag "diary_answers[#{question.identifier}]", answer.id, 
-                        is_selected, { class: "peer sr-only" } %>
-                    <div class="btn btn-outline btn-lg text-2xl hover:btn-primary transition-all duration-200 peer-checked:btn-primary peer-checked:bg-primary peer-checked:text-primary-content">
-                      <%= answer.emoji %>
-                    </div>
-                  </label>
-                <% end %>
-              </div>
-            </div>
-          <% end %>
-
-          <!-- Public Setting -->
-          <div class="form-control">
-            <label class="label cursor-pointer justify-start gap-4">
-              <%= form.check_box :is_public, class: "checkbox checkbox-primary" %>
-              <span class="label-text font-semibold">この日記を公開する</span>
-            </label>
-          </div>
-
-          <!-- Save Button for Notes and Mood -->
-          <div class="form-control mt-8">
-            <%= form.submit "メモと気分を保存", class: "btn btn-secondary btn-lg w-full" %>
           </div>
         <% end %>
-      </div>
-    </div>
 
-    <!-- TIL Selection Section -->
-    <div class="card bg-base-100 shadow-xl">
-      <div class="card-body">
-        <h2 class="card-title text-primary gap-2 mb-6">
-          <span class="material-symbols-outlined">
-            smart_toy
-          </span>
-          TIL選択
-        </h2>
-        <p class="text-base-content/70 mb-6">AIが生成したTIL候補から選択してください。</p>
+        <div class="form-control">
+          <%= form.label :date, "日付", class: "block text-base-content font-semibold mb-2" %>
+          <%= form.date_field :date, class: "neuro-input py-3 px-4 w-full max-w-xs", required: true %>
+        </div>
 
-        <%= form_with(model: @diary, url: diary_path(@diary), method: :patch, local: true, class: "space-y-6") do |form| %>
+        <% @questions.each do |question| %>
+          <div class="form-control">
+            <div class="mb-3">
+              <span class="block text-base-content font-semibold mb-2"><%= question.label %></span>
+            </div>
+            <div class="flex gap-3 flex-wrap">
+              <% question.answers.each do |answer| %>
+                <% is_selected = @selected_answers&.dig(question.identifier.to_s) == answer.id.to_s %>
+                <label class="cursor-pointer">
+                  <%= radio_button_tag "diary_answers[#{question.identifier}]", answer.id, 
+                      is_selected, { class: "peer sr-only" } %>
+                  <div class="neuro-button py-3 px-4 text-2xl peer-checked:!bg-primary peer-checked:!text-primary-content peer-checked:!shadow-inner">
+                    <%= answer.emoji %>
+                  </div>
+                </label>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
 
-        <% if @diary&.til_candidates&.any? %>
-          <div class="space-y-4">
-            <% @diary.til_candidates.each_with_index do |candidate, index| %>
-              <div class="form-control">
-                <%= form.label :"til_text_#{candidate.id}", class: "label cursor-pointer justify-start gap-4 p-4 border border-base-300 rounded-lg hover:border-primary hover:bg-base-200 hover:shadow-md transition-all duration-200" do %>
-                  <%= form.radio_button :til_text, candidate.content, 
-                    { class: "radio radio-primary", 
-                      id: "diary_til_text_#{candidate.id}",
-                      checked: @diary.til_text == candidate.content } %>
+        <div class="form-control">
+          <%= form.label :notes, "今日学んだこと・感じたこと", class: "block text-base-content font-semibold mb-2" %>
+          <%= form.text_area :notes, placeholder: "・今日学んだ技術について\n・つまずいた問題や解決方法\n・新しい発見や気づき\n   など", class: "neuro-input w-full h-32 py-4 px-4 resize-none", rows: 6 %>
+        </div>
 
-                  <div class="flex-1">
-                    <div class="flex items-center gap-2 mb-2">
-                      <div class="badge badge-primary badge-sm">候補 <%= index + 1 %></div>
-                      <% if @diary.til_text == candidate.content %>
-                        <div class="badge badge-success badge-sm">選択中</div>
-                      <% end %>
-                    </div>
-                    <div class="text-left text-base-content leading-relaxed whitespace-pre-wrap">
-                      <%= candidate.content %>
+        <!-- TIL Selection Section -->
+        <% if @diary.til_candidates.any? %>
+          <div class="form-control">
+            <span class="block text-base-content font-semibold mb-4">
+              AIが生成したTIL候補から選択してください
+            </span>
+            <div class="space-y-3">
+              <% @diary.til_candidates.each_with_index do |candidate, index| %>
+                <label class="cursor-pointer block">
+                  <%= radio_button_tag "diary[til_text]", candidate.content, 
+                      @diary.til_text == candidate.content, { class: "peer sr-only" } %>
+                  <div class="neuro-badge p-4 peer-checked:!bg-primary peer-checked:!text-primary-content transition-all">
+                    <div class="flex items-start gap-3">
+                      <span class="neuro-button w-8 h-8 flex items-center justify-center text-sm font-bold shrink-0">
+                        <%= index + 1 %>
+                      </span>
+                      <p class="text-sm leading-relaxed"><%= candidate.content %></p>
                     </div>
                   </div>
-                <% end %>
-              </div>
-            <% end %>
-          </div>
-        <% else %>
-          <div class="alert alert-warning">
-            <span class="material-symbols-outlined">
-              warning
-            </span>
-            <div>
-              <h3 class="font-bold">TIL候補がありません</h3>
-              <div>この日記にはAIが生成したTIL候補がありません。<br>日記作成時に学習メモがあった場合に生成されます。</div>
+                </label>
+              <% end %>
+              
+              <!-- Option to keep original notes -->
+              <label class="cursor-pointer block">
+                <%= radio_button_tag "diary[til_text]", "", 
+                    @diary.til_text.blank?, { class: "peer sr-only" } %>
+                <div class="neuro-badge p-4 peer-checked:!bg-secondary peer-checked:!text-secondary-content transition-all">
+                  <div class="flex items-start gap-3">
+                    <span class="neuro-button w-8 h-8 flex items-center justify-center text-sm font-bold shrink-0">
+                      📝
+                    </span>
+                    <p class="text-sm leading-relaxed">学習メモをそのまま使用する</p>
+                  </div>
+                </div>
+              </label>
             </div>
           </div>
-          
-          <div class="card-actions justify-center mt-6">
-            <%= link_to diary_path(@diary), class: "btn btn-ghost gap-2" do %>
-              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-              </svg>
-              日記に戻る
-            <% end %>
-          </div>
         <% end %>
 
-        <% if @diary&.til_candidates&.any? %>
-          <div class="divider"></div>
+        <div class="form-control">
+          <label class="flex items-center gap-3 cursor-pointer neuro-badge py-3 px-4">
+            <%= form.check_box :is_public, class: "checkbox checkbox-secondary bg-gray-100" %>
+            <span class="text-base-content font-semibold">この日記を公開する</span>
+          </label>
+        </div>
 
-          <div class="form-control">
-            <label class="label cursor-pointer justify-start gap-4">
-              <%= check_box_tag :push_to_github, true, false, class: "checkbox checkbox-primary" %>
-              <div class="flex-1">
-                <div class="label-text font-semibold">GitHubにプッシュする</div>
-                <div class="label-text-alt text-base-content/60">選択したTILをGitHubリポジトリに自動で追加します</div>
-              </div>
-            </label>
-          </div>
-        <% end %>
-
-        <% if @diary&.til_candidates&.any? %>
-          <div class="form-control mt-8">
-            <%= form.submit "日記を完成させる", class: "btn btn-primary btn-lg w-full" %>
-          </div>
-        <% end %>
-        <% end %>
-      </div>
+        <div class="form-control mt-8">
+          <%= form.submit "日記を更新", class: "neuro-button w-full py-4 px-6 font-bold text-lg hover:bg-primary-focus transition-colors hover:cursor-pointer" %>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>
-

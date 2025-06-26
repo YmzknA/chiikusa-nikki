@@ -1,31 +1,33 @@
-<div class="container mx-auto px-4 py-8">
-  <div class="flex justify-between items-center mb-8">
-    <h1 class="text-3xl font-bold text-base-content">日記カレンダー 🌱</h1>
-    <%= link_to new_diary_path, class: "btn btn-primary gap-2" do %>
-      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-      </svg>
-      新しい日記を書く
-    <% end %>
-  </div>
+<div class="min-h-screen lemonade-background p-4">
+  <div class="container mx-auto">
+    <div class="neuro-card p-6 mb-6">
+      <div class="flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-base-content">日記カレンダー 🌱</h1>
+        <%= link_to new_diary_path, class: "neuro-button py-3 px-6 font-medium inline-flex items-center gap-2" do %>
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          新しい日記を書く
+        <% end %>
+      </div>
+    </div>
 
-  <div class="card bg-base-100 shadow-xl">
-    <div class="card-body">
+    <div class="neuro-card p-6">
       <%= month_calendar(events: @diaries, attribute: :date, class: "table table-auto w-full") do |date, diaries| %>
-        <div class="p-2 min-h-[60px] border border-base-300 relative">
+        <div class="neuro-calendar-cell p-3 min-h-[60px] relative m-1">
           <div class="text-xs text-base-content/60 mb-1"><%= date.day %></div>
 
           <% if diaries.any? %>
             <% diary = diaries.first %>
             <% mood_level = diary.diary_answers.find_by(question: Question.find_by(identifier: :mood))&.answer&.level || 3 %>
             <%= link_to diary_path(diary) do %>
-              <div class="w-full h-full flex items-center justify-center hover:scale-130 transition-transform">
+              <div class="w-full h-full flex items-center justify-center hover:scale-110 transition-transform">
                 <%= render "diaries/weed", mood_level: mood_level %>
               </div>
             <% end %>
           <% else %>
             <%= link_to new_diary_path(date: date) do %>
-              <div class="w-full h-full flex items-center justify-center text-base-content/30 hover:scale-150 transition-all duration-200">
+              <div class="w-full h-full flex items-center justify-center text-base-content/30 hover:scale-110 transition-all duration-200">
                 <span class="material-symbols-outlined" style="font-size: 2rem; vertical-align: middle;">
                   add_circle_outline
                 </span>

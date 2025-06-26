@@ -1,71 +1,56 @@
-<div class="hero min-h-screen bg-base-100">
-  <div class="hero-content text-center">
-    <div class="max-w-md">
-      <%# Logo/Icon %>
-      <div class="text-center mb-8">
-        <div class="avatar placeholder mx-auto mb-6">
-          <div class="bg-primary text-primary-content rounded-full w-20">
-            <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-            </svg>
-          </div>
-        </div>
-        <h1 class="text-5xl font-bold text-base-content mb-4">Programming Diary</h1>
-        <p class="text-base-content/70 text-lg">日々の学習を記録して、成長を実感しよう 🌱</p>
+<div class="min-h-screen lemonade-background flex items-center justify-center p-4">
+  <div class="neuro-card p-8 max-w-sm w-full text-center relative">
+    <%# Logo/Icon %>
+    <!-- Chart Icon -->
+    <div class="mb-6">
+      <div class="neuro-icon w-16 h-16 mx-auto flex items-center justify-center">
+        <svg class="w-8 h-8 text-base-content" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+        </svg>
       </div>
-
-      <% if user_signed_in? %>
-        <%# Logged in state %>
-        <div class="card w-full max-w-sm bg-base-100 shadow-xl">
-          <div class="card-body">
-            <div class="text-center mb-4">
-              <div class="text-base-content text-lg">
-                ようこそ、<span class="font-semibold text-primary"><%= current_user.username || current_user.email %></span>さん ✨
-              </div>
-            </div>
-            
-            <div class="card-actions justify-center space-y-3">
-              <%= link_to new_diary_path, class: "btn btn-primary w-full gap-2" do %>
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                </svg>
-                今日の日記を書く
-              <% end %>
-              
-              <%= link_to diaries_path, class: "btn btn-secondary w-full gap-2" do %>
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                </svg>
-                過去の記録を見る
-              <% end %>
-              
-              <%= link_to destroy_user_session_path, method: :delete, class: "btn btn-ghost w-full" do %>
-                ログアウト
-              <% end %>
-            </div>
-          </div>
-        </div>
-      <% else %>
-        <%# Login state %>
-        <div class="card w-full max-w-sm bg-base-100 shadow-xl">
-          <div class="card-body">
-            <h2 class="card-title justify-center text-2xl mb-2">はじめましょう</h2>
-            <p class="text-center text-base-content/70 mb-6">GitHubアカウントでログインして、学習記録を開始しましょう</p>
-            
-            <%= button_to user_github_omniauth_authorize_path, data: { turbo: false }, class: "btn btn-neutral w-full gap-3 transform hover:scale-105" do %>
-              <%# GitHub Icon %>
-              <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 0C5.374 0 0 5.373 0 12 0 17.302 3.438 21.8 8.207 23.387c.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
-              </svg>
-              <span>GitHubでログイン</span>
-            <% end %>
-            
-            <p class="text-sm text-base-content/50 text-center mt-4">
-              ログインすることで、あなたの学習データを安全に管理できます
-            </p>
-          </div>
-        </div>
-      <% end %>
     </div>
+
+    <!-- Name -->
+    <h2 class="text-2xl font-bold text-base-content mb-2">Programming Diary</h2>
+
+    <!-- Job Title -->
+    <p class="text-base-content/70 mb-8 text-lg">日々の学習を記録して、成長を実感しよう</p>
+
+    <% if user_signed_in? %>
+      <%# Logged in state %>
+      <!-- Name -->
+      <h2 class="text-2xl font-bold text-base-content mb-2">
+        <%= current_user.username || current_user.email %>
+      </h2>
+
+      <!-- Job Title -->
+      <p class="text-base-content/70 mb-8 text-lg">データサイエンティスト</p>
+
+      <!-- Button -->
+      <%= link_to new_diary_path, class: "neuro-button w-full font-medium py-4 px-6 transition-all duration-200 inline-block text-center" do %>
+        詳しく見る
+      <% end %>
+      
+      <div class="mt-6 flex justify-center space-x-4">
+        <%= link_to diaries_path, class: "text-base-content/60 hover:text-base-content text-sm font-medium" do %>
+          過去の記録
+        <% end %>
+        <%= link_to destroy_user_session_path, method: :delete, class: "text-base-content/60 hover:text-base-content text-sm font-medium" do %>
+          ログアウト
+        <% end %>
+      </div>
+    <% else %>
+      <%# Login state %>
+      <div class="mb-6">
+        <!-- Button -->
+        <%= button_to user_github_omniauth_authorize_path, data: { turbo: false }, class: "neuro-button w-full font-medium py-4 px-6 transition-all duration-200 flex items-center justify-center gap-2" do %>
+          <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 0C5.374 0 0 5.373 0 12 0 17.302 3.438 21.8 8.207 23.387c.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+          </svg>
+          GitHubでログイン
+        <% end %>
+      </div>
+    <% end %>
   </div>
 </div>
+

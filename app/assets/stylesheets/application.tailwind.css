@@ -13,6 +13,118 @@ label:has(input[type="radio"]:checked) {
   @apply btn-primary;
 }
 
+/* Neumorphism design with lemonade theme colors */
+.lemonade-background {
+  background: oklch(91.8% 0.018 123.72); /* lemonade base-200 */
+}
+
+.neuro-card {
+  background: oklch(91.8% 0.018 123.72); /* lemonade base-200 */
+  border-radius: 24px;
+  box-shadow: 
+    20px 20px 40px rgba(105, 169, 106, 0.3),   /* lemonade primary dark shadow - much stronger */
+    -20px -20px 40px rgba(255, 254, 213, 1); /* lemonade base-100 light shadow - max */
+  transition: all 0.3s ease;
+}
+
+.neuro-icon {
+  background: oklch(91.8% 0.018 123.72); /* lemonade base-200 */
+  border-radius: 16px;
+  box-shadow: 
+    8px 8px 16px rgba(105, 169, 106, 0.3),  /* much stronger dark shadow */
+    -8px -8px 16px rgba(255, 254, 213, 1);  /* max light shadow */
+}
+
+.neuro-button {
+  background: oklch(91.8% 0.018 123.72); /* lemonade base-200 */
+  color: oklch(19.742% 0.004 123.72); /* lemonade base-content */
+  border-radius: 16px;
+  box-shadow: 
+    inset 8px 8px 16px rgba(105, 169, 106, 0.3),  /* much stronger inset dark shadow */
+    inset -8px -8px 16px rgba(255, 254, 213, 1);  /* max inset light shadow */
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.neuro-button:hover {
+  box-shadow: 
+    inset 12px 12px 20px rgba(105, 169, 106, 0.35),  /* very strong on hover */
+    inset -12px -12px 20px rgba(255, 254, 213, 1);
+}
+
+.neuro-button:active {
+  box-shadow: 
+    inset 15px 15px 25px rgba(105, 169, 106, 0.4),   /* maximum strength on active */
+    inset -15px -15px 25px rgba(255, 254, 213, 1);
+}
+
+.neuro-input {
+  background: oklch(91.8% 0.018 123.72); /* lemonade base-200 */
+  color: oklch(19.742% 0.004 123.72); /* lemonade base-content */
+  border-radius: 16px;
+  box-shadow: 
+    inset 8px 8px 16px rgba(105, 169, 106, 0.3),  /* much stronger inset dark shadow */
+    inset -8px -8px 16px rgba(255, 254, 213, 1);  /* max inset light shadow */
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.neuro-input:focus {
+  outline: none;
+  box-shadow: 
+    inset 8px 8px 16px rgba(105, 169, 106, 0.15),
+    inset -8px -8px 16px rgba(255, 254, 213, 0.9);
+}
+
+.neuro-calendar-cell {
+  background: oklch(91.8% 0.018 123.72); /* lemonade base-200 */
+  border-radius: 8px;
+  box-shadow: 
+    4px 4px 8px rgba(105, 169, 106, 0.08),
+    -4px -4px 8px rgba(255, 254, 213, 0.6);
+  transition: all 0.2s ease;
+}
+
+.neuro-calendar-cell:hover {
+  background: oklch(94% 0.02 123.72);
+  box-shadow: 
+    6px 6px 12px rgba(105, 169, 106, 0.12),
+    -6px -6px 12px rgba(255, 254, 213, 0.8);
+}
+
+.neuro-badge {
+  background: oklch(91.8% 0.018 123.72); /* lemonade base-200 */
+  border-radius: 12px;
+  box-shadow: 
+    4px 4px 8px rgba(105, 169, 106, 0.08),
+    -4px -4px 8px rgba(255, 254, 213, 0.6);
+}
+
+/* Success and error variants */
+.neuro-success {
+  background: oklch(86.19% 0.047 157.85); /* lemonade success */
+  box-shadow: 
+    8px 8px 16px rgba(34, 139, 34, 0.1),
+    -8px -8px 16px rgba(144, 238, 144, 0.8);
+}
+
+.neuro-error {
+  background: oklch(86.19% 0.047 25.85); /* lemonade error */
+  color: oklch(17.238% 0.009 25.85); /* lemonade error-content */
+  border-radius: 16px;
+  box-shadow: 
+    inset 8px 8px 16px rgba(105, 169, 106, 0.3),  /* much stronger inset dark shadow */
+    inset -8px -8px 16px rgba(255, 254, 213, 1);  /* max inset light shadow */
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.neuro-error:hover {
+  box-shadow: 
+    inset 12px 12px 20px rgba(105, 169, 106, 0.35),  /* very strong on hover */
+    inset -12px -12px 20px rgba(255, 254, 213, 1);
+}
+
 
 @plugin "daisyui/theme" {
   name: "lemonade";
