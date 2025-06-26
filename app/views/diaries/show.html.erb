@@ -121,7 +121,7 @@
 
         <% if @diary %>
           <div class="border-t border-base-content/10 pt-6 mt-6">
-              <%= link_to edit_diary_path(@diary), class: "neuro-button w-md py-3 px-6 mx-auto font-medium flex items-center justify-center gap-2" do %>
+              <%= link_to edit_diary_path(@diary), class: "neuro-button-secondary w-md py-3 px-6 mx-auto font-medium flex items-center justify-center gap-2" do %>
                 <span class="material-symbols-outlined">
                   edit_square
                 </span>
@@ -129,7 +129,7 @@
               <% end %>
 
               <div class="divider my-6"></div>
-              
+
               <%= button_to diary_path(@diary), method: :delete, data: { turbo_confirm: "本当にこの日記を削除しますか？" }, class: "neuro-error mt-10 py-3 px-6 mx-auto font-medium w-md flex items-center justify-center gap-2 hover:cursor-pointer" do %>
                 <span class="material-symbols-outlined">
                   delete

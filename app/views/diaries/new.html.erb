@@ -31,7 +31,7 @@
 
         <div class="form-control">
           <%= form.label :date, "日付", class: "block text-base-content font-semibold mb-2" %>
-          <%= form.date_field :date, value: @date, class: "neuro-input py-3 px-4 w-full max-w-xs", required: true %>
+          <%= form.date_field :date, value: @date, class: "neuro-input py-3 px-4 w-full max-w-42", required: true %>
         </div>
 
         <% @questions.each do |question| %>
@@ -60,14 +60,16 @@
         </div>
 
         <div class="form-control">
-          <label class="flex items-center gap-3 cursor-pointer neuro-badge py-3 px-4">
-            <%= form.check_box :is_public, class: "checkbox checkbox-secondary bg-gray-100" %>
+          <label class="flex items-center gap-3 cursor-pointer neuro-badge py-3 px-4 hover:scale-99 transition-transform">
+            <%= form.check_box :is_public, class: "checkbox checkbox-secondary bg-gray-100 " %>
             <span class="text-base-content font-semibold">この日記を公開する</span>
           </label>
         </div>
 
+        <div class="divider w-xl my-6 mx-auto"></div>
+
         <div class="form-control mt-8">
-          <%= form.submit "日記を作成", class: "neuro-button w-full py-4 px-6 font-bold text-lg" %>
+          <%= form.submit "日記を作成 ✓", class: "neuro-button w-full py-4 px-6 font-bold text-lg hover:cursor-pointer" %>
         </div>
       <% end %>
     </div>
