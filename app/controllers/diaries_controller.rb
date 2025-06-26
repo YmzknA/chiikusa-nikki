@@ -1,20 +1,19 @@
 class DiariesController < ApplicationController
-  before_action :set_diary, only: [ :show, :edit, :update ]
+  before_action :set_diary, only: [:show, :edit, :update]
 
   def index
     @diaries = current_user.diaries.order(date: :desc)
   end
 
-  def show
-  end
+  def show; end
 
   def new
     @diary = Diary.new
     @questions = Question.all
   end
 
-  def edit
-  end
+  def edit; end
+
   def create
     @diary = current_user.diaries.build(diary_params)
     if @diary.save
@@ -40,7 +39,6 @@ class DiariesController < ApplicationController
       render :new
     end
   end
-
 
   def update
     if @diary.update(diary_update_params)

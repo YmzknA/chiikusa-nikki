@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe User, type: :model do
   describe ".find_or_create_from_auth_hash" do
@@ -18,9 +18,9 @@ RSpec.describe User, type: :model do
 
     context "when user does not exist" do
       it "creates a new user" do
-        expect {
+        expect do
           described_class.find_or_create_from_auth_hash(auth_hash)
-        }.to change(described_class, :count).by(1)
+        end.to change(described_class, :count).by(1)
       end
     end
 
@@ -30,9 +30,9 @@ RSpec.describe User, type: :model do
       end
 
       it "does not create a new user" do
-        expect {
+        expect do
           described_class.find_or_create_from_auth_hash(auth_hash)
-        }.not_to change(described_class, :count)
+        end.not_to change(described_class, :count)
       end
 
       it "updates the user's information" do

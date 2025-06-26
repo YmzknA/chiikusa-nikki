@@ -1,6 +1,6 @@
 class User < ApplicationRecord
   devise :database_authenticatable, :registerable, :rememberable, :validatable,
-         :omniauthable, omniauth_providers: [ :github ]
+         :omniauthable, omniauth_providers: [:github]
 
   has_many :diaries
   validates :github_id, presence: true, uniqueness: true
@@ -25,6 +25,6 @@ class User < ApplicationRecord
 
   def random_email
     key = SecureRandom.uuid
-    "#{ key }@email.com"
+    "#{key}@email.com"
   end
 end

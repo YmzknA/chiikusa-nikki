@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe "Diaries", :js, type: :system do
   before do
@@ -38,7 +38,7 @@ RSpec.describe "Diaries", :js, type: :system do
 
     expect(page).to have_content("日記を作成しました。TILを選択してください。")
 
-    choose(page.all('input[type=radio]').first.id)
+    choose(page.all("input[type=radio]").first.id)
     click_button "日記を完成させる"
 
     expect(page).to have_content("日記を更新しました")

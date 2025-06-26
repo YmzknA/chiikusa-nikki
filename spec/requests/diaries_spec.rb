@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe "Diaries", type: :request do
   let(:user) { User.create!(github_id: "12345", username: "testuser", access_token: "test_token") }
@@ -6,7 +6,7 @@ RSpec.describe "Diaries", type: :request do
   before do
     OmniAuth.config.mock_auth[:github] = nil
     allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
-    allow_any_instance_of(OpenaiService).to receive(:generate_til).and_return([ "- TIL 1", "- TIL 2", "- TIL 3" ])
+    allow_any_instance_of(OpenaiService).to receive(:generate_til).and_return(["- TIL 1", "- TIL 2", "- TIL 3"])
   end
 
   describe "GET /diaries" do
