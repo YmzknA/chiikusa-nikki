@@ -1,4 +1,21 @@
 <div class="container mx-auto px-4 py-8 max-w-2xl">
+  <!-- Debug information for new diary form -->
+  <% if Rails.env.development? %>
+    <div class="alert alert-info mb-4">
+      <details>
+        <summary>Debug Info</summary>
+        <p>Questions Count: <%= @questions&.count %></p>
+        <% @questions&.each do |question| %>
+          <p>Q: <%= question.identifier %> - <%= question.label %> (Answers: <%= question.answers.count %>)</p>
+          <% question.answers.each do |answer| %>
+            <span>ID: <%= answer.id %> - <%= answer.emoji %> </span>
+          <% end %>
+        <% end %>
+        <p>Selected Answers: <%= @selected_answers.inspect %></p>
+      </details>
+    </div>
+  <% end %>
+
   <div class="flex items-center mb-8">
     <%= link_to diaries_path, class: "btn btn-ghost btn-circle mr-4" do %>
       <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -10,7 +27,7 @@
 
   <div class="card bg-base-100 shadow-xl">
     <div class="card-body">
-      <%= form_with(model: @diary, url: diaries_path, class: "space-y-6") do |form| %>
+      <%= form_with(model: @diary, url: diaries_path, local: true, class: "space-y-6") do |form| %>
         <% if @diary.errors.any? %>
           <div class="alert alert-error">
             <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>

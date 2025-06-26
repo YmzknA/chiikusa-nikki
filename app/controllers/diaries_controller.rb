@@ -15,16 +15,32 @@ class DiariesController < ApplicationController
   def edit; end
 
   def create
+    Rails.logger.debug "=== Diary Creation Debug ==="
+    Rails.logger.debug "Raw params: #{params.inspect}"
+    Rails.logger.debug "diary_answers params: #{params[:diary_answers].inspect}"
+    
     @diary = current_user.diaries.build(diary_params)
     if @diary.save
+      Rails.logger.debug "Diary saved with ID: #{@diary.id}"
+      
       # DiaryAnswerの保存
       if params[:diary_answers].present?
+        Rails.logger.debug "Processing diary answers..."
         diary_answer_params.each do |question_identifier, answer_id|
+          Rails.logger.debug "Processing: #{question_identifier} -> #{answer_id}"
           question = Question.find_by(identifier: question_identifier)
+          Rails.logger.debug "Found question: #{question.inspect}"
+          
           if question && answer_id.present?
-            @diary.diary_answers.create(question: question, answer_id: answer_id)
+            diary_answer = @diary.diary_answers.create(question: question, answer_id: answer_id)
+            Rails.logger.debug "Created DiaryAnswer: #{diary_answer.inspect}"
+            Rails.logger.debug "Errors: #{diary_answer.errors.full_messages}" if diary_answer.errors.any?
+          else
+            Rails.logger.debug "Skipped - question not found or answer_id empty"
           end
         end
+      else
+        Rails.logger.debug "No diary_answers params found"
       end
 
       # TIL候補の生成
@@ -80,6 +96,12 @@ class DiariesController < ApplicationController
   def diary_answer_params
     # 動的にQuestionのidentifierを取得してpermitする
     question_identifiers = Question.pluck(:identifier).map(&:to_sym)
-    params.require(:diary_answers).permit(*question_identifiers)
+    Rails.logger.debug "Question identifiers: #{question_identifiers}"
+    permitted_params = params.require(:diary_answers).permit(*question_identifiers)
+    Rails.logger.debug "Permitted diary_answer_params: #{permitted_params.inspect}"
+    permitted_params
+  rescue ActionController::ParameterMissing => e
+    Rails.logger.debug "Parameter missing error: #{e.message}"
+    {}
   end
 end
