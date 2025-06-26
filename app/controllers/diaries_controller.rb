@@ -18,24 +18,35 @@ class DiariesController < ApplicationController
     @diary = current_user.diaries.build(diary_params)
     if @diary.save
       # DiaryAnswerの保存
-      diary_answer_params.each do |question_identifier, answer_id|
-        question = Question.find_by(identifier: question_identifier)
-        @diary.diary_answers.create(question: question, answer_id: answer_id)
+      if params[:diary_answers].present?
+        diary_answer_params.each do |question_identifier, answer_id|
+          question = Question.find_by(identifier: question_identifier)
+          if question && answer_id.present?
+            @diary.diary_answers.create(question: question, answer_id: answer_id)
+          end
+        end
       end
 
       # TIL候補の生成
       if @diary.notes.present?
-        client = OpenaiService.new
-        til_candidates = client.generate_til(@diary.notes)
-        til_candidates.each_with_index do |content, index|
-          @diary.til_candidates.create(content: content, index: index)
+        begin
+          client = OpenaiService.new
+          til_candidates = client.generate_til(@diary.notes)
+          til_candidates.each_with_index do |content, index|
+            @diary.til_candidates.create(content: content, index: index)
+          end
+          redirect_to edit_diary_path(@diary), notice: "日記を作成しました。TILを選択してください。"
+        rescue => e
+          Rails.logger.error "OpenAI API Error: #{e.message}"
+          redirect_to diaries_path, notice: "日記を作成しました（TIL生成でエラーが発生しました）"
         end
-        redirect_to edit_diary_path(@diary), notice: "日記を作成しました。TILを選択してください。"
       else
         redirect_to diaries_path, notice: "日記を作成しました"
       end
     else
       @questions = Question.all
+      # フォームで選択された気分データを保持
+      @selected_answers = params[:diary_answers] || {}
       render :new
     end
   end
@@ -67,6 +78,8 @@ class DiariesController < ApplicationController
   end
 
   def diary_answer_params
-    params.require(:diary_answers).permit(:mood, :motivation, :progress)
+    # 動的にQuestionのidentifierを取得してpermitする
+    question_identifiers = Question.pluck(:identifier).map(&:to_sym)
+    params.require(:diary_answers).permit(*question_identifiers)
   end
 end

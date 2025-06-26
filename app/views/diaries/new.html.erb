@@ -35,14 +35,16 @@
             <div class="label">
               <span class="label-text font-semibold"><%= question.label %></span>
             </div>
-            <div class="flex gap-2 flex-wrap">
+            <div class="flex gap-2 flex-wrap" data-question="<%= question.identifier %>">
               <% question.answers.each do |answer| %>
+                <% is_selected = @selected_answers&.dig(question.identifier.to_s) == answer.id.to_s %>
                 <button type="button" 
-                        class="btn btn-outline btn-lg text-2xl hover:btn-primary transition-all duration-200" 
+                        class="btn <%= is_selected ? 'btn-primary' : 'btn-outline' %> btn-lg text-2xl hover:btn-primary transition-all duration-200" 
                         onclick="selectEmoji(this, '<%= question.identifier %>', '<%= answer.id %>')">
                   <%= answer.emoji %>
                 </button>
-                <%= form.radio_button "diary_answers[#{question.identifier}]", answer.id, class: "hidden", id: "diary_answers_#{question.identifier}_#{answer.id}" %>
+                <%= form.radio_button "diary_answers[#{question.identifier}]", answer.id, 
+                    { checked: is_selected, class: "hidden", id: "diary_answers_#{question.identifier}_#{answer.id}" } %>
               <% end %>
             </div>
           </div>
@@ -70,6 +72,8 @@
 
 <script>
 function selectEmoji(button, question, answerId) {
+  console.log('selectEmoji called:', { question, answerId });
+  
   // Remove active state from all buttons in this question group
   const questionGroup = button.parentElement;
   questionGroup.querySelectorAll('button').forEach(btn => {
@@ -82,9 +86,49 @@ function selectEmoji(button, question, answerId) {
   button.classList.add('btn-primary');
   
   // Check the corresponding radio button
-  const radioButton = document.getElementById(`diary_answers_${question}_${answerId}`);
+  const radioButtonId = `diary_answers_${question}_${answerId}`;
+  const radioButton = document.getElementById(radioButtonId);
+  console.log('Radio button found:', radioButton, 'ID:', radioButtonId);
+  
   if (radioButton) {
     radioButton.checked = true;
+    console.log('Radio button checked:', radioButton.checked);
+    
+    // Trigger change event to ensure form recognizes the selection
+    radioButton.dispatchEvent(new Event('change', { bubbles: true }));
+  } else {
+    console.error('Radio button not found with ID:', radioButtonId);
   }
 }
+
+// Add form submission validation
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.querySelector('form');
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      const questionGroups = document.querySelectorAll('[data-question]');
+      const missingAnswers = [];
+      
+      questionGroups.forEach(group => {
+        const question = group.dataset.question;
+        const checkedRadio = group.querySelector('input[type="radio"]:checked');
+        if (!checkedRadio) {
+          missingAnswers.push(question);
+        }
+      });
+      
+      if (missingAnswers.length > 0) {
+        console.log('Missing answers for questions:', missingAnswers);
+        // Don't prevent submission, but log for debugging
+      }
+      
+      // Log all form data for debugging
+      const formData = new FormData(form);
+      console.log('Form data being submitted:');
+      for (let [key, value] of formData.entries()) {
+        console.log(key + ': ' + value);
+      }
+    });
+  }
+});
 </script>
