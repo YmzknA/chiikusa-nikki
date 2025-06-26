@@ -7,8 +7,7 @@ class OpenaiService
 
   def generate_tils(notes)
     # 学習記録に基づいてTILを生成（一時的にフォールバック版を使用）
-    return generate_smart_tils(notes) if notes.present?
-
+    generate_smart_tils(notes) if notes.present?
   rescue StandardError => e
     Rails.logger.error "OpenAI API Error: #{e.message}"
     Rails.logger.error e.backtrace.join("\n")
@@ -23,7 +22,7 @@ class OpenaiService
     3.times do
       response = @client.chat(
         parameters: {
-          model: "gpt-4o-mini",
+          model: "gpt-4.1-nano-2025-04-14",
           messages: [
             {
               role: "system",
@@ -40,7 +39,7 @@ class OpenaiService
             },
             { role: "user", content: "以下の学習記録に基づいてTILを生成してください:\n#{notes}" }
           ],
-          temperature: 0.7,
+          temperature: 1.5,
           max_tokens: 150
         }
       )
