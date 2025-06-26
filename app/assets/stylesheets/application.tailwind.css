@@ -177,7 +177,13 @@ label:has(input[type="radio"]:checked) {
 }
 
 .simple-calendar-nav-link {
-  @apply neuro-button;
+  background: oklch(91.8% 0.018 123.72); /* lemonade base-200 */
+  color: oklch(19.742% 0.004 123.72); /* lemonade base-content */
+  border-radius: 16px;
+  box-shadow: 
+    inset 8px 8px 16px rgba(105, 169, 106, 0.3),  /* much stronger inset dark shadow */
+    inset -8px -8px 16px rgba(255, 254, 213, 1);  /* max inset light shadow */
+  border: none;
   padding: 0.75rem 1.5rem;
   font-size: 0.875rem;
   font-weight: 500;
