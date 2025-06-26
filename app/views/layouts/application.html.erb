@@ -15,9 +15,14 @@
     <link rel="apple-touch-icon" href="/icon.png">
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+
+    <!-- google font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kurenaido&display=swap" rel="stylesheet">
   </head>
 
-  <body data-theme="lemonade">
+  <body data-theme="lemonade" class="zen-kurenaido-regular">
     <%# Flash messages %>
     <% if notice %>
       <div class="alert alert-success fixed top-4 right-4 z-50 max-w-sm">
