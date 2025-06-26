@@ -60,8 +60,8 @@
                         onclick="selectEmoji(this, '<%= question.identifier %>', '<%= answer.id %>')">
                   <%= answer.emoji %>
                 </button>
-                <%= form.radio_button "diary_answers[#{question.identifier}]", answer.id, 
-                    { checked: is_selected, class: "hidden", id: "diary_answers_#{question.identifier}_#{answer.id}" } %>
+                <%= radio_button_tag "diary_answers[#{question.identifier}]", answer.id, 
+                    is_selected, { class: "hidden", id: "diary_answers_#{question.identifier}_#{answer.id}" } %>
               <% end %>
             </div>
           </div>

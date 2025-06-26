@@ -97,11 +97,14 @@ class DiariesController < ApplicationController
     # 動的にQuestionのidentifierを取得してpermitする
     question_identifiers = Question.pluck(:identifier).map(&:to_sym)
     Rails.logger.debug "Question identifiers: #{question_identifiers}"
-    permitted_params = params.require(:diary_answers).permit(*question_identifiers)
-    Rails.logger.debug "Permitted diary_answer_params: #{permitted_params.inspect}"
-    permitted_params
-  rescue ActionController::ParameterMissing => e
-    Rails.logger.debug "Parameter missing error: #{e.message}"
-    {}
+    
+    if params[:diary_answers].present?
+      permitted_params = params.permit(diary_answers: question_identifiers)[:diary_answers]
+      Rails.logger.debug "Permitted diary_answer_params: #{permitted_params.inspect}"
+      permitted_params || {}
+    else
+      Rails.logger.debug "No diary_answers parameter found"
+      {}
+    end
   end
 end
