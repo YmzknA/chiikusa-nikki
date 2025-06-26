@@ -1,4 +1,20 @@
 <div class="container mx-auto px-4 py-8 max-w-2xl">
+  <!-- Debug information for edit diary form -->
+  <% if Rails.env.development? %>
+    <div class="alert alert-info mb-4">
+      <details>
+        <summary>Debug Info</summary>
+        <p>Diary ID: <%= @diary&.id %></p>
+        <p>Diary Date: <%= @diary&.date %></p>
+        <p>TIL Candidates Count: <%= @diary&.til_candidates&.count %></p>
+        <p>Current TIL Text: <%= @diary&.til_text %></p>
+        <% @diary&.til_candidates&.each_with_index do |candidate, index| %>
+          <p>Candidate <%= index + 1 %>: <%= candidate.content.truncate(50) %></p>
+        <% end %>
+      </details>
+    </div>
+  <% end %>
+
   <div class="flex items-center mb-8">
     <%= link_to diary_path(@diary), class: "btn btn-ghost btn-circle mr-4" do %>
       <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -15,7 +31,7 @@
         <p class="text-base-content/70">あなたの学習メモをもとに作成されました。お気に入りのものを選んでください。</p>
       </div>
 
-      <%= form_with(model: @diary, url: diary_path(@diary), method: :patch, class: "space-y-6") do |form| %>
+      <%= form_with(model: @diary, url: diary_path(@diary), method: :patch, local: true, class: "space-y-6") do |form| %>
         <% if @diary.errors.any? %>
           <div class="alert alert-error">
             <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -30,45 +46,69 @@
           </div>
         <% end %>
 
-        <div class="space-y-4">
-          <% @diary.til_candidates.each_with_index do |candidate, index| %>
-            <div class="form-control">
-              <%= form.radio_button :til_text, candidate.content, class: "radio radio-primary hidden", id: "til_text_#{candidate.id}" %>
-              <%= form.label "til_text_#{candidate.id}", class: "label cursor-pointer justify-start gap-4 p-4 border border-base-300 rounded-lg hover:border-primary hover:bg-base-200 transition-all duration-200" do %>
-                <div class="radio radio-primary"></div>
-                <div class="flex-1">
-                  <div class="flex items-center gap-2 mb-2">
-                    <div class="badge badge-primary badge-sm">候補 <%= index + 1 %></div>
+        <% if @diary&.til_candidates&.any? %>
+          <div class="space-y-4">
+            <% @diary.til_candidates.each_with_index do |candidate, index| %>
+              <div class="form-control">
+                <%= form.radio_button :til_text, candidate.content, 
+                    { class: "radio radio-primary hidden", 
+                      id: "til_text_#{candidate.id}",
+                      checked: @diary.til_text == candidate.content } %>
+                <%= form.label "til_text_#{candidate.id}", class: "label cursor-pointer justify-start gap-4 p-4 border border-base-300 rounded-lg hover:border-primary hover:bg-base-200 transition-all duration-200 #{'border-primary bg-primary/10' if @diary.til_text == candidate.content}" do %>
+                  <div class="radio radio-primary <%= 'radio-checked' if @diary.til_text == candidate.content %>"></div>
+                  <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-2">
+                      <div class="badge badge-primary badge-sm">候補 <%= index + 1 %></div>
+                      <% if @diary.til_text == candidate.content %>
+                        <div class="badge badge-success badge-sm">選択中</div>
+                      <% end %>
+                    </div>
+                    <div class="text-left text-base-content leading-relaxed">
+                      <%= candidate.content %>
+                    </div>
                   </div>
-                  <div class="text-left text-base-content leading-relaxed">
-                    <%= candidate.content %>
-                  </div>
-                </div>
-              <% end %>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="alert alert-warning">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.992-.833-2.732 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+            <div>
+              <h3 class="font-bold">TIL候補がありません</h3>
+              <div>この日記にはAIが生成したTIL候補がありません。メモを追加してから再度お試しください。</div>
             </div>
-          <% end %>
-        </div>
+          </div>
+          
+          <div class="card-actions justify-center mt-6">
+            <%= link_to diary_path(@diary), class: "btn btn-ghost gap-2" do %>
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+              </svg>
+              日記に戻る
+            <% end %>
+          </div>
+        <% end %>
 
-        <div class="divider"></div>
+        <% if @diary&.til_candidates&.any? %>
+          <div class="divider"></div>
 
-        <div class="form-control">
-          <label class="label cursor-pointer justify-start gap-4">
-            <%= check_box_tag :push_to_github, true, false, class: "checkbox checkbox-primary" %>
-            <div class="flex-1">
-              <div class="label-text font-semibold">GitHubにプッシュする</div>
-              <div class="label-text-alt text-base-content/60">選択したTILをGitHubリポジトリに自動で追加します</div>
-            </div>
-          </label>
-        </div>
+          <div class="form-control">
+            <label class="label cursor-pointer justify-start gap-4">
+              <%= check_box_tag :push_to_github, true, false, class: "checkbox checkbox-primary" %>
+              <div class="flex-1">
+                <div class="label-text font-semibold">GitHubにプッシュする</div>
+                <div class="label-text-alt text-base-content/60">選択したTILをGitHubリポジトリに自動で追加します</div>
+              </div>
+            </label>
+          </div>
+        <% end %>
 
-        <div class="form-control mt-8">
-          <%= form.submit "日記を完成させる", class: "btn btn-primary btn-lg w-full gap-2" do %>
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            日記を完成させる
-          <% end %>
-        </div>
+        <% if @diary&.til_candidates&.any? %>
+          <div class="form-control mt-8">
+            <%= form.submit "日記を完成させる", class: "btn btn-primary btn-lg w-full" %>
+          </div>
+        <% end %>
       <% end %>
     </div>
   </div>
