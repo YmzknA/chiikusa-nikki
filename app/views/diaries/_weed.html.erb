@@ -1,20 +1,13 @@
 <%# mood_level: 1(😞) - 5(😁) %>
-<% color_class = case mood_level
-                when 1
-                  "text-gray-400"
-                when 2
-                  "text-blue-400"
-                when 3
-                  "text-green-400"
-                when 4
-                  "text-yellow-400"
-                when 5
-                  "text-pink-400"
-                else
-                  "text-green-400"
-                end %>
+<% mood_color = case mood_level
+               when 1 then "#A7F3D0"  # emerald-200
+               when 2 then "#6EE7B7"  # emerald-300
+               when 3 then "#34D399"  # emerald-400
+               when 4 then "#10B981"  # emerald-500
+               when 5 then "#059669"  # emerald-600
+               else "#34D399"         # fallback
+               end %>
 
-<svg class="w-8 h-8 <%= color_class %>" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM2 10a8 8 0 1116 0 8 8 0 01-16 0z" clip-rule="evenodd"></path>
-  <path d="M10 3a1 1 0 011 1v1.414l1.293-1.293a1 1 0 111.414 1.414L12.414 7H14a1 1 0 110 2h-1.586l1.293 1.293a1 1 0 11-1.414 1.414L11 9.414V11a1 1 0 11-2 0V9.414l-1.293 1.293a1 1 0 01-1.414-1.414L7.586 8H6a1 1 0 110-2h1.586L6.293 4.707a1 1 0 011.414-1.414L9 4.586V4a1 1 0 011-1z"></path>
-</svg>
+ <span class="material-symbols-outlined" style="color: <%= mood_color %>; font-size: 2.5rem; vertical-align: middle;">
+  book_4
+</span>
