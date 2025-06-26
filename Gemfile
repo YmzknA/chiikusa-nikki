@@ -64,7 +64,9 @@ group :test do
   gem "selenium-webdriver"
 end
 
+gem "devise"
 gem "omniauth", "~> 2.1"
+gem "omniauth-rails_csrf_protection"
 
 gem "openai"
 
