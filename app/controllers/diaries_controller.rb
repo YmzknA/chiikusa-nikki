@@ -11,6 +11,9 @@ class DiariesController < ApplicationController
     @diary = Diary.new
     @questions = Question.all
     @date = params[:date] || Date.current
+
+    # 既存日記のチェック
+    @existing_diary = current_user.diaries.find_by(date: @date)
   end
 
   def edit
@@ -59,6 +62,19 @@ class DiariesController < ApplicationController
       @questions = Question.all
       # フォームで選択された気分データを保持
       @selected_answers = params[:diary_answers] || {}
+
+      # エラー時に日付を保持
+      @date = @diary.date || params[:diary][:date] || Date.current
+
+      # 既存日記のチェック（エラー時にも確認）
+      @existing_diary = current_user.diaries.find_by(date: @date)
+
+      # 日付重複エラーの場合は特別なメッセージを表示
+      if @diary.errors[:date].any? && @existing_diary
+        flash.now[:alert] = "#{@diary.date.strftime('%Y年%m月%d日')}の日記は既に作成されています。同じ日に複数の日記は作成できません。"
+        @existing_diary_for_error = @existing_diary
+      end
+
       render :new
     end
   end
