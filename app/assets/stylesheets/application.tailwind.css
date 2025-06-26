@@ -236,14 +236,14 @@ label:has(input[type="radio"]:checked) {
 
 /* Weekend colors for header days - Position-based targeting since th elements don't get wday classes */
 
-/* Target Sunday (first column) and Saturday (last column) by position */
-.simple-calendar thead th:first-child {
-  /* Sunday header - Red */
+/* Target weekend days by position - adjusted for Monday-first week */
+.simple-calendar thead th:last-child {
+  /* Sunday header - Red (last column in Monday-first week) */
   color: oklch(65% 0.25 27) !important;
 }
 
-.simple-calendar thead th:last-child {
-  /* Saturday header - Blue */
+.simple-calendar thead th:nth-child(6) {
+  /* Saturday header - Blue (6th column in Monday-first week) */
   color: oklch(65% 0.20 260) !important;
 }
 
