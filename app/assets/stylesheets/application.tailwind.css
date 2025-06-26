@@ -253,6 +253,30 @@ label:has(input[type="radio"]:checked) {
     -4px -4px 8px rgba(255, 254, 213, 0.6);
 }
 
+/* Ensure text content within weekend headers is also colored */
+.simple-calendar th.wday-0 * {
+  /* Sunday text - Red */
+  color: oklch(65% 0.25 27) !important;
+}
+
+.simple-calendar th.wday-6 * {
+  /* Saturday text - Blue */
+  color: oklch(65% 0.20 260) !important;
+}
+
+/* Additional targeting for any text elements */
+.simple-calendar thead th.wday-0,
+.simple-calendar thead th.wday-0 span,
+.simple-calendar thead th.wday-0 div {
+  color: oklch(65% 0.25 27) !important;
+}
+
+.simple-calendar thead th.wday-6,
+.simple-calendar thead th.wday-6 span,
+.simple-calendar thead th.wday-6 div {
+  color: oklch(65% 0.20 260) !important;
+}
+
 /* Weekend colors for calendar cell content */
 .simple-calendar .wday-0 .neuro-calendar-cell {
   box-shadow: 
