@@ -234,46 +234,16 @@ label:has(input[type="radio"]:checked) {
   color: oklch(65% 0.20 260) !important; /* Blue color that fits lemonade theme */
 }
 
-/* Weekend colors for header days */
-.simple-calendar th.wday-0 {
+/* Weekend colors for header days - Position-based targeting since th elements don't get wday classes */
+
+/* Target Sunday (first column) and Saturday (last column) by position */
+.simple-calendar thead th:first-child {
   /* Sunday header - Red */
   color: oklch(65% 0.25 27) !important;
-  background: oklch(91.8% 0.018 123.72);
-  box-shadow: 
-    4px 4px 8px rgba(220, 38, 127, 0.15),
-    -4px -4px 8px rgba(255, 254, 213, 0.6);
 }
 
-.simple-calendar th.wday-6 {
+.simple-calendar thead th:last-child {
   /* Saturday header - Blue */
-  color: oklch(65% 0.20 260) !important;
-  background: oklch(91.8% 0.018 123.72);
-  box-shadow: 
-    4px 4px 8px rgba(59, 130, 246, 0.15),
-    -4px -4px 8px rgba(255, 254, 213, 0.6);
-}
-
-/* Ensure text content within weekend headers is also colored */
-.simple-calendar th.wday-0 * {
-  /* Sunday text - Red */
-  color: oklch(65% 0.25 27) !important;
-}
-
-.simple-calendar th.wday-6 * {
-  /* Saturday text - Blue */
-  color: oklch(65% 0.20 260) !important;
-}
-
-/* Additional targeting for any text elements */
-.simple-calendar thead th.wday-0,
-.simple-calendar thead th.wday-0 span,
-.simple-calendar thead th.wday-0 div {
-  color: oklch(65% 0.25 27) !important;
-}
-
-.simple-calendar thead th.wday-6,
-.simple-calendar thead th.wday-6 span,
-.simple-calendar thead th.wday-6 div {
   color: oklch(65% 0.20 260) !important;
 }
 
