@@ -223,6 +223,49 @@ label:has(input[type="radio"]:checked) {
   margin-left: 0.25rem;
 }
 
+/* Weekend colors for calendar */
+.simple-calendar td.wday-0 {
+  /* Sunday - Red */
+  color: oklch(65% 0.25 27) !important; /* Red color that fits lemonade theme */
+}
+
+.simple-calendar td.wday-6 {
+  /* Saturday - Blue */
+  color: oklch(65% 0.20 260) !important; /* Blue color that fits lemonade theme */
+}
+
+/* Weekend colors for header days */
+.simple-calendar th.wday-0 {
+  /* Sunday header - Red */
+  color: oklch(65% 0.25 27) !important;
+  background: oklch(91.8% 0.018 123.72);
+  box-shadow: 
+    4px 4px 8px rgba(220, 38, 127, 0.15),
+    -4px -4px 8px rgba(255, 254, 213, 0.6);
+}
+
+.simple-calendar th.wday-6 {
+  /* Saturday header - Blue */
+  color: oklch(65% 0.20 260) !important;
+  background: oklch(91.8% 0.018 123.72);
+  box-shadow: 
+    4px 4px 8px rgba(59, 130, 246, 0.15),
+    -4px -4px 8px rgba(255, 254, 213, 0.6);
+}
+
+/* Weekend colors for calendar cell content */
+.simple-calendar .wday-0 .neuro-calendar-cell {
+  box-shadow: 
+    4px 4px 8px rgba(220, 38, 127, 0.12),
+    -4px -4px 8px rgba(255, 254, 213, 0.6);
+}
+
+.simple-calendar .wday-6 .neuro-calendar-cell {
+  box-shadow: 
+    4px 4px 8px rgba(59, 130, 246, 0.12),
+    -4px -4px 8px rgba(255, 254, 213, 0.6);
+}
+
 @plugin "daisyui/theme" {
   name: "lemonade";
   default: false;
