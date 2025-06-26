@@ -1,4 +1,4 @@
-require 'openai'
+require "openai"
 
 class OpenaiService
   def initialize
@@ -24,7 +24,7 @@ class OpenaiService
     PROMPT
 
     response = @client.chat(model: "gpt-4-nano",
-      messages: [{ role: "user", content: prompt }],
+      messages: [ { role: "user", content: prompt } ],
       temperature: 0.7,
       max_tokens: 200,
       n: 3)

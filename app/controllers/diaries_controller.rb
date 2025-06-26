@@ -1,5 +1,5 @@
 class DiariesController < ApplicationController
-  before_action :set_diary, only: [:show, :edit, :update]
+  before_action :set_diary, only: [ :show, :edit, :update ]
 
   def index
     @diaries = current_user.diaries.order(date: :desc)
@@ -13,6 +13,8 @@ class DiariesController < ApplicationController
     @questions = Question.all
   end
 
+  def edit
+  end
   def create
     @diary = current_user.diaries.build(diary_params)
     if @diary.save
@@ -39,8 +41,6 @@ class DiariesController < ApplicationController
     end
   end
 
-  def edit
-  end
 
   def update
     if @diary.update(diary_update_params)
@@ -71,5 +71,4 @@ class DiariesController < ApplicationController
   def diary_answer_params
     params.require(:diary_answers).permit(:mood, :motivation, :progress)
   end
-
 end

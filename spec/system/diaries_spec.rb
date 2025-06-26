@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "Diaries", type: :system, js: true do
+RSpec.describe "Diaries", :js, type: :system do
   before do
     OmniAuth.config.mock_auth[:github] = nil
     Rails.application.env_config["omniauth.auth"] = github_mock

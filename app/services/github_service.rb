@@ -1,4 +1,4 @@
-require 'octokit'
+require "octokit"
 
 class GithubService
   def initialize(user)
@@ -14,7 +14,7 @@ class GithubService
     begin
       @client.create_contents(repo_name, file_path, "Add TIL for #{diary.date}", content)
     rescue Octokit::NotFound
-      @client.create_repository('til', private: true)
+      @client.create_repository("til", private: true)
       @client.create_contents(repo_name, file_path, "Add TIL for #{diary.date}", content)
     end
   end

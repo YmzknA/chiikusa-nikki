@@ -1,9 +1,7 @@
 class StatsController < ApplicationController
-  before_action :require_login
-
   def index
-    diaries = current_user.diaries.where(date: 30.days.ago..Time.now).order(date: :asc)
-    
+    diaries = current_user.diaries.where(date: 30.days.ago..Time.current).order(date: :asc)
+
     @chart_data = {
       labels: diaries.map(&:date),
       datasets: [
@@ -30,16 +28,5 @@ class StatsController < ApplicationController
         }
       ]
     }
-  end
-
-  private
-
-  def require_login
-    unless current_user
-      redirect_to root_path, alert: "ログインしてください"
-    end
-  end
-end
-  def index
   end
 end
