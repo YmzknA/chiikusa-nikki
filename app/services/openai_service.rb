@@ -18,7 +18,6 @@ class OpenaiService
   def generate_smart_tils(notes)
     tils = []
 
-    Rails.logger.info("Generating TILs for notes: #{notes}")
     3.times do
       response = @client.chat(
         parameters: {
