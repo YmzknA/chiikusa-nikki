@@ -32,13 +32,6 @@ services:
       - node_modules:/myapp/node_modules
     environment:
       TZ: Asia/Tokyo
-      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
-      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      TWITTER_API_KEY: ${TWITTER_API_KEY}
-      TWITTER_API_SECRET_KEY: ${TWITTER_API_SECRET_KEY}
-      TWITTER_ACCESS_TOKEN: ${TWITTER_ACCESS_TOKEN}
-      TWITTER_ACCESS_TOKEN_SECRET: ${TWITTER_ACCESS_TOKEN_SECRET}
     ports:
       - "3000:3000"
     depends_on:

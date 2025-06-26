@@ -2,7 +2,7 @@ require 'openai'
 
 class OpenaiService
   def initialize
-    @client = ::OpenAI::Client.new
+    @client = ::OpenAI::Client.new(access_token: Rails.application.credentials.dig(:openai, :api_key))
   end
 
   def generate_til(notes)

@@ -1,4 +1,11 @@
-<h1>Programing Diary</h1>
+<h1>Programming Diary</h1>
 <p>日々の学習を記録して、成長を実感しよう</p>
 
-<%= button_to "GitHubでログイン", "/auth/github", method: :post %>
+<% if user_signed_in? %>
+  <p>ようこそ、<%= current_user.username || current_user.email %>さん</p>
+  <%= link_to "日記を書く", new_diary_path, class: "btn btn-primary" %>
+  <%= link_to "過去の記録", diaries_path, class: "btn btn-secondary" %>
+  <%= link_to "ログアウト", destroy_user_session_path, method: :delete, class: "btn btn-outline" %>
+<% else %>
+  <%= link_to "GitHubでログイン", user_github_omniauth_authorize_path, method: :post, class: "btn btn-primary" %>
+<% end %>
