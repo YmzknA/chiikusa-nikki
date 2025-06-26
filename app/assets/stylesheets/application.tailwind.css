@@ -249,39 +249,15 @@ label:has(input[type="radio"]:checked) {
 
 /* Weekend colors for calendar cell content */
 .simple-calendar .wday-0 .neuro-calendar-cell {
-  /* Sunday cell - Red accent */
-  background: oklch(91.8% 0.018 123.72);
-  color: oklch(65% 0.25 27); /* Red text */
   box-shadow: 
     4px 4px 8px rgba(220, 38, 127, 0.12),
     -4px -4px 8px rgba(255, 254, 213, 0.6);
 }
 
-.simple-calendar .wday-0 .neuro-calendar-cell:hover {
-  /* Sunday cell hover - inverted colors */
-  background: oklch(65% 0.25 27); /* Red background */
-  color: oklch(91.8% 0.018 123.72); /* Light text */
-  box-shadow: 
-    4px 4px 8px rgba(220, 38, 127, 0.2),
-    -4px -4px 8px rgba(255, 254, 213, 0.8);
-}
-
 .simple-calendar .wday-6 .neuro-calendar-cell {
-  /* Saturday cell - Blue accent */
-  background: oklch(91.8% 0.018 123.72);
-  color: oklch(65% 0.20 260); /* Blue text */
   box-shadow: 
     4px 4px 8px rgba(59, 130, 246, 0.12),
     -4px -4px 8px rgba(255, 254, 213, 0.6);
-}
-
-.simple-calendar .wday-6 .neuro-calendar-cell:hover {
-  /* Saturday cell hover - inverted colors */
-  background: oklch(65% 0.20 260); /* Blue background */
-  color: oklch(91.8% 0.018 123.72); /* Light text */
-  box-shadow: 
-    4px 4px 8px rgba(59, 130, 246, 0.2),
-    -4px -4px 8px rgba(255, 254, 213, 0.8);
 }
 
 @plugin "daisyui/theme" {
