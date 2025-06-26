@@ -113,12 +113,12 @@
           <div class="space-y-4">
             <% @diary.til_candidates.each_with_index do |candidate, index| %>
               <div class="form-control">
-                <%= form.radio_button :til_text, candidate.content, 
-                    { class: "radio radio-primary hidden", 
-                      id: "til_text_#{candidate.id}",
+                <%= form.label :"til_text_#{candidate.id}", class: "label cursor-pointer justify-start gap-4 p-4 border border-base-300 rounded-lg hover:border-primary hover:bg-base-200 hover:shadow-md transition-all duration-200" do %>
+                  <%= form.radio_button :til_text, candidate.content, 
+                    { class: "radio radio-primary", 
+                      id: "diary_til_text_#{candidate.id}",
                       checked: @diary.til_text == candidate.content } %>
-                <%= form.label "til_text_#{candidate.id}", class: "label cursor-pointer justify-start gap-4 p-4 border border-base-300 rounded-lg hover:border-primary hover:bg-base-200 transition-all duration-200 #{'border-primary bg-primary/10' if @diary.til_text == candidate.content}" do %>
-                  <div class="radio radio-primary <%= 'radio-checked' if @diary.til_text == candidate.content %>"></div>
+
                   <div class="flex-1">
                     <div class="flex items-center gap-2 mb-2">
                       <div class="badge badge-primary badge-sm">候補 <%= index + 1 %></div>
@@ -126,7 +126,7 @@
                         <div class="badge badge-success badge-sm">選択中</div>
                       <% end %>
                     </div>
-                    <div class="text-left text-base-content leading-relaxed">
+                    <div class="text-left text-base-content leading-relaxed whitespace-pre-wrap">
                       <%= candidate.content %>
                     </div>
                   </div>

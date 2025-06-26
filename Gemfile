@@ -70,9 +70,7 @@ gem "devise"
 gem "omniauth", "~> 2.1"
 gem "omniauth-rails_csrf_protection"
 
-gem "openai"
-
-
+gem "ruby-openai"
 
 gem "octokit", "~> 10.0"
 
