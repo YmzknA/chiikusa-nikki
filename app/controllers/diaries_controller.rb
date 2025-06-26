@@ -35,9 +35,8 @@ class DiariesController < ApplicationController
 
       end
 
-      # TIL候補の生成
+      # TIL候補の生成とリダイレクト分岐
       if @diary.notes.present?
-
         begin
           openai_service = OpenaiService.new
           til_candidates = openai_service.generate_tils(@diary.notes)
@@ -45,13 +44,16 @@ class DiariesController < ApplicationController
           til_candidates.each_with_index do |content, index|
             @diary.til_candidates.create(content: content, index: index)
           end
+
+          # TIL候補が生成されたらTIL選択画面（edit）へリダイレクト
+          redirect_to edit_diary_path(@diary), notice: "日記を作成しました。続いて生成されたTILを選択してください。"
         rescue StandardError => e
           logger.info("Error generating TIL candidates: #{e.message}")
           redirect_to diaries_path, notice: "日記を作成しました（TIL生成でエラーが発生しました）"
         end
-
       else
-        redirect_to diaries_path, notice: "日記を作成しました"
+        # notesがない場合は詳細画面へリダイレクト
+        redirect_to diary_path(@diary), notice: "日記を作成しました"
       end
     else
       @questions = Question.all
