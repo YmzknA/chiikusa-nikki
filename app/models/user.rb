@@ -1,11 +1,31 @@
 class User < ApplicationRecord
-  has_many :diaries
+  devise :database_authenticatable, :registerable, :rememberable, :validatable,
+         :omniauthable, omniauth_providers: [:github]
 
-  def self.find_or_create_from_auth_hash(auth_hash)
-    user = find_or_initialize_by(github_id: auth_hash[:uid])
-    user.username = auth_hash[:info][:nickname]
-    user.access_token = auth_hash[:credentials][:token]
-    user.save!
-    user
+  has_many :diaries
+  validates :github_id, presence: true, uniqueness: true
+
+  def self.from_omniauth(auth)
+    where(email: auth.info.email).first_or_create do |user|
+      user.email = user.random_email
+      user.password = Devise.friendly_token[0, 20]
+      user.github_id = auth.uid
+      user.username = auth.info.nickname
+      user.access_token = auth.credentials.token
+    end
   end
+
+  def email_required?
+    false
+  end
+
+  def email_changed?
+    false
+  end
+
+  def random_email
+    key = SecureRandom.uuid
+    "#{ key }@email.com"
+  end
+    
 end
