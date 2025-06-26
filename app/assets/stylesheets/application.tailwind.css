@@ -147,6 +147,104 @@ label:has(input[type="radio"]:checked) {
 }
 
 
+/* Simple Calendar Navigation Styling */
+.simple-calendar {
+  border: none;
+  background: transparent;
+}
+
+.simple-calendar .calendar-heading {
+  background: transparent;
+  border: none;
+  margin-bottom: 1rem;
+}
+
+.simple-calendar .calendar-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: oklch(19.742% 0.004 123.72); /* lemonade base-content */
+  text-align: center;
+  margin: 0;
+  padding: 0.5rem 0;
+}
+
+.simple-calendar-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0 1rem;
+}
+
+.simple-calendar-nav-link {
+  @apply neuro-button;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 120px;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.simple-calendar-nav-link:hover {
+  transform: translateY(-1px);
+  box-shadow: 
+    inset 12px 12px 20px rgba(105, 169, 106, 0.35),
+    inset -12px -12px 20px rgba(255, 254, 213, 1);
+}
+
+.simple-calendar-nav-link:active {
+  transform: translateY(0);
+  box-shadow: 
+    inset 15px 15px 25px rgba(105, 169, 106, 0.4),
+    inset -15px -15px 25px rgba(255, 254, 213, 1);
+}
+
+/* Add icons to navigation links */
+.simple-calendar-nav-link:first-child::before {
+  content: "←";
+  font-size: 1.2rem;
+  margin-right: 0.25rem;
+}
+
+.simple-calendar-nav-link:last-child::after {
+  content: "→";
+  font-size: 1.2rem;
+  margin-left: 0.25rem;
+}
+
+/* Calendar table styling */
+.simple-calendar table {
+  background: transparent;
+  border: none;
+  border-collapse: separate;
+  border-spacing: 0.25rem;
+}
+
+.simple-calendar th {
+  background: oklch(91.8% 0.018 123.72);
+  color: oklch(19.742% 0.004 123.72);
+  border: none;
+  padding: 0.75rem;
+  text-align: center;
+  font-weight: 600;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  box-shadow: 
+    4px 4px 8px rgba(105, 169, 106, 0.08),
+    -4px -4px 8px rgba(255, 254, 213, 0.6);
+}
+
+.simple-calendar td {
+  border: none;
+  padding: 0;
+  vertical-align: top;
+}
+
 @plugin "daisyui/theme" {
   name: "lemonade";
   default: false;
