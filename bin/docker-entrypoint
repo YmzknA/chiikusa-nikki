@@ -1,5 +1,11 @@
 #!/bin/bash -e
 
+# Install foreman if needed (as root before switching user)
+if ! command -v foreman >/dev/null 2>&1; then
+  echo "Installing foreman..."
+  gem install foreman
+fi
+
 # Change ownership of the app directory to the user, excluding node_modules
 chown -R user:user /myapp
 find /myapp -mindepth 1 -maxdepth 1 ! -name "node_modules" -exec chown -R user:user {} +
