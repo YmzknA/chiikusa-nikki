@@ -15,7 +15,7 @@ questions = [
 
 answers = {
   mood: [
-    { level: 1, label: "とても落ち込んでいる", emoji: "😞" },
+    { level: 1, label: "落ち込んでいる", emoji: "😞" },
     { level: 2, label: "少し落ち込み気味", emoji: "😐" },
     { level: 3, label: "普通", emoji: "🙂" },
     { level: 4, label: "気分が良い", emoji: "😄" },
