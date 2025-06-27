@@ -29,7 +29,7 @@ class StatsController < ApplicationController
 
   def build_motivation_dataset(diaries)
     {
-      label: "学習のモチベーション",
+      label: "今日のモチベーション",
       data: extract_answer_data(diaries, :motivation),
       backgroundColor: "rgba(54, 162, 235, 0.2)",
       borderColor: "rgba(54, 162, 235, 1)",
@@ -39,7 +39,7 @@ class StatsController < ApplicationController
 
   def build_progress_dataset(diaries)
     {
-      label: "学習の進捗",
+      label: "目標の進捗",
       data: extract_answer_data(diaries, :progress),
       backgroundColor: "rgba(255, 206, 86, 0.2)",
       borderColor: "rgba(255, 206, 86, 1)",

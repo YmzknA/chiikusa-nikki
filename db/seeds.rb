@@ -9,8 +9,8 @@
 # Questions and Answers
 questions = [
   { identifier: "mood", label: "今日の気分", icon: "" },
-  { identifier: "motivation", label: "学習のモチベーション", icon: "" },
-  { identifier: "progress", label: "学習の進捗", icon: "" }
+  { identifier: "motivation", label: "今日のモチベーション", icon: "" },
+  { identifier: "progress", label: "目標の進捗", icon: "" }
 ]
 
 answers = {

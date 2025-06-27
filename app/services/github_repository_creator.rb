@@ -32,7 +32,7 @@ module GithubRepositoryCreator
   def create_github_repository(repo_name)
     @client.create_repository(repo_name, {
                                 private: true,
-                                description: "Programming Diary TIL Repository - 毎日の学習記録",
+                                description: "ちいくさ日記 TIL Repository - 毎日の記録",
                                 auto_init: false,
                                 has_issues: false,
                                 has_projects: false,
