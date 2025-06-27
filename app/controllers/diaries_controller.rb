@@ -1,12 +1,18 @@
 class DiariesController < ApplicationController
-  before_action :set_diary, only: [:show, :edit, :update, :destroy, :upload_to_github]
+  before_action :authenticate_user!, except: [:show, :public_index]
+  before_action :set_diary, only: [:show, :edit, :update, :destroy, :upload_to_github], if: -> { user_signed_in? }
+  before_action :set_public_diary, only: [:show], unless: -> { user_signed_in? }
 
   def index
     @diaries = current_user.diaries.order(date: :desc)
   end
 
   def show
-    check_github_repository_status
+    check_github_repository_status if user_signed_in?
+  end
+
+  def public_index
+    @diaries = Diary.public_diaries.includes(:user, :diary_answers).order(date: :desc).limit(20)
   end
 
   def new
@@ -81,6 +87,14 @@ class DiariesController < ApplicationController
 
   def set_diary
     @diary = current_user.diaries.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to diaries_path, alert: "指定された日記は見つかりません。"
+  end
+
+  def set_public_diary
+    @diary = Diary.public_diaries.includes(:user, :diary_answers, :til_candidates).find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to root_path, alert: "指定された日記は見つかりません。"
   end
 
   def diary_service

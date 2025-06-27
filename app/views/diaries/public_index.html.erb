@@ -1,0 +1,58 @@
+<div class="min-h-screen lemonade-background p-4">
+  <div class="container mx-auto">
+    <div class="neuro-card p-6 mb-6">
+      <div class="flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-base-content">公開日記一覧 🌱</h1>
+        <div class="flex items-center gap-3">
+          <%= link_to root_path, class: "neuro-button-secondary py-3 px-4 font-medium inline-flex items-center gap-2" do %>
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+            </svg>
+            ホームに戻る
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <% @diaries.each do |diary| %>
+        <div class="neuro-card p-6">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-lg font-semibold text-primary"><%= diary.date.strftime("%Y/%m/%d") %></span>
+            <span class="text-sm text-base-content/60">by <%= diary.user.username %></span>
+          </div>
+          
+          <% if diary.til_text.present? %>
+            <h3 class="text-lg font-bold text-primary mb-2">Today I Learned</h3>
+            <p class="text-base leading-relaxed text-base-content mb-4"><%= truncate(diary.til_text, length: 150) %></p>
+          <% elsif diary.notes.present? %>
+            <h3 class="text-lg font-bold text-secondary mb-2">学習メモ</h3>
+            <div class="text-base leading-relaxed text-base-content mb-4 whitespace-pre-line"><%= truncate(diary.notes, length: 150) %></div>
+          <% end %>
+
+          <div class="flex gap-2 mb-4 flex-wrap">
+            <% diary.diary_answers.each do |diary_answer| %>
+              <div class="neuro-badge py-1 px-2 text-xs font-medium flex items-center gap-1">
+                <span class="text-sm"><%= diary_answer.answer.emoji %></span>
+                <span><%= diary_answer.question.label %></span>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="flex justify-end">
+            <%= link_to diary_path(diary), class: "neuro-button py-2 px-4 text-sm font-medium" do %>
+              詳細を見る
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <% if @diaries.empty? %>
+      <div class="neuro-card p-8 text-center">
+        <h2 class="text-xl font-bold text-base-content mb-2">公開されている日記がありません</h2>
+        <p class="text-base-content/60">まだ公開されている日記がありません。</p>
+      </div>
+    <% end %>
+  </div>
+</div>

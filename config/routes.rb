@@ -10,6 +10,9 @@ Rails.application.routes.draw do
       post :upload_to_github
     end
   end
+
+  # Public diary listing
+  get "/public_diaries", to: "diaries#public_index"
   resource :profile, only: [:show, :edit, :update]
   get "/stats", to: "stats#index"
 
