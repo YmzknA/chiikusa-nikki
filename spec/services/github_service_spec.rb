@@ -47,7 +47,7 @@ RSpec.describe GithubService, type: :service do
         expect(result[:success]).to be true
         expect(result[:message]).to include("test-repo")
         expect(mock_client).to have_received(:create_repository)
-          .with("test-repo", private: true, description: "ちいくさ日記 TIL Repository - 毎日の学習記録")
+          .with("test-repo", private: true, description: "ちいくさ日記 TIL Repository - 毎日の記録")
       end
     end
 

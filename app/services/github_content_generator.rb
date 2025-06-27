@@ -7,7 +7,7 @@ module GithubContentGenerator
     # TILセクションの条件分岐
     til_section = if til_content.present?
                     <<~SECTION
-                      ## 今日学んだこと
+                      ## 今日やったこと
                       #{til_content}
 
                     SECTION
@@ -16,7 +16,7 @@ module GithubContentGenerator
                   end
 
     content_sections = build_content_sections(diary, til_section)
-    content_sections << "## 学習記録\n今日も学習に取り組みました。\n" if content_sections.empty?
+    content_sections << "## 今日やったこと\n今日も頑張りました。\n" if content_sections.empty?
 
     # CLAUDE.mdの指示に従い、日付などの基本情報を含める
     <<~MARKDOWN
@@ -34,11 +34,11 @@ module GithubContentGenerator
     <<~MARKDOWN
       # #{repo_name}
 
-      毎日の学習記録（TIL: Today I Learned）を記録するリポジトリです。
+      毎日の記録（TIL: Today I Learned）を記録するリポジトリです。
 
       ## 概要
 
-      このリポジトリは[ちいくさ日記](https://tiikusa-nikki.fly.dev)で作成された学習記録を自動で保存しています。
+      このリポジトリは[ちいくさ日記](https://tiikusa-nikki.fly.dev)で作成された日記を自動で保存しています。
 
       ## ファイル命名規則
 
@@ -49,8 +49,8 @@ module GithubContentGenerator
 
       各TILファイルには以下の情報が含まれます：
 
-      - その日学んだこと（AI生成候補から選択）
-      - 学習メモ
+      - その日の記録（AI生成候補から選択）
+      - 今日のメモ
       - 気分・モチベーション・進捗状況
       - 作成日時
 
@@ -62,7 +62,7 @@ module GithubContentGenerator
   def build_content_sections(diary, til_section)
     content_sections = []
     content_sections << til_section if til_section.present?
-    content_sections << "## 学習メモ\n#{diary.notes}\n" if diary.notes.present?
+    content_sections << "## 今日のメモ\n#{diary.notes}\n" if diary.notes.present?
 
     mood_summary = generate_mood_summary(diary)
     content_sections << "## 気分・状態\n#{mood_summary}\n" if mood_summary != "（記録なし）"
