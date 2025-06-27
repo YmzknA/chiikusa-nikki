@@ -26,7 +26,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   def handle_invalid_auth(auth)
     log_oauth_attempt(auth&.provider, auth&.info&.email, false)
-    redirect_to root_path, alert: "認証情報が無効です。"
+    redirect_to root_path, alert: "認証に失敗しました。再度お試しください。"
   end
 
   def handle_valid_oauth(auth, provider_name)
@@ -60,7 +60,8 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       redirect_to profile_path, notice: "#{provider_name}アカウントを連携しました。"
     else
       log_oauth_attempt(auth.provider, auth.info.email, false)
-      redirect_to profile_path, alert: "#{provider_name}アカウントの連携に失敗しました。"
+      error_msg = @user.errors.full_messages.join(', ')
+      redirect_to profile_path, alert: "#{provider_name}アカウントの連携に失敗しました。#{error_msg}"
     end
   end
 
@@ -74,9 +75,10 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       set_flash_message(:notice, :success, kind: provider_name) if is_navigational_format?
     else
       log_oauth_attempt(auth.provider, auth.info.email, false)
+      error_msg = @user.errors.full_messages.join(', ')
       session["devise.#{params[:provider]}_data"] = auth.except(:extra)
-      flash[:alert] = "#{provider_name}での認証に失敗しました。"
-      redirect_to new_user_registration_url
+      flash[:alert] = "#{provider_name}での認証に失敗しました。#{error_msg}"
+      redirect_to root_path
     end
   end
 end
