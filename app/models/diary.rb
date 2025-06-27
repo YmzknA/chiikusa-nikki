@@ -15,6 +15,7 @@ class Diary < ApplicationRecord
 
   def selected_til_content
     return nil unless selected_til_index.present?
+
     til_candidates.find_by(index: selected_til_index)&.content
   end
 end

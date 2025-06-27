@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe "GithubSettings", type: :request do
   let(:user) do
@@ -47,7 +47,7 @@ RSpec.describe "GithubSettings", type: :request do
 
       it "resets upload status and shows alert" do
         get "/github_settings"
-        
+
         expect(mock_service).to have_received(:reset_all_diaries_upload_status)
         expect(flash[:alert]).to include("見つかりません")
       end
@@ -64,7 +64,7 @@ RSpec.describe "GithubSettings", type: :request do
 
       it "creates repository and redirects with success message" do
         patch "/github_settings", params: { github_repo_name: "new-til-repo" }
-        
+
         expect(response).to redirect_to(github_settings_path)
         expect(flash[:notice]).to include("Repository created")
       end
@@ -73,7 +73,7 @@ RSpec.describe "GithubSettings", type: :request do
     context "with blank repository name" do
       it "redirects with error message" do
         patch "/github_settings", params: { github_repo_name: "" }
-        
+
         expect(response).to redirect_to(github_settings_path)
         expect(flash[:alert]).to include("入力してください")
       end
@@ -86,7 +86,7 @@ RSpec.describe "GithubSettings", type: :request do
 
       it "redirects with error message" do
         patch "/github_settings", params: { github_repo_name: "invalid-repo" }
-        
+
         expect(response).to redirect_to(github_settings_path)
         expect(flash[:alert]).to include("Creation failed")
       end
@@ -104,7 +104,7 @@ RSpec.describe "GithubSettings", type: :request do
 
     it "resets repository configuration and redirects with success message" do
       delete "/github_settings"
-      
+
       expect(user.reload.github_repo_name).to be_nil
       expect(response).to redirect_to(github_settings_path)
       expect(flash[:notice]).to include("リセットしました")
@@ -115,7 +115,7 @@ RSpec.describe "GithubSettings", type: :request do
     before do
       # Remove authentication stubs
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(nil)
-      allow_any_instance_of(ApplicationController).to receive(:authenticate_user!).and_raise(ActionController::RoutingError.new('Not Found'))
+      allow_any_instance_of(ApplicationController).to receive(:authenticate_user!).and_raise(ActionController::RoutingError.new("Not Found"))
     end
 
     it "raises routing error for GET" do

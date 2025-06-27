@@ -100,7 +100,7 @@ RSpec.describe User, type: :model do
 
         it "updates github_repo_name and returns success" do
           result = user.setup_github_repository("test-repo")
-          
+
           expect(result[:success]).to be true
           expect(user.github_repo_name).to eq("test-repo")
         end
@@ -115,7 +115,7 @@ RSpec.describe User, type: :model do
 
         it "does not update github_repo_name and returns failure" do
           result = user.setup_github_repository("invalid-repo")
-          
+
           expect(result[:success]).to be false
           expect(user.github_repo_name).to be_nil
         end
@@ -124,7 +124,7 @@ RSpec.describe User, type: :model do
       context "when repo_name is blank" do
         it "returns failure message" do
           result = user.setup_github_repository("")
-          
+
           expect(result[:success]).to be false
           expect(result[:message]).to include("入力してください")
         end
@@ -180,7 +180,7 @@ RSpec.describe User, type: :model do
 
       it "resets github_repo_name and calls service reset method" do
         user.reset_github_repository
-        
+
         expect(user.github_repo_name).to be_nil
         expect(mock_service).to have_received(:reset_all_diaries_upload_status)
       end

@@ -30,95 +30,20 @@ class DiariesController < ApplicationController
   def create
     @diary = current_user.diaries.build(diary_params)
     if @diary.save
-      # DiaryAnswerの保存
-      if params[:diary_answers].present?
-
-        diary_answer_params.each do |question_identifier, answer_id|
-          question = Question.find_by(identifier: question_identifier)
-          @diary.diary_answers.create(question: question, answer_id: answer_id) if question && answer_id.present?
-        end
-
-      end
-
-      # TIL候補の生成とリダイレクト分岐
-      if @diary.notes.present?
-        begin
-          openai_service = OpenaiService.new
-          til_candidates = openai_service.generate_tils(@diary.notes)
-
-          til_candidates.each_with_index do |content, index|
-            @diary.til_candidates.create(content: content, index: index)
-          end
-
-          # TIL候補が生成されたらTIL選択画面（edit）へリダイレクト
-          redirect_to edit_diary_path(@diary), notice: "日記を作成しました。続いて生成されたTILを選択してください。"
-        rescue StandardError => e
-          logger.info("Error generating TIL candidates: #{e.message}")
-          redirect_to diaries_path, notice: "日記を作成しました（TIL生成でエラーが発生しました）"
-        end
-      else
-        # notesがない場合は詳細画面へリダイレクト
-        redirect_to diary_path(@diary), notice: "日記を作成しました"
-      end
+      create_diary_answers
+      handle_til_generation_and_redirect
     else
-      @questions = Question.all
-      # フォームで選択された気分データを保持
-      @selected_answers = params[:diary_answers] || {}
-
-      # エラー時に日付を保持
-      @date = @diary.date || params[:diary][:date] || Date.current
-
-      # 既存日記のチェック（エラー時にも確認）
-      @existing_diary = current_user.diaries.find_by(date: @date)
-
-      # 日付重複エラーの場合は特別なメッセージを表示
-      if @diary.errors[:date].any? && @existing_diary
-        flash.now[:alert] = "#{@diary.date.strftime('%Y年%m月%d日')}の日記は既に作成されています。同じ日に複数の日記は作成できません。"
-        @existing_diary_for_error = @existing_diary
-      end
-
-      render :new
+      handle_creation_error
     end
   end
 
   def update
     if @diary.update(diary_update_params)
-      # DiaryAnswerの更新
-      if params[:diary_answers].present?
-
-        # 既存のDiaryAnswerを削除
-        @diary.diary_answers.destroy_all
-
-        # 新しいDiaryAnswerを作成
-        diary_answer_params.each do |question_identifier, answer_id|
-          question = Question.find_by(identifier: question_identifier)
-
-          @diary.diary_answers.create(question: question, answer_id: answer_id) if question && answer_id.present?
-        end
-      end
-
-      # TIL候補の再生成（メモが更新された場合）
-      notes_changed = @diary.notes_changed?
-      if @diary.notes.present? && notes_changed
-        begin
-          # 既存のTIL候補を削除
-          @diary.til_candidates.destroy_all
-
-          client = OpenaiService.new
-          til_candidates = client.generate_tils(@diary.notes)
-          til_candidates.each_with_index do |content, index|
-            @diary.til_candidates.create(content: content, index: index)
-          end
-        rescue StandardError
-        end
-      end
-
-
+      update_diary_answers
+      regenerate_til_candidates_if_needed
       redirect_to diary_path(@diary), notice: "日記を更新しました"
     else
-      @questions = Question.all
-      @selected_answers = params[:diary_answers] || {}
-      render :edit
+      handle_update_error
     end
   end
 
@@ -137,7 +62,7 @@ class DiariesController < ApplicationController
     end
 
     result = current_user.github_service.push_til(@diary)
-    
+
     if result[:success]
       redirect_to diary_path(@diary), notice: result[:message]
     else
@@ -174,13 +99,92 @@ class DiariesController < ApplicationController
     end
   end
 
+  def create_diary_answers
+    return unless params[:diary_answers].present?
+
+    diary_answer_params.each do |question_identifier, answer_id|
+      question = Question.find_by(identifier: question_identifier)
+      @diary.diary_answers.create(question: question, answer_id: answer_id) if question && answer_id.present?
+    end
+  end
+
+  def handle_til_generation_and_redirect
+    if @diary.notes.present?
+      generate_til_candidates_and_redirect
+    else
+      redirect_to diary_path(@diary), notice: "日記を作成しました"
+    end
+  end
+
+  def generate_til_candidates_and_redirect
+    openai_service = OpenaiService.new
+    til_candidates = openai_service.generate_tils(@diary.notes)
+
+    til_candidates.each_with_index do |content, index|
+      @diary.til_candidates.create(content: content, index: index)
+    end
+
+    redirect_to edit_diary_path(@diary), notice: "日記を作成しました。続いて生成されたTILを選択してください。"
+  rescue StandardError => e
+    Rails.logger.info("Error generating TIL candidates: #{e.message}")
+    redirect_to diaries_path, notice: "日記を作成しました（TIL生成でエラーが発生しました）"
+  end
+
+  def handle_creation_error
+    @questions = Question.all
+    @selected_answers = params[:diary_answers] || {}
+    @date = @diary.date || params[:diary][:date] || Date.current
+    @existing_diary = current_user.diaries.find_by(date: @date)
+
+    handle_date_duplication_error if @diary.errors[:date].any? && @existing_diary
+
+    render :new
+  end
+
+  def handle_date_duplication_error
+    flash.now[:alert] = "#{@diary.date.strftime('%Y年%m月%d日')}の日記は既に作成されています。同じ日に複数の日記は作成できません。"
+    @existing_diary_for_error = @existing_diary
+  end
+
+  def update_diary_answers
+    return unless params[:diary_answers].present?
+
+    @diary.diary_answers.destroy_all
+    diary_answer_params.each do |question_identifier, answer_id|
+      question = Question.find_by(identifier: question_identifier)
+      @diary.diary_answers.create(question: question, answer_id: answer_id) if question && answer_id.present?
+    end
+  end
+
+  def regenerate_til_candidates_if_needed
+    notes_changed = @diary.notes_changed?
+    return unless @diary.notes.present? && notes_changed
+
+    @diary.til_candidates.destroy_all
+    client = OpenaiService.new
+    til_candidates = client.generate_tils(@diary.notes)
+    til_candidates.each_with_index do |content, index|
+      @diary.til_candidates.create(content: content, index: index)
+    end
+  rescue StandardError => e
+    Rails.logger.error("Error regenerating TIL candidates: #{e.message}")
+  end
+
+  def handle_update_error
+    @questions = Question.all
+    @selected_answers = params[:diary_answers] || {}
+    render :edit
+  end
+
   def check_github_repository_status
     return unless current_user.github_repo_configured?
-    
-    unless current_user.verify_github_repository
-      Rails.logger.info "Repository #{current_user.github_repo_name} not found for user #{current_user.id}. Resetting upload status."
-      current_user.github_service.reset_all_diaries_upload_status
-      flash.now[:alert] = "設定されたGitHubリポジトリが見つかりません。GitHub設定を確認してください。"
-    end
+
+    return if current_user.verify_github_repository?
+
+    log_message = "Repository #{current_user.github_repo_name} not found for user #{current_user.id}. " \
+                  "Resetting upload status."
+    Rails.logger.info log_message
+    current_user.github_service.reset_all_diaries_upload_status
+    flash.now[:alert] = "設定されたGitHubリポジトリが見つかりません。GitHub設定を確認してください。"
   end
 end
