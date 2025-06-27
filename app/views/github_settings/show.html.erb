@@ -96,14 +96,13 @@
                 class: "neuro-button py-3 px-6 font-medium flex items-center gap-2" %>
             
             <% if @user.github_repo_configured? %>
-              <%= button_to github_settings_path, method: :delete, 
-                  data: { turbo_confirm: "本当にGitHub設定をリセットしますか？これにより、すべての日記のアップロード状態がリセットされます。" },
-                  class: "neuro-error py-3 px-6 font-medium flex items-center gap-2" do %>
+              <button type="button" onclick="showDisconnectModal()" 
+                      class="neuro-error py-3 px-6 font-medium flex items-center gap-2">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
                 </svg>
-                設定をリセット
-              <% end %>
+                リポジトリとの連携を解除
+              </button>
             <% end %>
           </div>
         <% end %>
@@ -146,4 +145,71 @@
       </div>
     </div>
   </div>
+
+  <!-- 連携解除確認モーダル -->
+  <dialog id="disconnect_modal" class="modal">
+    <div class="modal-box">
+      <h3 class="text-lg font-bold text-error mb-4">
+        <svg class="h-6 w-6 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.992-.833-2.732 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z"></path>
+        </svg>
+        リポジトリとの連携を解除
+      </h3>
+      
+      <div class="space-y-4 mb-6">
+        <p class="text-base-content">
+          現在のリポジトリ「<span class="font-mono text-primary"><%= @user.github_repo_name %></span>」との連携を解除しようとしています。
+        </p>
+        
+        <div class="alert alert-warning">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.992-.833-2.732 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z"></path>
+          </svg>
+          <span>
+            <strong>重要な注意事項：</strong><br>
+            この操作により以下が実行されます：
+          </span>
+        </div>
+        
+        <ul class="list-disc list-inside space-y-2 text-sm text-base-content/80 bg-base-200 p-4 rounded-lg">
+          <li>現在のリポジトリとの連携が完全に解除されます</li>
+          <li>すべての日記のGitHubアップロード状態がリセットされます</li>
+          <li><strong class="text-error">同じリポジトリに再接続することはできません</strong></li>
+          <li>再度TILをアップロードするには、新しいリポジトリを作成する必要があります</li>
+        </ul>
+        
+        <div class="alert alert-error">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>
+          </svg>
+          <span class="text-sm">
+            <strong>この操作は取り消すことができません。</strong><br>
+            本当に連携を解除しますか？
+          </span>
+        </div>
+      </div>
+      
+      <div class="modal-action">
+        <button type="button" onclick="closeDisconnectModal()" class="btn btn-ghost">
+          キャンセル
+        </button>
+        <%= form_with url: github_settings_path, method: :delete, local: true, class: "inline" do |form| %>
+          <%= form.submit "連携を解除する", class: "btn btn-error" %>
+        <% end %>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button type="button" onclick="closeDisconnectModal()">close</button>
+    </form>
+  </dialog>
+
+  <script>
+    function showDisconnectModal() {
+      document.getElementById('disconnect_modal').showModal();
+    }
+    
+    function closeDisconnectModal() {
+      document.getElementById('disconnect_modal').close();
+    }
+  </script>
 </div>
