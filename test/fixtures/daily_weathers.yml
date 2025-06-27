@@ -2,8 +2,8 @@
 
 one:
   date: 2025-06-26
-  data: 
+  data: {}
 
 two:
-  date: 2025-06-26
-  data: 
+  date: 2025-06-27
+  data: {} 

@@ -3,11 +3,12 @@ require "test_helper"
 class DiaryUniquenessTest < ActiveSupport::TestCase
   def setup
     @user = User.create!(
-      uid: "123456789",
-      provider: "github",
+      github_id: "123456789",
       username: "testuser",
-      name: "Test User",
-      email: "test@example.com"
+      email: "test@example.com",
+      encrypted_access_token: "encrypted_token",
+      providers: ["github"],
+      password: Devise.friendly_token[0, 20]
     )
   end
 
@@ -26,11 +27,13 @@ class DiaryUniquenessTest < ActiveSupport::TestCase
 
   test "should allow different users to create diaries on same date" do
     user2 = User.create!(
-      uid: "987654321",
-      provider: "github",
+      google_id: "987654321",
       username: "testuser2",
-      name: "Test User 2",
-      email: "test2@example.com"
+      email: "test2@example.com",
+      google_email: "test2@example.com",
+      encrypted_google_access_token: "encrypted_token_2",
+      providers: ["google_oauth2"],
+      password: Devise.friendly_token[0, 20]
     )
 
     date = Date.current

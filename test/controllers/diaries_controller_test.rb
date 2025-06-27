@@ -4,9 +4,12 @@ class DiariesControllerTest < ActionController::TestCase
   setup do
     # Create a test user
     @user = User.create!(
+      github_id: "123456789",
       username: "testuser",
       email: "test@example.com",
-      password: "password123"
+      encrypted_access_token: "encrypted_token",
+      providers: ["github"],
+      password: Devise.friendly_token[0, 20]
     )
 
     # Create test questions and answers

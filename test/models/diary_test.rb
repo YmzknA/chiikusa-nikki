@@ -3,9 +3,12 @@ require "test_helper"
 class DiaryTest < ActiveSupport::TestCase
   def setup
     @user = User.create!(
+      github_id: "123456789",
       username: "testuser",
       email: "test@example.com",
-      password: "password123"
+      encrypted_access_token: "encrypted_token",
+      providers: ["github"],
+      password: Devise.friendly_token[0, 20]
     )
 
     @mood_question = Question.create!(identifier: "mood", label: "今日の気分")

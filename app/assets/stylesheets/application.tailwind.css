@@ -47,6 +47,7 @@ label:has(input[type="radio"]:checked) {
 }
 
 .neuro-button:hover {
+  cursor: pointer;
   box-shadow: 
     inset 12px 12px 20px rgba(105, 169, 106, 0.35),  /* very strong on hover */
     inset -12px -12px 20px rgba(255, 254, 213, 1);

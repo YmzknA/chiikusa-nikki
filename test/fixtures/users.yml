@@ -1,11 +1,16 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  github_id: MyString
-  username: MyString
-  access_token: MyString
+  github_id: 12345
+  username: testuser1
+  email: test1@example.com
+  encrypted_access_token: encrypted_token_1
+  providers: ["github"]
 
 two:
-  github_id: MyString
-  username: MyString
-  access_token: MyString
+  google_id: 67890
+  username: testuser2
+  email: test2@example.com
+  google_email: test2@example.com
+  encrypted_google_access_token: encrypted_token_2
+  providers: ["google_oauth2"]
