@@ -26,6 +26,23 @@
           現在の設定状況
         </h2>
         
+        <% if @user.access_token.present? %>
+          <div class="neuro-success py-3 px-4 text-sm font-medium flex items-center gap-2 mb-4">
+            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            GitHub認証: 有効
+          </div>
+        <% else %>
+          <div class="neuro-error py-3 px-4 text-sm font-medium flex items-center gap-2 mb-4">
+            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+            GitHub認証: 無効 - 
+            <%= link_to "再ログインしてください", "/users/auth/github", class: "underline font-bold" %>
+          </div>
+        <% end %>
+
         <% if @user.github_repo_configured? %>
           <div class="space-y-4">
             <div class="flex items-center gap-3">
@@ -65,48 +82,66 @@
       </div>
 
       <!-- Repository Setup Section -->
-      <div class="neuro-card p-6">
-        <h2 class="flex items-center gap-2 text-2xl font-bold text-secondary mb-4">
-          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-          </svg>
-          <%= @user.github_repo_configured? ? "リポジトリを変更" : "新しいリポジトリを作成" %>
-        </h2>
-        
-        <div class="mb-4">
-          <p class="text-base-content/70 text-sm mb-2">
-            TILを保存するためのGitHubリポジトリを作成します。リポジトリ名を入力してください。
-          </p>
-          <p class="text-base-content/60 text-xs">
-            作成されるリポジトリ: <span class="font-mono"><%= @user.username %>/<span class="text-primary">リポジトリ名</span></span>
-          </p>
-        </div>
-
-        <%= form_with url: github_settings_path, method: :patch, local: true, class: "space-y-4" do |form| %>
-          <div>
-            <%= form.text_field :github_repo_name, 
-                placeholder: "例: til, my-learning-notes", 
-                value: @user.github_repo_name,
-                class: "neuro-input w-full p-3 text-base-content",
-                required: true %>
-          </div>
+      <% unless @user.github_repo_configured? %>
+        <div class="neuro-card p-6">
+          <h2 class="flex items-center gap-2 text-2xl font-bold text-secondary mb-4">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            新しいリポジトリを作成
+          </h2>
           
-          <div class="flex gap-3">
-            <%= form.submit (@user.github_repo_configured? ? "リポジトリを変更" : "リポジトリを作成"), 
-                class: "neuro-button py-3 px-6 font-medium flex items-center gap-2" %>
-            
-            <% if @user.github_repo_configured? %>
-              <button type="button" onclick="showDisconnectModal()" 
-                      class="neuro-error py-3 px-6 font-medium flex items-center gap-2">
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-                </svg>
-                リポジトリとの連携を解除
-              </button>
-            <% end %>
+          <div class="mb-4">
+            <p class="text-base-content/70 text-sm mb-2">
+              TILを保存するためのGitHubリポジトリを作成します。リポジトリ名を入力してください。
+            </p>
+            <p class="text-base-content/60 text-xs">
+              作成されるリポジトリ: <span class="font-mono"><%= @user.username %>/<span class="text-primary">リポジトリ名</span></span>
+            </p>
           </div>
-        <% end %>
-      </div>
+
+          <%= form_with url: github_settings_path, method: :patch, local: true, class: "space-y-4" do |form| %>
+            <div>
+              <%= form.text_field :github_repo_name, 
+                  placeholder: "例: til, my-learning-notes", 
+                  class: "neuro-input w-full p-3 text-base-content",
+                  required: true %>
+            </div>
+            
+            <div class="flex gap-3">
+              <%= form.submit "リポジトリを作成", 
+                  class: "neuro-button py-3 px-6 font-medium flex items-center gap-2" %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <!-- Repository Management Section -->
+        <div class="neuro-card p-6">
+          <h2 class="flex items-center gap-2 text-2xl font-bold text-secondary mb-4">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            リポジトリ管理
+          </h2>
+          
+          <div class="mb-4">
+            <p class="text-base-content/70 text-sm mb-4">
+              現在設定されているリポジトリとの連携を解除できます。解除後は新しいリポジトリを設定できます。
+            </p>
+          </div>
+
+          <div class="flex gap-3">
+            <button type="button" onclick="showDisconnectModal()" 
+                    class="neuro-error py-3 px-6 font-medium flex items-center gap-2">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+              </svg>
+              リポジトリとの連携を解除
+            </button>
+          </div>
+        </div>
+      <% end %>
 
       <!-- Instructions Section -->
       <div class="neuro-card p-6">

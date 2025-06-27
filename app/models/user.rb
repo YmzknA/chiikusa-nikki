@@ -48,7 +48,16 @@ class User < ApplicationRecord
 
   # Accessor method for encrypted access token
   def access_token
-    encrypted_access_token
+    return nil if encrypted_access_token.blank?
+
+    begin
+      encrypted_access_token
+    rescue ActiveRecord::Encryption::Errors::Decryption => e
+      Rails.logger.warn "Failed to decrypt access token for user #{id}: #{e.message}"
+      # Clear invalid encrypted token
+      update_column(:encrypted_access_token, nil)
+      nil
+    end
   end
 
   def access_token=(token)

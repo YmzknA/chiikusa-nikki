@@ -35,6 +35,7 @@ class GithubSettingsController < ApplicationController
 
   def check_and_handle_repository_status
     return false unless current_user.github_repo_configured?
+    return false unless current_user.access_token.present?
 
     repo_exists = current_user.verify_github_repository?
 
