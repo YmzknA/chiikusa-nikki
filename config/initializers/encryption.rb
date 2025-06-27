@@ -24,8 +24,8 @@ Rails.application.configure do
     # In development, allow graceful degradation
     if Rails.env.development?
       Rails.logger.warn "Running in development mode without encryption. Please add encryption credentials."
-    elsif Rails.env.production?
-      # In production, fail fast to prevent security issues
+    elsif Rails.env.production? && !ENV['SECRET_KEY_BASE_DUMMY']
+      # In production, fail fast to prevent security issues (but allow asset precompilation)
       raise "Active Record encryption credentials are required in production. Please configure credentials.yml.enc."
     end
   end
