@@ -39,7 +39,7 @@ class DiaryService
       @diary.til_candidates.create(content: content, index: index)
     end
 
-    { redirect_to: [:edit_diary, @diary], notice: "日記を作成しました。続いて生成されたTIL を選択してください。" }
+    { redirect_to: [:edit, @diary], notice: "日記を作成しました。続いて生成されたTIL を選択してください。" }
   rescue StandardError => e
     Rails.logger.info("Error generating TIL candidates: #{e.message}")
     { redirect_to: :diaries, notice: "日記を作成しました（TIL生成でエラーが発生しました）" }
