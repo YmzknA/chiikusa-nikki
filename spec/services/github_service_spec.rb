@@ -212,4 +212,96 @@ RSpec.describe GithubService, type: :service do
       end
     end
   end
+
+  describe '#test_github_connection' do
+    let(:mock_user_info) do
+      double(
+        login: "testuser",
+        name: "Test User",
+        public_repos: 5,
+        total_private_repos: 3
+      )
+    end
+
+    context 'when connection is successful' do
+      before do
+        allow(mock_client).to receive(:user).and_return(mock_user_info)
+      end
+
+      it 'returns success with user info' do
+        result = service.test_github_connection
+        
+        expect(result[:success]).to be true
+        expect(result[:user_info][:login]).to eq("testuser")
+        expect(result[:user_info][:public_repos]).to eq(5)
+      end
+    end
+
+    context 'when unauthorized' do
+      before do
+        allow(mock_client).to receive(:user).and_raise(Octokit::Unauthorized.new)
+      end
+
+      it 'returns failure message' do
+        result = service.test_github_connection
+        
+        expect(result[:success]).to be false
+        expect(result[:message]).to include("認証に失敗")
+      end
+    end
+  end
+
+  describe '#valid_repository_name?' do
+    it 'validates repository names correctly' do
+      expect(service.send(:valid_repository_name?, "valid-repo")).to be true
+      expect(service.send(:valid_repository_name?, "valid_repo")).to be true
+      expect(service.send(:valid_repository_name?, "valid.repo")).to be true
+      expect(service.send(:valid_repository_name?, "ValidRepo123")).to be true
+      
+      expect(service.send(:valid_repository_name?, "")).to be false
+      expect(service.send(:valid_repository_name?, ".invalid")).to be false
+      expect(service.send(:valid_repository_name?, "invalid.")).to be false
+      expect(service.send(:valid_repository_name?, "invalid@repo")).to be false
+      expect(service.send(:valid_repository_name?, "a" * 101)).to be false
+    end
+  end
+
+  describe '#create_or_update_file' do
+    let(:repo_name) { "testuser/test-repo" }
+    let(:file_path) { "test.md" }
+    let(:content) { "# Test Content" }
+    let(:commit_message) { "Test commit" }
+
+    context 'when file does not exist' do
+      before do
+        allow(mock_client).to receive(:contents).and_raise(Octokit::NotFound.new)
+        allow(mock_client).to receive(:create_contents).and_return(true)
+      end
+
+      it 'creates new file' do
+        result = service.create_or_update_file(repo_name, file_path, content, commit_message)
+        
+        expect(result[:success]).to be true
+        expect(result[:action]).to eq("created")
+        expect(mock_client).to have_received(:create_contents)
+      end
+    end
+
+    context 'when file exists' do
+      let(:existing_file) { double(sha: "abc123") }
+
+      before do
+        allow(mock_client).to receive(:contents).and_return(existing_file)
+        allow(mock_client).to receive(:update_contents).and_return(true)
+      end
+
+      it 'updates existing file' do
+        result = service.create_or_update_file(repo_name, file_path, content, commit_message)
+        
+        expect(result[:success]).to be true
+        expect(result[:action]).to eq("updated")
+        expect(mock_client).to have_received(:update_contents)
+      end
+    end
+  end
 end

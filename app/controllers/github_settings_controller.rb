@@ -4,6 +4,7 @@ class GithubSettingsController < ApplicationController
   def show
     @user = current_user
     @repo_exists = check_and_handle_repository_status
+    @connection_test_result = test_github_connection if @user.access_token.present?
   end
 
   def update
@@ -43,5 +44,16 @@ class GithubSettingsController < ApplicationController
     end
     
     repo_exists
+  end
+
+  def test_github_connection
+    return nil unless current_user.access_token.present?
+    
+    begin
+      current_user.github_service.test_github_connection
+    rescue => e
+      Rails.logger.error "GitHub connection test failed: #{e.message}"
+      { success: false, message: "接続テストでエラーが発生しました" }
+    end
   end
 end

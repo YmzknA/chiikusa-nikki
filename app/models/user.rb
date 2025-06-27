@@ -6,13 +6,25 @@ class User < ApplicationRecord
   validates :github_id, presence: true, uniqueness: true
 
   def self.from_omniauth(auth)
-    where(email: auth.info.email).first_or_create do |user|
-      user.email = auth.info.email
+    # 既存ユーザーを探すか新規作成
+    user = where(email: auth.info.email).first_or_initialize
+    
+    # 既存ユーザーでも新しい認証情報で更新
+    user.assign_attributes(
+      email: auth.info.email,
+      github_id: auth.uid,
+      username: auth.info.nickname,
+      access_token: auth.credentials.token
+    )
+    
+    # 新規ユーザーの場合のみパスワード設定
+    if user.new_record?
       user.password = Devise.friendly_token[0, 20]
-      user.github_id = auth.uid
-      user.username = auth.info.nickname
-      user.access_token = auth.credentials.token
     end
+    
+    user.save!
+    Rails.logger.info "OAuth user updated: #{user.username} (#{user.email}) - Token: #{user.access_token.present? ? 'Present' : 'Missing'}"
+    user
   end
 
   def email_required?
