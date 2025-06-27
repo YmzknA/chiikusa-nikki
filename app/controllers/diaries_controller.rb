@@ -1,11 +1,13 @@
 class DiariesController < ApplicationController
-  before_action :set_diary, only: [:show, :edit, :update, :destroy]
+  before_action :set_diary, only: [:show, :edit, :update, :destroy, :upload_to_github]
 
   def index
     @diaries = current_user.diaries.order(date: :desc)
   end
 
-  def show; end
+  def show
+    check_github_repository_status
+  end
 
   def new
     @diary = Diary.new
@@ -103,7 +105,7 @@ class DiariesController < ApplicationController
           @diary.til_candidates.destroy_all
 
           client = OpenaiService.new
-          til_candidates = client.generate_til(@diary.notes)
+          til_candidates = client.generate_tils(@diary.notes)
           til_candidates.each_with_index do |content, index|
             @diary.til_candidates.create(content: content, index: index)
           end
@@ -111,10 +113,6 @@ class DiariesController < ApplicationController
         end
       end
 
-      if params[:push_to_github] == "1"
-        client = GithubService.new(current_user)
-        client.push_til(@diary)
-      end
 
       redirect_to diary_path(@diary), notice: "日記を更新しました"
     else
@@ -132,6 +130,21 @@ class DiariesController < ApplicationController
     end
   end
 
+  def upload_to_github
+    unless @diary.can_upload_to_github?
+      redirect_to diary_path(@diary), alert: "GitHubにアップロードできません。リポジトリ設定とTIL選択を確認してください。"
+      return
+    end
+
+    result = current_user.github_service.push_til(@diary)
+    
+    if result[:success]
+      redirect_to diary_path(@diary), notice: result[:message]
+    else
+      redirect_to diary_path(@diary), alert: result[:message]
+    end
+  end
+
   private
 
   def set_diary
@@ -143,7 +156,7 @@ class DiariesController < ApplicationController
   end
 
   def diary_update_params
-    params.require(:diary).permit(:til_text, :notes, :is_public)
+    params.require(:diary).permit(:til_text, :notes, :is_public, :selected_til_index)
   end
 
   def diary_answer_params
@@ -158,6 +171,16 @@ class DiariesController < ApplicationController
     else
       Rails.logger.debug "No diary_answers parameter found"
       {}
+    end
+  end
+
+  def check_github_repository_status
+    return unless current_user.github_repo_configured?
+    
+    unless current_user.verify_github_repository
+      Rails.logger.info "Repository #{current_user.github_repo_name} not found for user #{current_user.id}. Resetting upload status."
+      current_user.github_service.reset_all_diaries_upload_status
+      flash.now[:alert] = "設定されたGitHubリポジトリが見つかりません。GitHub設定を確認してください。"
     end
   end
 end
