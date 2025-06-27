@@ -310,12 +310,22 @@ class GithubService
     mood_answers.each do |diary_answer|
       question_label = diary_answer.question&.label
       answer_emoji = diary_answer.answer&.emoji
+      answer_label = diary_answer.answer&.label
+      answer_value = diary_answer.answer&.value
       next unless question_label && answer_emoji
       
-      summary_parts << "#{question_label}: #{answer_emoji}"
+      # 詳細な説明を含む形式で記載 (value: label)
+      detail_text = ""
+      if answer_value.present? && answer_label.present?
+        detail_text = " (#{answer_value}: #{answer_label})"
+      elsif answer_label.present?
+        detail_text = " (#{answer_label})"
+      end
+      
+      summary_parts << "#{question_label}: #{answer_emoji}#{detail_text}"
     end
     
-    summary_parts.join(" | ")
+    summary_parts.join("\n")
   end
 
   # 参考実装から着想を得た追加のヘルパーメソッド
