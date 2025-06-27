@@ -16,9 +16,11 @@
 
 Rails.application.configure do
   # Validate that encryption is properly configured
-  unless Rails.application.credentials.active_record_encryption.present?
+  if Rails.application.credentials.active_record_encryption.present?
+    Rails.logger.info "Active Record encryption configured successfully."
+  else
     Rails.logger.warn "Active Record encryption credentials are missing. GitHub OAuth tokens will not be encrypted."
-    
+
     # In development, allow graceful degradation
     if Rails.env.development?
       Rails.logger.warn "Running in development mode without encryption. Please add encryption credentials."
@@ -26,7 +28,5 @@ Rails.application.configure do
       # In production, fail fast to prevent security issues
       raise "Active Record encryption credentials are required in production. Please configure credentials.yml.enc."
     end
-  else
-    Rails.logger.info "Active Record encryption configured successfully."
   end
 end
