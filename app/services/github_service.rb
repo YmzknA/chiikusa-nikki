@@ -230,7 +230,7 @@ class GithubService
   def generate_til_content(diary)
     # CLAUDE.mdルール準拠: TIL候補から選択されたものを使用
     selected_til = diary.til_candidates.find_by(index: diary.selected_til_index)
-    til_content = selected_til&.content || diary.til_text || ""
+    til_content = selected_til&.content || diary.til_text || diary.notes || "今日も学習に取り組みました。"
     
     # CLAUDE.mdの指示に従い、日付などの基本情報を含める
     <<~MARKDOWN
