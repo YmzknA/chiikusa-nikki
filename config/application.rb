@@ -11,6 +11,13 @@ module Myapp
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.2
 
+    # Configure Active Record encryption using Rails credentials
+    if Rails.application.credentials.active_record_encryption.present?
+      config.active_record.encryption.primary_key = Rails.application.credentials.active_record_encryption.primary_key
+      config.active_record.encryption.deterministic_key = Rails.application.credentials.active_record_encryption.deterministic_key
+      config.active_record.encryption.key_derivation_salt = Rails.application.credentials.active_record_encryption.key_derivation_salt
+    end
+
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
