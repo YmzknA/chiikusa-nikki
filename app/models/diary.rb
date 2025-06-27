@@ -10,7 +10,7 @@ class Diary < ApplicationRecord
   end
 
   def can_upload_to_github?
-    !github_uploaded? && user.github_repo_name.present? && selected_til_index.present?
+    !github_uploaded? && user.github_repo_name.present? && (selected_til_index.present? || notes.present?)
   end
 
   def selected_til_content
