@@ -21,7 +21,7 @@ class User < ApplicationRecord
     user.password = Devise.friendly_token[0, 20] if user.new_record?
 
     user.save!
-    token_status = user.access_token.present? ? 'Present' : 'Missing'
+    token_status = user.access_token.present? ? "Present" : "Missing"
     Rails.logger.info "OAuth user updated: #{user.username} (#{user.email}) - Token: #{token_status}"
     user
   end

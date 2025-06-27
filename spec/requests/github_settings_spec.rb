@@ -115,7 +115,8 @@ RSpec.describe "GithubSettings", type: :request do
     before do
       # Remove authentication stubs
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(nil)
-      allow_any_instance_of(ApplicationController).to receive(:authenticate_user!).and_raise(ActionController::RoutingError.new("Not Found"))
+      allow_any_instance_of(ApplicationController).to receive(:authenticate_user!)
+        .and_raise(ActionController::RoutingError.new("Not Found"))
     end
 
     it "raises routing error for GET" do
@@ -123,7 +124,9 @@ RSpec.describe "GithubSettings", type: :request do
     end
 
     it "raises routing error for PATCH" do
-      expect { patch "/github_settings", params: { github_repo_name: "test" } }.to raise_error(ActionController::RoutingError)
+      expect do
+        patch "/github_settings", params: { github_repo_name: "test" }
+      end.to raise_error(ActionController::RoutingError)
     end
 
     it "raises routing error for DELETE" do

@@ -30,7 +30,7 @@
 
     <div class="neuro-card p-6">
       <%= month_calendar(events: @diaries, attribute: :date, class: "table table-auto w-full") do |date, diaries| %>
-        <div class="neuro-calendar-cell p-3 min-h-[60px] relative m-1">
+        <div class="neuro-calendar-cell py-3 px-2 min-h-[60px] relative">
           <div class="text-xs text-base-content/60 mb-1"><%= date.day %></div>
 
           <% if diaries.any? %>
@@ -43,10 +43,11 @@
             <% end %>
           <% else %>
             <%= link_to new_diary_path(date: date) do %>
-              <div class="w-full h-full flex items-center justify-center text-base-content/30 hover:scale-110 transition-all duration-200">
-                <span class="material-symbols-outlined" style="font-size: 2rem; vertical-align: middle;">
-                  add
-                </span>
+              <div class="w-full h-full flex items-center justify-center hover:scale-110 transition-all duration-200">
+                <div class="mask mask-hexagon-2 size-4 md:size-8 flex items-center justify-center"> 
+                  <div class="size-full bg-base-300">
+                  </div>
+                </div>
               </div>
             <% end %>
           <% end %>
