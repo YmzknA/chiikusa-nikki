@@ -40,12 +40,6 @@ module GithubFileOperations
   def handle_file_unauthorized_error(error)
     Rails.logger.error "GitHub API Unauthorized: #{error.message}"
 
-    # Clear invalid token and related data
-    if @user
-      @user.reset_github_access
-      Rails.logger.info "Cleared invalid GitHub token for user #{@user.id}"
-    end
-
     {
       success: false,
       message: "GitHub認証が期限切れです。再度ログインしてください。",

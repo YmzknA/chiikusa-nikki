@@ -9,7 +9,7 @@ module GithubErrorHandler
   def handle_unauthorized_error(error)
     Rails.logger.error "GitHub API Unauthorized: #{error.message}"
 
-    # Clear invalid token and related data
+    # Clear invalid token
     if @user
       @user.reset_github_access
       Rails.logger.info "Cleared invalid GitHub token for user #{@user.id}"

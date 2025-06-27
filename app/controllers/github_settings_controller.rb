@@ -39,12 +39,10 @@ class GithubSettingsController < ApplicationController
 
     repo_exists = current_user.verify_github_repository?
 
-    # リポジトリが存在しない場合、すべての日記のアップロード状態をリセット
     unless repo_exists
       log_message = "Repository #{current_user.github_repo_name} not found for user #{current_user.id}. " \
                     "Resetting upload status."
       Rails.logger.info log_message
-      current_user.github_service.reset_all_diaries_upload_status
       flash.now[:alert] = "設定されたGitHubリポジトリが見つかりません。リポジトリが削除された可能性があります。すべての日記のアップロード状態をリセットしました。"
     end
 

@@ -135,7 +135,6 @@ class DiariesController < ApplicationController
     log_message = "Repository #{current_user.github_repo_name} not found for user #{current_user.id}. " \
                   "Resetting upload status."
     Rails.logger.info log_message
-    current_user.github_service.reset_all_diaries_upload_status
     flash.now[:alert] = "設定されたGitHubリポジトリが見つかりません。GitHub設定を確認してください。"
   end
 end

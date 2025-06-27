@@ -92,6 +92,5 @@ class User < ApplicationRecord
     self.encrypted_access_token = nil
     self.github_repo_name = nil
     save!
-    github_service.reset_all_diaries_upload_status
   end
 end
