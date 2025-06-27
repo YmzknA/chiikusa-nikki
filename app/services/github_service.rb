@@ -311,13 +311,13 @@ class GithubService
       question_label = diary_answer.question&.label
       answer_emoji = diary_answer.answer&.emoji
       answer_label = diary_answer.answer&.label
-      answer_value = diary_answer.answer&.value
+      answer_level = diary_answer.answer&.level
       next unless question_label && answer_emoji
       
-      # 詳細な説明を含む形式で記載 (value: label)
+      # 詳細な説明を含む形式で記載 (level: label)
       detail_text = ""
-      if answer_value.present? && answer_label.present?
-        detail_text = " (#{answer_value}: #{answer_label})"
+      if answer_level.present? && answer_label.present?
+        detail_text = " (#{answer_level}: #{answer_label})"
       elsif answer_label.present?
         detail_text = " (#{answer_label})"
       end
