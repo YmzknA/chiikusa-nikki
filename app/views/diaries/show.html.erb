@@ -35,6 +35,23 @@
             Today I Learned
           </h2>
           <p class="text-lg leading-relaxed text-base-content"><%= @diary.til_text %></p>
+          
+          <% if @diary&.notes.present? %>
+            <div class="mt-6">
+              <div class="collapse collapse-arrow bg-base-200 border border-base-300">
+                <input type="checkbox" />
+                <div class="collapse-title text-xl font-bold text-secondary flex items-center gap-2">
+                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                  </svg>
+                  学習メモ
+                </div>
+                <div class="collapse-content">
+                  <div class="whitespace-pre-line text-base leading-relaxed text-base-content pt-2"><%= @diary.notes %></div>
+                </div>
+              </div>
+            </div>
+          <% end %>
         <% elsif @diary&.notes.present? %>
           <h2 class="flex items-center gap-2 text-2xl font-bold text-secondary mb-4">
             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
