@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_06_27_065311) do
+ActiveRecord::Schema[7.2].define(version: 2025_06_27_202536) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -38,7 +38,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_06_27_065311) do
     t.text "notes"
     t.text "til_text"
     t.integer "selected_til_index"
-    t.boolean "is_public"
+    t.boolean "is_public", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "github_uploaded", default: false, null: false
@@ -48,6 +48,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_06_27_065311) do
     t.string "github_repository_url"
     t.index ["github_uploaded"], name: "index_diaries_on_github_uploaded"
     t.index ["github_uploaded_at"], name: "index_diaries_on_github_uploaded_at"
+    t.index ["is_public", "date"], name: "index_diaries_on_is_public_and_date"
+    t.index ["is_public"], name: "index_diaries_on_is_public"
     t.index ["user_id", "date"], name: "index_diaries_on_user_id_and_date", unique: true
     t.index ["user_id", "github_uploaded"], name: "index_diaries_on_user_id_and_github_uploaded"
     t.index ["user_id"], name: "index_diaries_on_user_id"
