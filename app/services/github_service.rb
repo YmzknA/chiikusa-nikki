@@ -322,7 +322,7 @@ class GithubService
         detail_text = " (#{answer_label})"
       end
       
-      summary_parts << "#{question_label}: #{answer_emoji}#{detail_text}"
+      summary_parts << "#{question_label}: #{answer_emoji}#{detail_text}\n"
     end
     
     summary_parts.join("\n")
