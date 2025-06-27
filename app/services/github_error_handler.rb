@@ -1,4 +1,6 @@
 module GithubErrorHandler
+  include GithubRateLimitHandler
+  include GithubRepositoryValidator
   def handle_repository_exists_error(repo_name)
     Rails.logger.warn "Repository creation failed - already exists: #{repo_name}"
     { success: false, message: "リポジトリ名「#{repo_name}」は既に存在します" }
@@ -37,80 +39,6 @@ module GithubErrorHandler
   def handle_unexpected_error(error)
     Rails.logger.error "Unexpected error during repository creation: #{error.class} - #{error.message}"
     { success: false, message: "予期しないエラーが発生しました" }
-  end
-
-  def handle_rate_limit_error(error)
-    reset_time = extract_rate_limit_reset_time(error)
-    wait_time = calculate_wait_time(reset_time)
-
-    Rails.logger.warn "GitHub API rate limit exceeded. Reset at: #{reset_time}"
-
-    {
-      success: false,
-      message: "GitHub API制限に達しました。#{format_wait_time(wait_time)}後に再試行してください。",
-      retry_after: wait_time,
-      rate_limited: true
-    }
-  end
-
-  private
-
-  def extract_rate_limit_reset_time(error)
-    return nil unless error.respond_to?(:response_headers)
-
-    reset_header = error.response_headers["X-RateLimit-Reset"] ||
-                   error.response_headers["x-ratelimit-reset"]
-    return nil unless reset_header
-
-    Time.at(reset_header.to_i)
-  rescue StandardError
-    nil
-  end
-
-  def calculate_wait_time(reset_time)
-    return 60 unless reset_time # Default 1 minute if no reset time
-
-    wait_seconds = (reset_time - Time.current).to_i
-    [wait_seconds, 0].max
-  end
-
-  def format_wait_time(seconds)
-    if seconds < 60
-      "#{seconds}秒"
-    elsif seconds < 3600
-      minutes = (seconds / 60).round
-      "約#{minutes}分"
-    else
-      hours = (seconds / 3600).round
-      "約#{hours}時間"
-    end
-  end
-
-  def valid_repository_name?(repo_name)
-    return false if basic_name_invalid?(repo_name)
-    return false if contains_invalid_patterns?(repo_name)
-    return false if reserved_name?(repo_name)
-
-    true
-  end
-
-  def basic_name_invalid?(repo_name)
-    repo_name.blank? || repo_name.length > 100
-  end
-
-  def contains_invalid_patterns?(repo_name)
-    repo_name.start_with?(".", "-") ||
-      repo_name.end_with?(".", "-") ||
-      !repo_name.match?(/\A[a-zA-Z0-9._-]+\z/) ||
-      repo_name.include?("..")
-  end
-
-  def reserved_name?(repo_name)
-    reserved_names = %w[con prn aux nul com1 com2 com3 com4 com5 com6 com7 com8 com9
-                        lpt1 lpt2 lpt3 lpt4 lpt5 lpt6 lpt7 lpt8 lpt9]
-    problematic_names = %w[. .. git HEAD]
-
-    reserved_names.include?(repo_name.downcase) || problematic_names.include?(repo_name)
   end
 
   def log_detailed_error(error)

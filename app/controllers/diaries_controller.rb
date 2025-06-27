@@ -30,8 +30,9 @@ class DiariesController < ApplicationController
   def create
     @diary = current_user.diaries.build(diary_params)
     if @diary.save
-      create_diary_answers
-      handle_til_generation_and_redirect
+      diary_service.create_diary_answers(diary_answer_params)
+      result = diary_service.handle_til_generation_and_redirect
+      redirect_to result[:redirect_to], notice: result[:notice]
     else
       handle_creation_error
     end
@@ -39,8 +40,10 @@ class DiariesController < ApplicationController
 
   def update
     if @diary.update(diary_update_params)
-      update_diary_answers
-      regenerate_til_candidates_if_needed
+      diary_service.update_diary_answers(diary_answer_params)
+      notes_changed = @diary.previous_changes.key?("notes")
+      til_text_changed = @diary.previous_changes.key?("til_text")
+      diary_service.regenerate_til_candidates_if_needed(notes_changed, til_text_changed)
       redirect_to diary_path(@diary), notice: "日記を更新しました"
     else
       handle_update_error
@@ -80,6 +83,10 @@ class DiariesController < ApplicationController
     @diary = current_user.diaries.find(params[:id])
   end
 
+  def diary_service
+    @diary_service ||= DiaryService.new(@diary)
+  end
+
   def diary_params
     params.require(:diary).permit(:date, :notes, :is_public)
   end
@@ -103,80 +110,20 @@ class DiariesController < ApplicationController
     end
   end
 
-  def create_diary_answers
-    return unless params[:diary_answers].present?
-
-    diary_answer_params.each do |question_identifier, answer_id|
-      question = Question.find_by(identifier: question_identifier)
-      @diary.diary_answers.create(question: question, answer_id: answer_id) if question && answer_id.present?
-    end
-  end
-
-  def handle_til_generation_and_redirect
-    if @diary.notes.present?
-      generate_til_candidates_and_redirect
-    else
-      redirect_to diary_path(@diary), notice: "日記を作成しました"
-    end
-  end
-
-  def generate_til_candidates_and_redirect
-    openai_service = OpenaiService.new
-    til_candidates = openai_service.generate_tils(@diary.notes)
-
-    til_candidates.each_with_index do |content, index|
-      @diary.til_candidates.create(content: content, index: index)
-    end
-
-    redirect_to edit_diary_path(@diary), notice: "日記を作成しました。続いて生成されたTILを選択してください。"
-  rescue StandardError => e
-    Rails.logger.info("Error generating TIL candidates: #{e.message}")
-    redirect_to diaries_path, notice: "日記を作成しました（TIL生成でエラーが発生しました）"
-  end
-
   def handle_creation_error
-    @questions = Question.all
-    @selected_answers = params[:diary_answers] || {}
-    @date = @diary.date || params[:diary][:date] || Date.current
-    @existing_diary = current_user.diaries.find_by(date: @date)
-
-    handle_date_duplication_error if @diary.errors[:date].any? && @existing_diary
-
+    error_data = diary_service.handle_creation_error(Question.all, params, current_user)
+    @questions = error_data[:questions]
+    @selected_answers = error_data[:selected_answers]
+    @date = error_data[:date]
+    @existing_diary_for_error = error_data[:existing_diary_for_error]
+    flash.now[:alert] = error_data[:flash_message] if error_data[:flash_message]
     render :new
   end
 
-  def handle_date_duplication_error
-    flash.now[:alert] = "#{@diary.date.strftime('%Y年%m月%d日')}の日記は既に作成されています。同じ日に複数の日記は作成できません。"
-    @existing_diary_for_error = @existing_diary
-  end
-
-  def update_diary_answers
-    return unless params[:diary_answers].present?
-
-    @diary.diary_answers.destroy_all
-    diary_answer_params.each do |question_identifier, answer_id|
-      question = Question.find_by(identifier: question_identifier)
-      @diary.diary_answers.create(question: question, answer_id: answer_id) if question && answer_id.present?
-    end
-  end
-
-  def regenerate_til_candidates_if_needed
-    notes_changed = @diary.notes_changed?
-    return unless @diary.notes.present? && notes_changed
-
-    @diary.til_candidates.destroy_all
-    client = OpenaiService.new
-    til_candidates = client.generate_tils(@diary.notes)
-    til_candidates.each_with_index do |content, index|
-      @diary.til_candidates.create(content: content, index: index)
-    end
-  rescue StandardError => e
-    Rails.logger.error("Error regenerating TIL candidates: #{e.message}")
-  end
-
   def handle_update_error
-    @questions = Question.all
-    @selected_answers = params[:diary_answers] || {}
+    error_data = diary_service.handle_update_error(Question.all)
+    @questions = error_data[:questions]
+    @selected_answers = error_data[:selected_answers]
     render :edit
   end
 
