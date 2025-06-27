@@ -27,7 +27,7 @@ class DiaryService
     if @diary.notes.present?
       generate_til_candidates_and_redirect
     else
-      { redirect_to: [:diary, @diary], notice: "日記を作成しました" }
+      { redirect_to: @diary, notice: "日記を作成しました" }
     end
   end
 
@@ -42,7 +42,7 @@ class DiaryService
     { redirect_to: [:edit, @diary], notice: "日記を作成しました。続いて生成されたTIL を選択してください。" }
   rescue StandardError => e
     Rails.logger.info("Error generating TIL candidates: #{e.message}")
-    { redirect_to: :diaries, notice: "日記を作成しました（TIL生成でエラーが発生しました）" }
+    { redirect_to: @diary, notice: "日記を作成しました（TIL生成でエラーが発生しました）" }
   end
 
   def regenerate_til_candidates_if_needed(notes_changed, til_text_changed)
