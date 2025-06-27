@@ -5,14 +5,28 @@ class User < ApplicationRecord
   has_many :diaries, dependent: :destroy
   validates :github_id, presence: true, uniqueness: true
 
+  # Encrypt GitHub access tokens for security
+  encrypts :encrypted_access_token, deterministic: false
+
   def self.from_omniauth(auth)
-    where(email: auth.info.email).first_or_create do |user|
-      user.email = auth.info.email
-      user.password = Devise.friendly_token[0, 20]
-      user.github_id = auth.uid
-      user.username = auth.info.nickname
-      user.access_token = auth.credentials.token
-    end
+    # 既存ユーザーを探すか新規作成
+    user = where(email: auth.info.email).first_or_initialize
+
+    # 既存ユーザーでも新しい認証情報で更新
+    user.assign_attributes(
+      email: auth.info.email,
+      github_id: auth.uid,
+      username: auth.info.nickname,
+      encrypted_access_token: auth.credentials.token
+    )
+
+    # 新規ユーザーの場合のみパスワード設定
+    user.password = Devise.friendly_token[0, 20] if user.new_record?
+
+    user.save!
+    token_status = user.encrypted_access_token.present? ? "Present" : "Missing"
+    Rails.logger.info "OAuth user updated: #{user.username} (#{user.email}) - Token: #{token_status}"
+    user
   end
 
   def email_required?
@@ -26,5 +40,57 @@ class User < ApplicationRecord
   def random_email
     key = SecureRandom.uuid
     "#{key}@email.com"
+  end
+
+  def github_repo_configured?
+    github_repo_name.present?
+  end
+
+  # Accessor method for encrypted access token
+  def access_token
+    return nil if encrypted_access_token.blank?
+
+    begin
+      encrypted_access_token
+    rescue ActiveRecord::Encryption::Errors::Decryption => e
+      Rails.logger.warn "Failed to decrypt access token for user #{id}: #{e.message}"
+      # Clear invalid encrypted token
+      update_column(:encrypted_access_token, nil)
+      nil
+    end
+  end
+
+  def access_token=(token)
+    self.encrypted_access_token = token
+  end
+
+  def github_service
+    @github_service ||= GithubService.new(self)
+  end
+
+  def setup_github_repository(repo_name)
+    return { success: false, message: "リポジトリ名を入力してください" } if repo_name.blank?
+
+    result = github_service.create_repository(repo_name)
+    update!(github_repo_name: repo_name) if result[:success]
+    result
+  end
+
+  def verify_github_repository?
+    return false unless github_repo_configured?
+
+    github_service.repository_exists?(github_repo_name)
+  end
+
+  def reset_github_repository
+    self.github_repo_name = nil
+    save!
+    github_service.reset_all_diaries_upload_status
+  end
+
+  def reset_github_access
+    self.encrypted_access_token = nil
+    self.github_repo_name = nil
+    save!
   end
 end

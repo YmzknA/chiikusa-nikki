@@ -173,6 +173,7 @@ label:has(input[type="radio"]:checked) {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  margin-top: 1rem;
   padding: 0 1rem;
 }
 

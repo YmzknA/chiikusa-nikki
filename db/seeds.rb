@@ -15,25 +15,25 @@ questions = [
 
 answers = {
   mood: [
-    { level: 1, label: "", emoji: "😞" },
-    { level: 2, label: "", emoji: "😐" },
-    { level: 3, label: "", emoji: "🙂" },
-    { level: 4, label: "", emoji: "😄" },
-    { level: 5, label: "", emoji: "😁" }
+    { level: 1, label: "落ち込んでいる", emoji: "😞" },
+    { level: 2, label: "少し落ち込み気味", emoji: "😐" },
+    { level: 3, label: "普通", emoji: "🙂" },
+    { level: 4, label: "気分が良い", emoji: "😄" },
+    { level: 5, label: "とても気分が良い", emoji: "😁" }
   ],
   motivation: [
-    { level: 1, label: "", emoji: "🧊" },
-    { level: 2, label: "", emoji: "❄️" },
-    { level: 3, label: "", emoji: "💧" },
-    { level: 4, label: "", emoji: "🌡️" },
-    { level: 5, label: "", emoji: "🔥" }
+    { level: 1, label: "やる気が全くない", emoji: "🧊" },
+    { level: 2, label: "やる気が低い", emoji: "❄️" },
+    { level: 3, label: "普通", emoji: "💧" },
+    { level: 4, label: "やる気がある", emoji: "🌡️" },
+    { level: 5, label: "とてもやる気がある", emoji: "🔥" }
   ],
   progress: [
-    { level: 1, label: "", emoji: "🪹" },
-    { level: 2, label: "", emoji: "🌰" },
-    { level: 3, label: "", emoji: "🌱" },
-    { level: 4, label: "", emoji: "🌿" },
-    { level: 5, label: "", emoji: "🌳" }
+    { level: 1, label: "全く進まなかった", emoji: "🪹" },
+    { level: 2, label: "あまり進まなかった", emoji: "🌰" },
+    { level: 3, label: "普通に進んだ", emoji: "🌱" },
+    { level: 4, label: "よく進んだ", emoji: "🌿" },
+    { level: 5, label: "とてもよく進んだ", emoji: "🌳" }
   ]
 }
 
