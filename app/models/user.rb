@@ -27,4 +27,33 @@ class User < ApplicationRecord
     key = SecureRandom.uuid
     "#{key}@email.com"
   end
+
+  def github_repo_configured?
+    github_repo_name.present?
+  end
+
+  def github_service
+    @github_service ||= GithubService.new(self)
+  end
+
+  def setup_github_repository(repo_name)
+    return { success: false, message: "リポジトリ名を入力してください" } if repo_name.blank?
+
+    result = github_service.create_repository(repo_name)
+    if result[:success]
+      update!(github_repo_name: repo_name)
+    end
+    result
+  end
+
+  def verify_github_repository
+    return false unless github_repo_configured?
+    github_service.repository_exists?(github_repo_name)
+  end
+
+  def reset_github_repository
+    self.github_repo_name = nil
+    save!
+    github_service.reset_all_diaries_upload_status
+  end
 end
