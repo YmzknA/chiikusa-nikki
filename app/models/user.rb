@@ -7,6 +7,7 @@ class User < ApplicationRecord
 
   # OAuth認証に必要な検証（少なくとも一つのプロバイダーIDが必要）
   validate :at_least_one_provider_id
+  validate :providers_consistency
   validates :github_id, uniqueness: true, allow_nil: true
   validates :google_id, uniqueness: true, allow_nil: true
 
@@ -264,6 +265,42 @@ class User < ApplicationRecord
     return if github_id.present? || google_id.present?
 
     errors.add(:base, "少なくとも一つの認証プロバイダーが必要です")
+  end
+
+  def providers_consistency
+    providers_array = providers || []
+    validate_github_provider_consistency(providers_array)
+    validate_google_provider_consistency(providers_array)
+  end
+
+  def validate_github_provider_consistency(providers_array)
+    return unless github_inconsistent?(providers_array)
+
+    if github_id.present?
+      errors.add(:providers, "GitHub IDが存在しますが、プロバイダーリストに含まれていません")
+    else
+      errors.add(:providers, "プロバイダーリストにGitHubが含まれていますが、GitHub IDが設定されていません")
+    end
+  end
+
+  def validate_google_provider_consistency(providers_array)
+    return unless google_inconsistent?(providers_array)
+
+    if google_id.present?
+      errors.add(:providers, "Google IDが存在しますが、プロバイダーリストに含まれていません")
+    else
+      errors.add(:providers, "プロバイダーリストにGoogleが含まれていますが、Google IDが設定されていません")
+    end
+  end
+
+  def github_inconsistent?(providers_array)
+    (github_id.present? && !providers_array.include?("github")) ||
+      (github_id.blank? && providers_array.include?("github"))
+  end
+
+  def google_inconsistent?(providers_array)
+    (google_id.present? && !providers_array.include?("google_oauth2")) ||
+      (google_id.blank? && providers_array.include?("google_oauth2"))
   end
 end
 # rubocop:enable Metrics/ClassLength
