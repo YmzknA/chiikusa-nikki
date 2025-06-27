@@ -65,6 +65,10 @@ class DiariesController < ApplicationController
 
     if result[:success]
       redirect_to diary_path(@diary), notice: result[:message]
+    elsif result[:requires_reauth]
+      redirect_to "/users/auth/github", alert: result[:message]
+    elsif result[:rate_limited]
+      redirect_to diary_path(@diary), alert: result[:message]
     else
       redirect_to diary_path(@diary), alert: result[:message]
     end

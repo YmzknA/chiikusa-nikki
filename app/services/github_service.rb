@@ -82,12 +82,23 @@ class GithubService
 
     if result[:success]
       # CLAUDE.mdルール準拠: アップロード後に記録カラムに保存
-      diary.update!(github_uploaded: true)
+      file_url = "https://github.com/#{repo_full_name}/blob/main/#{file_path}"
+      audit_data = {
+        github_uploaded: true,
+        github_uploaded_at: Time.current,
+        github_file_path: file_path,
+        github_repository_url: "https://github.com/#{repo_full_name}"
+      }
+
+      # Add commit SHA if available in result
+      audit_data[:github_commit_sha] = result[:commit_sha] if result[:commit_sha]
+
+      diary.update!(audit_data)
       Rails.logger.info "TIL uploaded successfully: #{repo_full_name}/#{file_path}"
       {
         success: true,
         message: "TILをGitHubにアップロードしました",
-        file_url: "https://github.com/#{repo_full_name}/blob/main/#{file_path}"
+        file_url: file_url
       }
     else
       Rails.logger.error "TIL upload failed: #{result[:message]}"
@@ -117,8 +128,14 @@ class GithubService
   def reset_all_diaries_upload_status
     # CLAUDE.mdルール準拠: リポジトリが無くなった場合は全ての日記のGitHubアップロード記録をfalseにする
     affected_count = @user.diaries.where(github_uploaded: true).count
-    @user.diaries.update_all(github_uploaded: false)
-    Rails.logger.info "Reset upload status for #{affected_count} diaries for user #{@user.id}"
+    @user.diaries.update_all(
+      github_uploaded: false,
+      github_uploaded_at: nil,
+      github_file_path: nil,
+      github_commit_sha: nil,
+      github_repository_url: nil
+    )
+    Rails.logger.info "Reset upload status and audit data for #{affected_count} diaries for user #{@user.id}"
   end
 
   def get_repository_info(repo_name)

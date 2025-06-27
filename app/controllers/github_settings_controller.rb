@@ -19,6 +19,8 @@ class GithubSettingsController < ApplicationController
 
     if result[:success]
       redirect_to github_settings_path, notice: result[:message]
+    elsif result[:requires_reauth]
+      redirect_to "/users/auth/github", alert: result[:message]
     else
       redirect_to github_settings_path, alert: result[:message]
     end

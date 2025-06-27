@@ -5,6 +5,9 @@ class User < ApplicationRecord
   has_many :diaries, dependent: :destroy
   validates :github_id, presence: true, uniqueness: true
 
+  # Encrypt GitHub access tokens for security
+  encrypts :encrypted_access_token, deterministic: false
+
   def self.from_omniauth(auth)
     # 既存ユーザーを探すか新規作成
     user = where(email: auth.info.email).first_or_initialize
@@ -14,14 +17,14 @@ class User < ApplicationRecord
       email: auth.info.email,
       github_id: auth.uid,
       username: auth.info.nickname,
-      access_token: auth.credentials.token
+      encrypted_access_token: auth.credentials.token
     )
 
     # 新規ユーザーの場合のみパスワード設定
     user.password = Devise.friendly_token[0, 20] if user.new_record?
 
     user.save!
-    token_status = user.access_token.present? ? "Present" : "Missing"
+    token_status = user.encrypted_access_token.present? ? "Present" : "Missing"
     Rails.logger.info "OAuth user updated: #{user.username} (#{user.email}) - Token: #{token_status}"
     user
   end
@@ -43,6 +46,15 @@ class User < ApplicationRecord
     github_repo_name.present?
   end
 
+  # Accessor method for encrypted access token
+  def access_token
+    encrypted_access_token
+  end
+
+  def access_token=(token)
+    self.encrypted_access_token = token
+  end
+
   def github_service
     @github_service ||= GithubService.new(self)
   end
@@ -62,6 +74,13 @@ class User < ApplicationRecord
   end
 
   def reset_github_repository
+    self.github_repo_name = nil
+    save!
+    github_service.reset_all_diaries_upload_status
+  end
+
+  def reset_github_access
+    self.encrypted_access_token = nil
     self.github_repo_name = nil
     save!
     github_service.reset_all_diaries_upload_status

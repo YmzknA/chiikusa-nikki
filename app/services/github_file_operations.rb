@@ -39,7 +39,18 @@ module GithubFileOperations
 
   def handle_file_unauthorized_error(error)
     Rails.logger.error "GitHub API Unauthorized: #{error.message}"
-    { success: false, message: "GitHub認証に失敗しました。再度ログインしてください。" }
+
+    # Clear invalid token and related data
+    if @user
+      @user.reset_github_access
+      Rails.logger.info "Cleared invalid GitHub token for user #{@user.id}"
+    end
+
+    {
+      success: false,
+      message: "GitHub認証が期限切れです。再度ログインしてください。",
+      requires_reauth: true
+    }
   end
 
   def handle_file_forbidden_error(error)
@@ -48,9 +59,12 @@ module GithubFileOperations
   end
 
   def handle_file_api_error(error)
+    # Handle rate limiting specifically for file operations
+    return handle_rate_limit_error(error) if error.is_a?(Octokit::TooManyRequests)
+
     Rails.logger.error "GitHub API Error during file operation: #{error.class} - #{error.message}"
     log_detailed_error(error)
-    { success: false, message: "ファイル操作に失敗しました: #{error.message}" }
+    { success: false, message: "ファイル操作に失敗しました。しばらく時間をおいて再試行してください。" }
   end
 
   def handle_file_unexpected_error(error)
