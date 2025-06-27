@@ -60,7 +60,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       redirect_to profile_path, notice: "#{provider_name}アカウントを連携しました。"
     else
       log_oauth_attempt(auth.provider, auth.info.email, false)
-      error_msg = @user.errors.full_messages.join(', ')
+      error_msg = @user.errors.full_messages.join(", ")
       redirect_to profile_path, alert: "#{provider_name}アカウントの連携に失敗しました。#{error_msg}"
     end
   end
@@ -75,7 +75,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       set_flash_message(:notice, :success, kind: provider_name) if is_navigational_format?
     else
       log_oauth_attempt(auth.provider, auth.info.email, false)
-      error_msg = @user.errors.full_messages.join(', ')
+      error_msg = @user.errors.full_messages.join(", ")
       session["devise.#{params[:provider]}_data"] = auth.except(:extra)
       flash[:alert] = "#{provider_name}での認証に失敗しました。#{error_msg}"
       redirect_to root_path

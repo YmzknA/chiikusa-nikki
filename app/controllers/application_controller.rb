@@ -47,7 +47,7 @@ class ApplicationController < ActionController::Base
     # ログイン中の場合の追加チェック
     return true unless user_signed_in?
 
-    validate_provider_connection(auth.provider)
+    validate_provider_connection?(auth.provider)
   end
 
   def basic_oauth_valid?(auth)
@@ -61,25 +61,25 @@ class ApplicationController < ActionController::Base
     email.match?(/\A[^@\s]+@[^@\s]+\z/)
   end
 
-  def validate_provider_connection(provider)
+  def validate_provider_connection?(provider)
     case provider
     when "github"
-      validate_github_connection
+      validate_github_connection?
     when "google_oauth2"
-      validate_google_connection
+      validate_google_connection?
     else
       true
     end
   end
 
-  def validate_github_connection
+  def validate_github_connection?
     return true unless current_user.github_connected?
 
     Rails.logger.warn "User #{current_user.id} attempted to link GitHub but already connected"
     false
   end
 
-  def validate_google_connection
+  def validate_google_connection?
     return true unless current_user.google_connected?
 
     Rails.logger.warn "User #{current_user.id} attempted to link Google but already connected"
