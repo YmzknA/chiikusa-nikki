@@ -5,6 +5,9 @@ class Diary < ApplicationRecord
 
   validates :date, presence: true, uniqueness: { scope: :user_id, message: "の日記は既に作成されています" }
 
+  scope :public_diaries, -> { where(is_public: true) }
+  scope :private_diaries, -> { where(is_public: false) }
+
   def github_uploaded?
     github_uploaded == true
   end
