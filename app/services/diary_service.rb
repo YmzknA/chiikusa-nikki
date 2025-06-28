@@ -23,8 +23,8 @@ class DiaryService
     end
   end
 
-  def handle_til_generation_and_redirect
-    if @diary.notes.present?
+  def handle_til_generation_and_redirect(skip_ai_generation: false)
+    if @diary.notes.present? && !skip_ai_generation
       generate_til_candidates_and_redirect
     else
       { redirect_to: @diary, notice: "日記を作成しました" }
@@ -32,6 +32,10 @@ class DiaryService
   end
 
   def generate_til_candidates_and_redirect
+    return { redirect_to: @diary, notice: "日記を作成しました（種が不足しているためTILは生成されませんでした）" } if @user.seed_count <= 0
+
+    @user.decrement!(:seed_count)
+
     openai_service = OpenaiService.new
     til_candidates = openai_service.generate_tils(@diary.notes)
 
@@ -45,9 +49,15 @@ class DiaryService
     { redirect_to: @diary, notice: "日記を作成しました（TIL生成でエラーが発生しました）" }
   end
 
-  def regenerate_til_candidates_if_needed(notes_changed, til_text_changed)
-    return unless notes_changed || til_text_changed
+  def regenerate_til_candidates_if_needed
     return if @diary.notes.blank?
+
+    if @user.seed_count <= 0
+      Rails.logger.info("Seed count is zero, skipping TIL regeneration.")
+      return
+    end
+
+    @user.decrement!(:seed_count)
 
     # Clear existing candidates and generate new ones
     @diary.til_candidates.destroy_all

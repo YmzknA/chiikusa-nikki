@@ -37,7 +37,8 @@ class DiariesController < ApplicationController
     @diary = current_user.diaries.build(diary_params)
     if @diary.save
       diary_service.create_diary_answers(diary_answer_params)
-      result = diary_service.handle_til_generation_and_redirect
+      skip_ai_generation = params[:skip_ai_generation] == "true"
+      result = diary_service.handle_til_generation_and_redirect(skip_ai_generation: skip_ai_generation)
       redirect_to result[:redirect_to], notice: result[:notice]
     else
       handle_creation_error
@@ -47,9 +48,10 @@ class DiariesController < ApplicationController
   def update
     if @diary.update(diary_update_params)
       diary_service.update_diary_answers(diary_answer_params)
-      notes_changed = @diary.previous_changes.key?("notes")
-      til_text_changed = @diary.previous_changes.key?("til_text")
-      diary_service.regenerate_til_candidates_if_needed(notes_changed, til_text_changed)
+      regenerate_ai = params[:regenerate_ai] == "1"
+
+      diary_service.regenerate_til_candidates_if_needed if regenerate_ai
+
       redirect_to diary_path(@diary), notice: "日記を更新しました"
     else
       handle_update_error
@@ -80,6 +82,56 @@ class DiariesController < ApplicationController
       redirect_to diary_path(@diary), alert: result[:message]
     else
       redirect_to diary_path(@diary), alert: result[:message]
+    end
+  end
+
+  def increment_seed
+    respond_to do |format|
+      if current_user.increment_seed_count
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.update("flash-messages", partial: "shared/flash", locals: {
+                                  flash: { notice: "種を増やしました！💧🌱" }
+                                }),
+            turbo_stream.update("seed-count", current_user.seed_count)
+          ]
+        end
+        format.html { redirect_to diaries_path, notice: "種を増やしました！" }
+      else
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.update("flash-messages", partial: "shared/flash", locals: {
+                                                     flash: { alert: "本日は既に種を増やしています。" }
+                                                   })
+        end
+        format.html { redirect_to diaries_path, alert: "本日は既に種を増やしています。" }
+      end
+    end
+  end
+
+  def share_on_x
+    @diary = current_user.diaries.find(params[:diary_id]) if params[:diary_id]
+
+    respond_to do |format|
+      if current_user.increment_seed_count_by_share
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.update("flash-messages", partial: "shared/flash", locals: {
+                                  flash: { notice: "種を増やしました！ 🌱" }
+                                }),
+            turbo_stream.update("seed-count", current_user.seed_count)
+          ]
+        end
+        format.html { redirect_to diary_path(@diary), notice: "Xで共有して種を増やしました！" }
+        format.json { render json: { success: true, seed_count: current_user.seed_count } }
+      else
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.update("flash-messages", partial: "shared/flash", locals: {
+                                                     flash: { alert: "本日は既にX共有で種を増やしています。" }
+                                                   })
+        end
+        format.html { redirect_to diary_path(@diary), alert: "本日は既にX共有で種を増やしています。" }
+        format.json { render json: { success: false, message: "本日は既にX共有で種を増やしています。" } }
+      end
     end
   end
 

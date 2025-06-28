@@ -9,6 +9,10 @@ Rails.application.routes.draw do
     member do
       post :upload_to_github
     end
+    collection do
+      post :increment_seed
+      post :share_on_x
+    end
   end
 
   # Public diary listing
