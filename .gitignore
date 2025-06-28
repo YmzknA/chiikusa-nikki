@@ -47,3 +47,6 @@
 
 # Ignore PR draft files
 pr.md
+
+GEMINI.md
+CLAUDE.md
