@@ -460,6 +460,14 @@ class StatsController < ApplicationController
           },
           legend: {
             position: "top"
+          },
+          tooltip: {
+            backgroundColor: "rgba(255, 255, 255, 0.95)",
+            titleColor: "#333",
+            bodyColor: "#666",
+            borderColor: "#ddd",
+            borderWidth: 1,
+            cornerRadius: 8
           }
         },
         scales: {
