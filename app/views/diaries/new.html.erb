@@ -69,6 +69,15 @@
           <%= form.text_area :notes, placeholder: "・今日やったことについて\n・つまずいた問題や解決方法\n・新しい発見や気づき\n   など", class: "neuro-input w-full h-32 py-4 px-4 resize-none", rows: 6 %>
         </div>
 
+        <div class="divider my-6 mx-auto"></div>
+
+        <div class="form-control">
+          <label class="flex items-center gap-3 cursor-pointer neuro-badge py-3 px-4">
+            <%= check_box_tag "use_ai_generation", "1", true, class: "checkbox checkbox-secondary bg-gray-100", id: "use_ai_generation_checkbox" %>
+            <span class="text-base-content font-semibold">AI生成を使用する（タネを1つ消費）</span>
+          </label>
+        </div>
+
         <div class="form-control">
           <label class="flex items-center gap-3 cursor-pointer neuro-badge py-3 px-4 hover:scale-99 transition-transform">
             <%= form.check_box :is_public, class: "checkbox checkbox-secondary bg-gray-100 " %>
@@ -79,7 +88,7 @@
         <div class="divider w-xl my-6 mx-auto"></div>
 
         <div class="form-control mt-8">
-          <%= form.submit "日記を作成 ✓", class: "neuro-button w-full py-4 px-6 font-bold text-lg hover:cursor-pointer", onclick: "return checkSeedCountBeforeAction(event)" %>
+          <%= form.submit "日記を作成 ✓", class: "neuro-button w-full py-4 px-6 font-bold text-lg hover:cursor-pointer", onclick: "return checkSeedCountBeforeAction(event, 'use_ai_generation_checkbox')" %>
         </div>
       <% end %>
     </div>
@@ -96,7 +105,8 @@
   <script>
     function continueDiaryCreation() {
       closeSeedShortageModal();
-      // AI生成無しでフォームを送信
+      // AI生成チェックボックスをオフにして続行
+      document.getElementById('use_ai_generation_checkbox').checked = false;
       const form = document.querySelector('form');
       const hiddenField = document.createElement('input');
       hiddenField.type = 'hidden';

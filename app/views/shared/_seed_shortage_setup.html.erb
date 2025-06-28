@@ -1,4 +1,4 @@
-<!-- 種不足モーダル -->
+<!-- タネ不足モーダル -->
 <%= render 'shared/seed_shortage_modal' %>
 
 <script>
@@ -15,7 +15,7 @@
       }
     }
     
-    // 種不足チェック
+    // タネ不足チェック
     if (hasNotes && seedCount <= 0) {
       event.preventDefault();
       showSeedShortageModal();

@@ -14,7 +14,7 @@ export default class extends Controller {
   async share(event) {
     console.log("X share clicked, diary ID:", this.diaryIdValue)
     
-    // 種獲得リクエストを並行して送信
+    // タネ獲得リクエストを並行して送信
     if (this.shareUrlValue) {
       this.requestSeedIncrement()
     }
@@ -23,7 +23,7 @@ export default class extends Controller {
     // event.preventDefault()は呼ばない
   }
 
-  // 種獲得リクエストの送信
+  // タネ獲得リクエストの送信
   async requestSeedIncrement() {
     try {
       const formData = new FormData()

@@ -32,7 +32,7 @@ class DiaryService
   end
 
   def generate_til_candidates_and_redirect
-    return { redirect_to: @diary, notice: "日記を作成しました（種が不足しているためTILは生成されませんでした）" } if @user.seed_count <= 0
+    return { redirect_to: @diary, notice: "日記を作成しました（タネが不足しているためTILは生成されませんでした）" } if @user.seed_count <= 0
 
     @user.decrement!(:seed_count)
 
