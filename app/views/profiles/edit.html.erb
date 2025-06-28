@@ -33,7 +33,14 @@
           <%= form.label :username, class: "label" do %>
             <span class="label-text font-semibold text-base-content">ユーザー名</span>
           <% end %>
-          <%= form.text_field :username, class: "input input-bordered w-full bg-base-100 border-base-content/20 focus:border-primary", placeholder: "ユーザー名を入力してください" %>
+          <%= form.text_field :username, 
+            class: "neuro-input w-full text-lg py-4 px-6 font-medium", 
+            placeholder: "あなたのお名前",
+            value: "",
+            required: true,
+            autofocus: true,
+            maxlength: 50
+          %>
           <div class="label">
             <span class="label-text-alt text-base-content/60">日記一覧や詳細画面で表示されるお名前です</span>
           </div>
@@ -70,8 +77,8 @@
         </div>
 
         <div class="form-actions flex gap-3 pt-4">
+          <%= link_to "キャンセル", profile_path, class: "neuro-error flex-1 py-3 px-6 font-medium text-center" %>
           <%= form.submit "更新する", class: "neuro-button flex-1 py-3 px-6 font-medium" %>
-          <%= link_to "キャンセル", profile_path, class: "neuro-button-secondary flex-1 py-3 px-6 font-medium text-center" %>
         </div>
       <% end %>
     </div>

@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   get "/public_diaries", to: "diaries#public_index"
   resource :profile, only: [:show, :edit, :update]
   get "/stats", to: "stats#index"
+  get "/stats/chart_data", to: "stats#chart_data"
 
   # ユーザー名設定関連
   get "/setup_username", to: "users#setup_username"
