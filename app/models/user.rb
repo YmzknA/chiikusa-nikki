@@ -266,8 +266,9 @@ class User < ApplicationRecord
     !connected_providers.include?(provider)
   end
 
+  # These methods return boolean status, but are action methods, not predicates
   # rubocop:disable Naming/PredicateMethod
-  def increment_seed_by_watering
+  def add_seed_from_watering!
     return false if last_seed_incremented_at&.today?
     return false if seed_count >= 5
 
@@ -276,7 +277,7 @@ class User < ApplicationRecord
     true
   end
 
-  def increment_seed_by_sharing
+  def add_seed_from_sharing!
     return false if last_shared_at&.today?
     return false if seed_count >= 5
 
