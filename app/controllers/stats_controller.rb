@@ -8,8 +8,6 @@ class StatsController < ApplicationController
     @monthly_posts_chart = build_monthly_posts_chart
     @learning_intensity_heatmap = build_learning_intensity_heatmap
     @habit_calendar_chart = build_habit_calendar_chart
-    @achievement_gauge_chart = build_achievement_gauge_chart
-    @mood_progress_correlation_chart = build_mood_progress_correlation_chart
     @weekday_pattern_chart = build_weekday_pattern_chart
     @distribution_chart = build_distribution_chart
 
@@ -75,6 +73,7 @@ class StatsController < ApplicationController
     chart_data = diaries.map do |diary|
       {
         date: diary.date,
+        diary_id: diary.id,
         mood: extract_answer_level(diary, :mood),
         motivation: extract_answer_level(diary, :motivation),
         progress: extract_answer_level(diary, :progress)
@@ -85,6 +84,7 @@ class StatsController < ApplicationController
     if chart_data.empty?
       chart_data = [{
         date: Date.current,
+        diary_id: nil,
         mood: nil,
         motivation: nil,
         progress: nil
@@ -95,6 +95,7 @@ class StatsController < ApplicationController
       type: "line",
       data: {
         labels: chart_data.map { |d| d[:date].strftime("%m/%d") },
+        diary_ids: chart_data.map { |d| d[:diary_id] },
         datasets: [
           {
             label: "気分 😊",
@@ -201,7 +202,17 @@ class StatsController < ApplicationController
           line: {
             spanGaps: true
           }
-        }
+        },
+        onClick: "function(event, elements) {
+          if (elements.length > 0) {
+            const datasetIndex = elements[0].datasetIndex;
+            const index = elements[0].index;
+            const diaryId = this.data.diary_ids[index];
+            if (diaryId) {
+              window.location.href = '/diaries/' + diaryId;
+            }
+          }
+        }"
       }
     }
   end
@@ -260,150 +271,6 @@ class StatsController < ApplicationController
     }
   end
 
-  def build_achievement_gauge_chart
-    # 今月の進捗レベル4-5の達成率を計算
-    current_month_start = Date.current.beginning_of_month
-    current_month_end = Date.current.end_of_month
-
-    month_diaries = current_user.diaries.where(date: current_month_start..current_month_end)
-                                .includes(diary_answers: [:question, :answer])
-
-    if month_diaries.any?
-      progress_levels = month_diaries.map { |diary| extract_answer_level(diary, :progress) }.compact
-      achievement_count = progress_levels.count { |level| level >= 4 }
-      achievement_rate = (achievement_count.to_f / progress_levels.length * 100).round(1)
-    else
-      achievement_rate = 0
-    end
-
-    {
-      type: "doughnut",
-      data: {
-        labels: %w[達成 未達成],
-        datasets: [{
-          data: [achievement_rate, 100 - achievement_rate],
-          backgroundColor: [
-            "rgba(34, 197, 94, 0.8)",
-            "rgba(229, 231, 235, 0.8)"
-          ],
-          borderColor: [
-            "rgba(34, 197, 94, 1)",
-            "rgba(156, 163, 175, 1)"
-          ],
-          borderWidth: 2,
-          cutout: "70%"
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          title: {
-            display: true,
-            text: "今月の目標達成率",
-            font: { size: 16, weight: "bold" }
-          },
-          legend: {
-            position: "bottom"
-          },
-          tooltip: {
-            callbacks: {
-              label: "function(context) { return context.label + ': ' + context.parsed + '%'; }"
-            }
-          }
-        }
-      }
-    }
-  end
-
-  def build_mood_progress_correlation_chart
-    # 過去3ヶ月のデータで相関を分析
-    diaries = current_user.diaries.where(date: 3.months.ago..Date.current)
-                          .includes(diary_answers: [:question, :answer])
-
-    scatter_data = diaries.map do |diary|
-      mood = extract_answer_level(diary, :mood)
-      progress = extract_answer_level(diary, :progress)
-
-      next unless mood && progress
-
-      {
-        x: mood,
-        y: progress,
-        date: diary.date.strftime("%m/%d")
-      }
-    end.compact
-
-    {
-      type: "scatter",
-      data: {
-        datasets: [{
-          label: "気分 × 進捗の関係",
-          data: scatter_data,
-          backgroundColor: "rgba(147, 51, 234, 0.6)",
-          borderColor: "rgba(147, 51, 234, 1)",
-          borderWidth: 2,
-          pointRadius: 6,
-          pointHoverRadius: 8
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          title: {
-            display: true,
-            text: "気分と進捗の相関関係",
-            font: { size: 16, weight: "bold" }
-          },
-          legend: {
-            position: "top"
-          },
-          tooltip: {
-            backgroundColor: "rgba(255, 255, 255, 0.95)",
-            titleColor: "#333",
-            bodyColor: "#666",
-            borderColor: "#ddd",
-            borderWidth: 1,
-            cornerRadius: 8,
-            callbacks: {
-              title: "function(context) { return context[0].raw.date + 'の記録'; }",
-              label: "function(context) { return '気分: Lv.' + context.parsed.x + ', 進捗: Lv.' + context.parsed.y; }"
-            }
-          }
-        },
-        scales: {
-          x: {
-            type: "linear",
-            position: "bottom",
-            min: 1,
-            max: 6,
-            title: {
-              display: true,
-              text: "気分レベル"
-            },
-            ticks: {
-              stepSize: 1,
-              callback: "function(value) { return value <= 5 ? value : ''; }"
-            }
-          },
-          y: {
-            min: 1,
-            max: 6,
-            title: {
-              display: true,
-              text: "進捗レベル"
-            },
-            ticks: {
-              stepSize: 1,
-              callback: "function(value) { return value <= 5 ? value : ''; }"
-            }
-          }
-        }
-      }
-    }
-  end
-
   def build_distribution_chart
     # パラメータから期間を取得（デフォルト1ヶ月）
     months_back = (params[:distribution_months]&.to_i || 1).clamp(1, 12)
@@ -427,21 +294,21 @@ class StatsController < ApplicationController
         labels: %w[レベル1 レベル2 レベル3 レベル4 レベル5],
         datasets: [
           {
-            label: "気分",
+            label: "気分 😊",
             data: mood_distribution,
             backgroundColor: "rgba(255, 99, 132, 0.6)",
             borderColor: "rgba(255, 99, 132, 1)",
             borderWidth: 1
           },
           {
-            label: "モチベーション",
+            label: "モチベーション 🔥",
             data: motivation_distribution,
             backgroundColor: "rgba(255, 165, 0, 0.6)",
             borderColor: "rgba(255, 165, 0, 1)",
             borderWidth: 1
           },
           {
-            label: "進捗",
+            label: "進捗 🌱",
             data: progress_distribution,
             backgroundColor: "rgba(34, 197, 94, 0.6)",
             borderColor: "rgba(34, 197, 94, 1)",
