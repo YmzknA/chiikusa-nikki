@@ -32,7 +32,7 @@ export default class extends Controller {
       ...this.optionsValue
     }
 
-    // 日毎推移チャートの場合、クリックイベントを追加
+    // 日毎推移チャートの場合、クリックイベントとホバーカーソルを追加
     if (this.typeValue === 'line' && this.dataValue.diary_ids) {
       customOptions.onClick = (event, elements) => {
         if (elements.length > 0) {
@@ -42,6 +42,10 @@ export default class extends Controller {
             window.location.href = `/diaries/${diaryId}`
           }
         }
+      }
+      
+      customOptions.onHover = (event, elements) => {
+        event.native.target.style.cursor = elements.length > 0 ? 'pointer' : 'default'
       }
     }
 
