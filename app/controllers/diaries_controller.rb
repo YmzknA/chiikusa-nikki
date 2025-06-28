@@ -104,7 +104,8 @@ class DiariesController < ApplicationController
         turbo_stream.update("flash-messages", partial: "shared/flash", locals: {
                               flash: { notice: seed_service.message }
                             }),
-        turbo_stream.update("seed-count", current_user.seed_count)
+        turbo_stream.update("seed-count", current_user.seed_count),
+        turbo_stream.update("watering-button", partial: "shared/watering")
       ]
     else
       render turbo_stream: turbo_stream.update("flash-messages", partial: "shared/flash", locals: {
