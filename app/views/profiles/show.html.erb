@@ -2,7 +2,7 @@
   <div class="container mx-auto max-w-2xl">
     <div class="neuro-card p-6 mb-6">
       <div class="flex items-center">
-        <%= link_to root_path, class: "neuro-button p-3 mr-4 inline-flex items-center justify-center" do %>
+        <%= link_to diaries_path, class: "neuro-button p-3 mr-4 inline-flex items-center justify-center" do %>
           <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
           </svg>
@@ -50,6 +50,56 @@
                 <div class="text-lg font-semibold text-base-content"><%= current_user.diaries.where(github_uploaded: true).count %>件</div>
               </div>
             <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI生成種管理セクション -->
+      <div class="neuro-card p-6">
+        <h3 class="text-xl font-bold text-base-content mb-4">AI生成種管理 🌱</h3>
+        <div class="grid grid-cols-1 gap-4">
+          <div class="neuro-badge p-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-sm text-base-content/60">現在の種数</div>
+                <div class="text-2xl font-bold text-base-content flex items-center gap-2">
+                  <%= image_tag "seed.png", alt: "種", class: "w-6 h-6" %>
+                  <span><%= current_user.seed_count %> / 5</span>
+                </div>
+              </div>
+              <div class="text-xs text-base-content/50">
+                上限: 5個
+              </div>
+            </div>
+          </div>
+
+          <div class="neuro-badge p-4">
+            <div class="text-sm text-base-content/60 mb-3">本日の種の増加状況</div>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span>🌱</span>
+                  <span class="text-sm">水やりボタン</span>
+                </div>
+                <% unless current_user.can_increment_seed_count? %>
+                  <span class="text-xs text-gray-500">本日獲得済み</span>
+                <% end %>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span>🐦</span>
+                  <span class="text-sm">X共有</span>
+                </div>
+                <% unless current_user.can_increment_seed_count_by_share? %>
+                  <span class="text-xs text-gray-500">本日獲得済み</span>
+                <% end %>
+              </div>
+            </div>
+            <div class="mt-3 pt-2 border-t border-base-content/10">
+              <p class="text-xs text-base-content/60">
+                制限は日本時間0時にリセットされます
+              </p>
+            </div>
           </div>
         </div>
       </div>
