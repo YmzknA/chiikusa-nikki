@@ -35,11 +35,6 @@
         <div class="border-t border-base-content/10 pt-6 mt-6">
           <div class="grid grid-cols-1 gap-4">
             <div class="neuro-badge p-4">
-              <div class="text-sm text-base-content/60">参加日</div>
-              <div class="text-lg font-semibold text-base-content"><%= current_user.created_at.strftime("%Y年%m月%d日") %></div>
-            </div>
-            
-            <div class="neuro-badge p-4">
               <div class="text-sm text-base-content/60">総日記数</div>
               <div class="text-lg font-semibold text-base-content"><%= current_user.diaries.count %>件</div>
             </div>
@@ -56,14 +51,17 @@
 
       <!-- AI生成種管理セクション -->
       <div class="neuro-card p-6">
-        <h3 class="text-xl font-bold text-base-content mb-4">AI生成種管理 🌱</h3>
+        <h3 class="text-xl font-bold text-base-content mb-4">
+          TILの種 📝
+        </h3>
+
         <div class="grid grid-cols-1 gap-4">
           <div class="neuro-badge p-4">
             <div class="flex items-center justify-between">
               <div>
                 <div class="text-sm text-base-content/60">現在の種数</div>
                 <div class="text-2xl font-bold text-base-content flex items-center gap-2">
-                  <%= image_tag "seed.png", alt: "種", class: "w-6 h-6" %>
+                  <%= image_tag "logo.png", alt: "種", class: "w-6 h-6" %>
                   <span><%= current_user.seed_count %> / 5</span>
                 </div>
               </div>
@@ -78,7 +76,7 @@
             <div class="space-y-2">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <span>🌱</span>
+                  <%= image_tag "watering_can.png", alt: "水やり", class: "w-5 h-5" %>
                   <span class="text-sm">水やりボタン</span>
                 </div>
                 <% unless current_user.can_increment_seed_count? %>
@@ -87,7 +85,9 @@
               </div>
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <span>🐦</span>
+                  <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
                   <span class="text-sm">X共有</span>
                 </div>
                 <% unless current_user.can_increment_seed_count_by_share? %>
