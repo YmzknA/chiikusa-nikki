@@ -1,0 +1,27 @@
+<!-- 種不足モーダル -->
+<%= render 'shared/seed_shortage_modal' %>
+
+<script>
+  function checkSeedCountBeforeAction(event, checkboxId = null) {
+    const seedCount = <%= current_user.seed_count %>;
+    const notesTextarea = document.querySelector('#diary_notes');
+    const hasNotes = notesTextarea && notesTextarea.value.trim().length > 0;
+    
+    // チェックボックスが指定されている場合（編集時）
+    if (checkboxId) {
+      const checkbox = document.getElementById(checkboxId);
+      if (!checkbox.checked || !hasNotes) {
+        return true; // AI生成を使わない場合は続行
+      }
+    }
+    
+    // 種不足チェック
+    if (hasNotes && seedCount <= 0) {
+      event.preventDefault();
+      showSeedShortageModal();
+      return false;
+    }
+    
+    return true;
+  }
+</script>

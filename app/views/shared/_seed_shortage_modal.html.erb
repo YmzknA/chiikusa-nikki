@@ -1,0 +1,62 @@
+<dialog id="seedShortageModal" class="modal sm:modal-middle">
+  <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    
+    <div class="text-center">
+      <div class="mb-4">
+        <%= image_tag "seed.png", alt: "種", class: "w-16 h-16 mx-auto opacity-50" %>
+      </div>
+      
+      <h3 class="text-lg font-bold text-base-content mb-4">🌱 種が不足しています</h3>
+      
+      <p class="text-base-content/70 mb-6">
+        AIによるTIL生成には種が必要です。<br>
+        以下の方法で種を増やすことができます：
+      </p>
+      
+      <div class="space-y-3 mb-6">
+        <div class="flex items-center justify-between p-3 bg-base-200 rounded-lg">
+          <div class="flex items-center gap-2">
+            <span>🌱</span>
+            <span class="text-sm">水やりボタン</span>
+          </div>
+          <% unless current_user.can_increment_seed_count? %>
+            <span class="text-xs text-base-content/60">本日獲得済み</span>
+          <% end %>
+        </div>
+        
+        <div class="flex items-center justify-between p-3 bg-base-200 rounded-lg">
+          <div class="flex items-center gap-2">
+            <span>🐦</span>
+            <span class="text-sm">X共有</span>
+          </div>
+          <% unless current_user.can_increment_seed_count_by_share? %>
+            <span class="text-xs text-base-content/60">本日獲得済み</span>
+          <% end %>
+        </div>
+      </div>
+      
+      <div class="modal-action">
+        <form method="dialog" class="flex gap-2 w-full">
+          <button class="btn btn-ghost flex-1">キャンセル</button>
+          <%= content_for(:continue_button) if content_for?(:continue_button) %>
+        </form>
+      </div>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
+
+<script>
+  function showSeedShortageModal() {
+    document.getElementById('seedShortageModal').showModal();
+  }
+  
+  function closeSeedShortageModal() {
+    document.getElementById('seedShortageModal').close();
+  }
+</script>
