@@ -31,12 +31,20 @@ class ApplicationController < ActionController::Base
   end
 
   def check_username_setup
-    return unless user_signed_in?
-    return if devise_controller?
-    return if controller_name == "users" && action_name.in?(%w[setup_username update_username])
-    return if current_user.username_configured?
+    return unless requires_username_setup?
 
     redirect_to setup_username_path
+  end
+
+  def requires_username_setup?
+    user_signed_in? &&
+      !devise_controller? &&
+      !current_user.username_configured? &&
+      !username_setup_excluded_action?
+  end
+
+  def username_setup_excluded_action?
+    controller_name == "users" && action_name.in?(%w[setup_username update_username])
   end
 
   # セキュリティヘルパーメソッド

@@ -1,14 +1,12 @@
 <%# mood_level: 1(😞) - 5(😁) %>
 <% mood_color = case mood_level
-               when 1 then "#A7F3D0"  # emerald-200
-               when 2 then "#6EE7B7"  # emerald-300
-               when 3 then "#34D399"  # emerald-400
-               when 4 then "#10B981"  # emerald-500
-               when 5 then "#059669"  # emerald-600
-               else "#34D399"         # fallback
+                when 1 then "#d5392d" # Red for very sad
+                when 2 then "#d9c300" # Yellow for neutral
+                when 3 then "#bdba8c" # Lighter green for okay
+                when 4 then "#9dcf4b" # Green for happy
+                when 5 then "#12d040" # Bright green for very happy
+                else "#bdba8c" # Default color
                end %>
 
 
-               <div class="mask mask-hexagon-2 size-4 md:size-8 flex items-center justify-center"
-                 style="background-color: <%= mood_color %>;">
-                </div>
+               <%= render "shared/leaf", color: mood_color %>

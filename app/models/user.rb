@@ -15,7 +15,8 @@ class User < ApplicationRecord
   validates :email, presence: true, format: { with: /\A[^@\s]+@[^@\s]+\z/ }
 
   # ユーザー名検証
-  validates :username, presence: true, length: { minimum: 1, maximum: 50 }
+  validates :username, presence: true, length: { minimum: 1, maximum: 50 },
+                       unless: :username_setup_pending?
 
   # パスワード検証（OAuth認証のみの場合は不要な場合もある）
   validates :password, length: { minimum: 6 }, allow_blank: true
@@ -26,6 +27,9 @@ class User < ApplicationRecord
 
   # プロバイダー管理のためのシリアライズ
   serialize :providers, type: Array, coder: JSON
+
+  # 定数定義
+  DEFAULT_USERNAME = "ユーザー名🌱".freeze
 
   def self.from_omniauth(auth, current_user = nil)
     provider = auth.provider
@@ -93,14 +97,14 @@ class User < ApplicationRecord
     when "github"
       user.assign_attributes(
         github_id: uid,
-        username: user.username.presence || "ユーザー名🌱",
+        username: user.username.presence || DEFAULT_USERNAME,
         encrypted_access_token: auth.credentials.token
       )
     when "google_oauth2"
       user.assign_attributes(
         google_id: uid,
         google_email: email,
-        username: user.username.presence || "ユーザー名🌱",
+        username: user.username.presence || DEFAULT_USERNAME,
         encrypted_google_access_token: auth.credentials.token
       )
     end
@@ -138,14 +142,14 @@ class User < ApplicationRecord
       when "github"
         attributes.merge!(
           github_id: uid,
-          username: "ユーザー名🌱",
+          username: DEFAULT_USERNAME,
           encrypted_access_token: auth.credentials.token
         )
       when "google_oauth2"
         attributes.merge!(
           google_id: uid,
           google_email: email,
-          username: "ユーザー名🌱",
+          username: DEFAULT_USERNAME,
           encrypted_google_access_token: auth.credentials.token
         )
       end
@@ -262,7 +266,8 @@ class User < ApplicationRecord
     !connected_providers.include?(provider)
   end
 
-  def increment_seed_count
+  # rubocop:disable Naming/PredicateMethod
+  def add_seed_by_watering
     return false if last_seed_incremented_at&.today?
     return false if seed_count >= 5
 
@@ -271,14 +276,15 @@ class User < ApplicationRecord
     true
   end
 
-  def increment_seed_count_by_share
+  def add_seed_by_sharing
     return false if last_shared_at&.today?
     return false if seed_count >= 5
 
     increment!(:seed_count)
-    update!(last_shared_at: Time.current)
+    update!(last_seed_incremented_at: Time.current)
     true
   end
+  # rubocop:enable Naming/PredicateMethod
 
   def can_increment_seed_count?
     !last_seed_incremented_at&.today? && seed_count < 5
@@ -289,7 +295,11 @@ class User < ApplicationRecord
   end
 
   def username_configured?
-    username.present? && username != "ユーザー名🌱"
+    username.present? && username != DEFAULT_USERNAME
+  end
+
+  def username_setup_pending?
+    username == DEFAULT_USERNAME
   end
 
   private
