@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @plugin "daisyui";
+@import "./water_effect.css";
 
 .m-plus-1p-regular {
   font-family: "M PLUS 1p", sans-serif;

@@ -1,0 +1,101 @@
+/* 水やりボタンのエフェクト */
+.water-button {
+  position: relative;
+  overflow: visible;
+}
+
+.water-splash {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.water-drop {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #00bcd4;
+  border-radius: 50%;
+  opacity: 0;
+  animation: waterSplash 0.6s ease-out forwards;
+}
+
+.water-drop:nth-child(1) { 
+  animation-delay: 0s;
+  transform: translate(-20px, -15px); 
+}
+.water-drop:nth-child(2) { 
+  animation-delay: 0.05s;
+  transform: translate(15px, -20px); 
+}
+.water-drop:nth-child(3) { 
+  animation-delay: 0.1s;
+  transform: translate(-10px, 18px); 
+}
+.water-drop:nth-child(4) { 
+  animation-delay: 0.15s;
+  transform: translate(20px, 10px); 
+}
+.water-drop:nth-child(5) { 
+  animation-delay: 0.2s;
+  transform: translate(-25px, 5px); 
+}
+.water-drop:nth-child(6) { 
+  animation-delay: 0.1s;
+  transform: translate(8px, -25px); 
+}
+
+@keyframes waterSplash {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(0.5);
+    background: #00bcd4;
+  }
+  50% {
+    opacity: 1;
+    transform: translate(var(--dx, 0), var(--dy, 0)) scale(1);
+    background: #4dd0e1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--dx, 0) * 1.5), calc(var(--dy, 0) * 1.5)) scale(0.2);
+    background: #80deea;
+  }
+}
+
+/* ボタン自体のアニメーション */
+.water-button-animate {
+  animation: buttonPulse 0.3s ease-out;
+}
+
+@keyframes buttonPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 成功時のフェードイン効果 */
+.success-flash {
+  animation: successGlow 0.8s ease-in-out;
+}
+
+@keyframes successGlow {
+  0% {
+    box-shadow: 0 0 0 rgba(16, 185, 129, 0);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
