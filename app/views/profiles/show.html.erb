@@ -16,11 +16,10 @@
       <div class="neuro-card p-6">
         <div class="flex items-center gap-4 mb-6">
           <div class="w-16 h-16 bg-primary text-primary-content rounded-full flex items-center justify-center text-xl font-bold">
-            <%= current_user.username&.first&.upcase || current_user.email&.first&.upcase %>
+            <%= current_user.username&.first&.upcase || "😊" %>
           </div>
           <div>
             <h2 class="text-2xl font-bold text-base-content"><%= current_user.username || "ユーザー" %></h2>
-            <p class="text-base-content/70"><%= current_user.email %></p>
             <% if current_user.github_repo_configured? %>
               <div class="flex items-center gap-1 mt-1">
                 <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">

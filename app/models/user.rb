@@ -14,6 +14,9 @@ class User < ApplicationRecord
   # メールアドレス検証（一意性は不要）
   validates :email, presence: true, format: { with: /\A[^@\s]+@[^@\s]+\z/ }
 
+  # ユーザー名検証
+  validates :username, presence: true, length: { minimum: 1, maximum: 50 }
+
   # パスワード検証（OAuth認証のみの場合は不要な場合もある）
   validates :password, length: { minimum: 6 }, allow_blank: true
 
@@ -90,14 +93,14 @@ class User < ApplicationRecord
     when "github"
       user.assign_attributes(
         github_id: uid,
-        username: user.username.presence || auth.info.nickname || auth.info.name,
+        username: user.username.presence || "ユーザー名🌱",
         encrypted_access_token: auth.credentials.token
       )
     when "google_oauth2"
       user.assign_attributes(
         google_id: uid,
         google_email: email,
-        username: user.username.presence || auth.info.name || auth.info.email.split("@").first,
+        username: user.username.presence || "ユーザー名🌱",
         encrypted_google_access_token: auth.credentials.token
       )
     end
@@ -124,7 +127,7 @@ class User < ApplicationRecord
       end
     end
 
-    def build_oauth_attributes(auth, user)
+    def build_oauth_attributes(auth, _user)
       provider = auth.provider
       uid = auth.uid
       email = auth.info.email
@@ -135,14 +138,14 @@ class User < ApplicationRecord
       when "github"
         attributes.merge!(
           github_id: uid,
-          username: auth.info.nickname || auth.info.name,
+          username: "ユーザー名🌱",
           encrypted_access_token: auth.credentials.token
         )
       when "google_oauth2"
         attributes.merge!(
           google_id: uid,
           google_email: email,
-          username: user.username || auth.info.name || auth.info.email.split("@").first,
+          username: "ユーザー名🌱",
           encrypted_google_access_token: auth.credentials.token
         )
       end
@@ -283,6 +286,10 @@ class User < ApplicationRecord
 
   def can_increment_seed_count_by_share?
     !last_shared_at&.today? && seed_count < 5
+  end
+
+  def username_configured?
+    username.present? && username != "ユーザー名🌱"
   end
 
   private
