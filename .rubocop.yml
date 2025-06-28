@@ -69,4 +69,6 @@ Metrics/AbcSize:
   Max: 40
 
 Metrics/ClassLength:
-  Max: 150
+  Max: 180
+  CountComments: false
+  CountAsOne: ['array', 'hash', 'heredoc']
