@@ -12,18 +12,43 @@ class StatsController < ApplicationController
     @mood_progress_correlation_chart = build_mood_progress_correlation_chart
     @weekday_pattern_chart = build_weekday_pattern_chart
     @distribution_chart = build_distribution_chart
+
+    # Turbo Frameリクエストの場合は部分テンプレートをレンダリング
+    respond_to do |format|
+      format.html do
+        if turbo_frame_request?
+          render partial: turbo_frame_partial, locals: chart_locals
+        end
+      end
+    end
   end
 
-  def chart_data
-    view_type = params[:view_type] || "recent"
-    target_month = params[:target_month] || Date.current.strftime("%Y-%m")
-
-    chart_data = build_daily_trends_chart(view_type, target_month)
-
-    render json: chart_data
-  end
 
   private
+
+  def turbo_frame_partial
+    frame_id = request.headers['Turbo-Frame']
+    case frame_id
+    when 'daily-trends-chart'
+      'stats/charts/daily_trends'
+    when 'weekday-pattern-chart'
+      'stats/charts/weekday_pattern'
+    when 'distribution-chart'
+      'stats/charts/distribution'
+    else
+      'stats/index'
+    end
+  end
+
+  def chart_locals
+    {
+      view_type: @view_type,
+      target_month: @target_month,
+      daily_trends_chart: @daily_trends_chart,
+      weekday_pattern_chart: @weekday_pattern_chart,
+      distribution_chart: @distribution_chart
+    }
+  end
 
   def build_daily_trends_chart(view_type = "recent", target_month = nil)
     # 表示期間に応じてデータ取得期間を設定
@@ -380,12 +405,21 @@ class StatsController < ApplicationController
   end
 
   def build_distribution_chart
-    all_diaries = current_user.diaries.includes(diary_answers: [:question, :answer])
+    # パラメータから期間を取得（デフォルト1ヶ月）
+    months_back = (params[:distribution_months]&.to_i || 1).clamp(1, 12)
+    start_date = months_back.months.ago.to_date
+    
+    # 指定期間のデータを取得
+    period_diaries = current_user.diaries.where(date: start_date..Date.current)
+                                .includes(diary_answers: [:question, :answer])
 
     # 各レベルの出現回数を計算
-    mood_distribution = calculate_level_distribution(all_diaries, :mood)
-    motivation_distribution = calculate_level_distribution(all_diaries, :motivation)
-    progress_distribution = calculate_level_distribution(all_diaries, :progress)
+    mood_distribution = calculate_level_distribution(period_diaries, :mood)
+    motivation_distribution = calculate_level_distribution(period_diaries, :motivation)
+    progress_distribution = calculate_level_distribution(period_diaries, :progress)
+    
+    # タイトルを期間に応じて動的に設定
+    period_text = months_back == 1 ? "直近1ヶ月" : "過去#{months_back}ヶ月間"
 
     {
       type: "bar",
@@ -421,7 +455,7 @@ class StatsController < ApplicationController
         plugins: {
           title: {
             display: true,
-            text: "各項目のレベル分布",
+            text: "各項目のレベル分布（#{period_text}）",
             font: { size: 16, weight: "bold" }
           },
           legend: {
@@ -634,8 +668,12 @@ class StatsController < ApplicationController
   end
 
   def build_weekday_pattern_chart
-    # 過去3ヶ月のデータで曜日別パターンを分析
-    diaries = current_user.diaries.where(date: 3.months.ago..Date.current)
+    # パラメータから期間を取得（デフォルト1ヶ月）
+    months_back = (params[:weekday_months]&.to_i || 1).clamp(1, 12)
+    start_date = months_back.months.ago.to_date
+    
+    # 指定期間のデータで曜日別パターンを分析
+    diaries = current_user.diaries.where(date: start_date..Date.current)
                           .includes(diary_answers: [:question, :answer])
 
     # 曜日別にデータをグループ化
@@ -673,6 +711,9 @@ class StatsController < ApplicationController
         day_name: weekday_names[index]
       }
     end
+
+    # タイトルを期間に応じて動的に設定
+    period_text = months_back == 1 ? "直近1ヶ月" : "過去#{months_back}ヶ月間"
 
     {
       type: "bar",
@@ -717,7 +758,7 @@ class StatsController < ApplicationController
         plugins: {
           title: {
             display: true,
-            text: "曜日別パフォーマンスパターン",
+            text: "曜日別パフォーマンスパターン（#{period_text}）",
             font: { size: 16, weight: "bold" }
           },
           legend: {
