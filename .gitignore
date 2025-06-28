@@ -43,6 +43,7 @@
 .claude/
 
 /CLAUDE.md
+/GEMINI.md
 
 # Ignore PR draft files
 pr.md
