@@ -259,6 +259,32 @@ class User < ApplicationRecord
     !connected_providers.include?(provider)
   end
 
+  def increment_seed_count
+    return false if last_seed_incremented_at&.today?
+    return false if seed_count >= 5
+
+    increment!(:seed_count)
+    update!(last_seed_incremented_at: Time.current)
+    true
+  end
+
+  def increment_seed_count_by_share
+    return false if last_shared_at&.today?
+    return false if seed_count >= 5
+
+    increment!(:seed_count)
+    update!(last_shared_at: Time.current)
+    true
+  end
+
+  def can_increment_seed_count?
+    !last_seed_incremented_at&.today? && seed_count < 5
+  end
+
+  def can_increment_seed_count_by_share?
+    !last_shared_at&.today? && seed_count < 5
+  end
+
   private
 
   def at_least_one_provider_id

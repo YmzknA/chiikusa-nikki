@@ -2,7 +2,7 @@
   <div class="container mx-auto max-w-2xl">
     <div class="neuro-card p-6 mb-6">
       <div class="flex items-center">
-        <%= link_to root_path, class: "neuro-button p-3 mr-4 inline-flex items-center justify-center" do %>
+        <%= link_to diaries_path, class: "neuro-button p-3 mr-4 inline-flex items-center justify-center" do %>
           <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
           </svg>
@@ -35,11 +35,6 @@
         <div class="border-t border-base-content/10 pt-6 mt-6">
           <div class="grid grid-cols-1 gap-4">
             <div class="neuro-badge p-4">
-              <div class="text-sm text-base-content/60">参加日</div>
-              <div class="text-lg font-semibold text-base-content"><%= current_user.created_at.strftime("%Y年%m月%d日") %></div>
-            </div>
-            
-            <div class="neuro-badge p-4">
               <div class="text-sm text-base-content/60">総日記数</div>
               <div class="text-lg font-semibold text-base-content"><%= current_user.diaries.count %>件</div>
             </div>
@@ -50,6 +45,75 @@
                 <div class="text-lg font-semibold text-base-content"><%= current_user.diaries.where(github_uploaded: true).count %>件</div>
               </div>
             <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI生成タネ管理セクション -->
+      <div class="neuro-card p-6">
+        <h3 class="text-xl font-bold text-base-content mb-4">
+          TILのタネ 📝
+        </h3>
+
+        <div class="grid grid-cols-1 gap-4">
+          <div class="neuro-badge p-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-sm text-base-content/60">現在のタネの数</div>
+                <div class="text-2xl font-bold text-base-content flex items-center gap-2">
+                  <%= image_tag "logo.png", alt: "タネ", class: "w-6 h-6" %>
+                  <span><%= current_user.seed_count %> / 5</span>
+                </div>
+              </div>
+              <div class="text-xs text-base-content/50">
+                上限: 5個
+              </div>
+            </div>
+          </div>
+
+          <div class="neuro-badge p-4">
+            <div class="text-sm text-base-content/60 mb-3">本日のタネの増加状況</div>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <%= image_tag "watering_can.png", alt: "水やり", class: "w-5 h-5" %>
+                  <span class="text-sm">水やりボタン</span>
+                  <div class="tooltip tooltip-right" data-tip="日記一覧ページのヘッダーにあります">
+                    <div class="w-4 h-4 rounded-full bg-base-300 hover:bg-primary hover:text-primary-content flex items-center justify-center cursor-help transition-all duration-200 hover:scale-110">
+                      <svg class="h-2.5 w-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <% unless current_user.can_increment_seed_count? %>
+                  <span class="text-xs text-gray-500">本日獲得済み</span>
+                <% end %>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                  <span class="text-sm">X共有</span>
+                  <div class="tooltip tooltip-right" data-tip="日記詳細ページのX共有ボタンから共有">
+                    <div class="w-4 h-4 rounded-full bg-base-300 hover:bg-primary hover:text-primary-content flex items-center justify-center cursor-help transition-all duration-200 hover:scale-110">
+                      <svg class="h-2.5 w-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <% unless current_user.can_increment_seed_count_by_share? %>
+                  <span class="text-xs text-gray-500">本日獲得済み</span>
+                <% end %>
+              </div>
+            </div>
+            <div class="mt-3 pt-2 border-t border-base-content/10">
+              <p class="text-xs text-base-content/60">
+                制限は日本時間0時にリセットされます
+              </p>
+            </div>
           </div>
         </div>
       </div>

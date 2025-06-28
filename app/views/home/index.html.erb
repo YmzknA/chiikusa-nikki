@@ -1,4 +1,4 @@
-<div class="min-h-screen lemonade-background flex items-center justify-center p-4">
+<div class="stick-regular min-h-screen lemonade-background flex items-center justify-center p-4">
   <div class="neuro-card p-8 max-w-sm w-full text-center relative">
 
     <%# what is chiikusa Modal %>
@@ -7,74 +7,15 @@
         <span class="material-symbols-outlined">help</span>
       </button>
     </div>
-    <dialog id="my_modal_3" class="modal sm:modal-middle">
-      <div class="modal-box">
-        <form method="dialog">
-          <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-        </form>
-        <h3 class="text-lg font-bold">🌱 ちいくさ日記とは？</h3>
-        <div class="py-4 text-left space-y-4">
-          <p class="text-base-content">
-            日記を毎日付けるのが苦手な人向けの<br>
-            <strong>簡単1分日記アプリ</strong>です 📝
-          </p>
-          
-          <div class="space-y-3">
-            <div class="flex items-start gap-3">
-              <span class="text-xl">📊</span>
-              <div>
-                <p class="font-medium">気分・やる気・進捗を記録</p>
-                <p class="text-sm text-base-content/70">絵文字で簡単に今日の状態を記録</p>
-              </div>
-            </div>
-            
-            <div class="flex items-start gap-3">
-              <span class="text-xl">🤖</span>
-              <div>
-                <p class="font-medium">AIがTILを自動生成</p>
-                <p class="text-sm text-base-content/70">箇条書きのメモから「今日やったこと」を文章で3つ提案</p>
-              </div>
-            </div>
-            
-            <div class="flex items-start gap-3">
-              <span class="text-xl">🔗</span>
-              <div>
-                <p class="font-medium">GitHubにアップロード</p>
-                <p class="text-sm text-base-content/70">作成した日記をMarkdownでリポジトリに保存</p>
-              </div>
-            </div>
-            
-            <div class="flex items-start gap-3">
-              <span class="text-xl">🌱</span>
-              <div>
-                <p class="font-medium">継続で「ちいくさ」が育つ</p>
-                <p class="text-sm text-base-content/70">毎日の記録でGitHubに小さな草が育つ</p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="border-t pt-3 mt-4">
-            <p class="text-sm text-base-content/60 text-center">
-              GitHubまたはGoogleでログインして始めよう！
-            </p>
-          </div>
-        </div>
-      </div>
-      <form method="dialog" class="modal-backdrop">
-        <button>close</button>
-      </form>
-    </dialog>
 
     <%# Logo/Icon %>
     <!-- Chart Icon -->
     <div class="mb-6">
-      <div class="neuro-icon w-16 h-16 mx-auto flex items-center justify-center text-2xl">
-        🌱
+      <div class="neuro-icon size-48 mx-auto flex items-center justify-center text-2xl">
+        <%= image_tag 'logo_with_title.png', class: 'size-40' %>
       </div>
     </div>
 
-    <!-- Name -->
-    <h2 class="text-2xl font-bold text-base-content mb-2">ちいくさ日記</h2>
 
     <!-- Job Title -->
     <p class="text-base-content/70 mb-8 text-lg">毎日1分<br>簡単日記で草生やし</p>
@@ -88,9 +29,9 @@
 
       <!-- Button -->
       <%= link_to new_diary_path, class: "neuro-button w-full font-medium py-4 px-6 transition-all duration-200 inline-block text-center" do %>
-        ちいくさ を生やす
+        草を生やす
       <% end %>
-      
+
       <div class="mt-6 flex justify-center items-end space-x-4">
         <%= link_to diaries_path, class: "text-base-content/60 hover:text-base-content text-sm font-medium" do %>
           過去の記録
@@ -98,8 +39,8 @@
         <%= button_to destroy_user_session_path, method: :delete,
             data: { turbo_confirm: "本当にログアウトしますか？" },
             class: "text-base-content/60 hover:text-base-content hover:cursor-pointer text-sm font-medium" do %>
-          ログアウト
-        <% end %>
+              ログアウト
+            <% end %>
       </div>
     <% else %>
       <%# Login state %>
@@ -126,4 +67,63 @@
     <% end %>
   </div>
 </div>
+
+<dialog id="my_modal_3" class="modal sm:modal-middle">
+  <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <h3 class="stick-regular text-lg font-bold">🌱 ちいくさ日記とは？</h3>
+    <div class="py-4 text-left space-y-4">
+      <p class="text-base-content">
+      ちいくさとは、「小さな草」のこと。<br>
+      日記を毎日付けるのが苦手な人向けの<br>
+      <strong>簡単1分日記アプリ</strong>です 📝
+      </p>
+
+      <div class="space-y-3">
+        <div class="flex items-start gap-3">
+          <span class="text-xl">📊</span>
+          <div>
+            <p class="font-medium">気分・やる気・進捗を記録</p>
+            <p class="text-sm text-base-content/70">絵文字で簡単に今日の状態を記録</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <span class="text-xl">🤖</span>
+          <div>
+            <p class="font-medium">AIがTILを自動生成</p>
+            <p class="text-sm text-base-content/70">箇条書きのメモから「今日やったこと」を文章で3つ提案</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <span class="text-xl">🔗</span>
+          <div>
+            <p class="font-medium">GitHubにアップロード</p>
+            <p class="text-sm text-base-content/70">作成した日記をMarkdownでリポジトリに保存</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <span class="text-xl">🌱</span>
+          <div>
+            <p class="font-medium">継続で「ちいくさ」が育つ</p>
+            <p class="text-sm text-base-content/70">毎日の記録でGitHubに小さな草が育つ</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t pt-3 mt-4">
+        <p class="text-sm text-base-content/60 text-center">
+        GitHubまたはGoogleでログインして始めよう！
+        </p>
+      </div>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
 

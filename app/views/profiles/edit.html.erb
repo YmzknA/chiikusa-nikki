@@ -29,13 +29,6 @@
         <input type="email" value="<%= current_user.email %>" class="input input-bordered" disabled />
       </div>
 
-      <div class="form-control">
-        <label class="label">
-          <span class="label-text font-semibold">参加日</span>
-        </label>
-        <input type="text" value="<%= current_user.created_at.strftime("%Y年%m月%d日") %>" class="input input-bordered" disabled />
-      </div>
-
       <div class="card-actions justify-end mt-6">
         <%= link_to profile_path, class: "btn btn-primary" do %>
           プロフィールに戻る

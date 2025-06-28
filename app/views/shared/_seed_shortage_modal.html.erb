@@ -1,0 +1,78 @@
+<dialog id="seedShortageModal" class="modal sm:modal-middle">
+  <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    
+    <div class="text-center">
+      <div class="mb-4">
+        <%= image_tag "logo.png", alt: "タネ", class: "w-16 h-16 mx-auto" %>
+      </div>
+      
+      <h3 class="text-lg font-bold text-base-content mb-4">タネが不足しています</h3>
+      
+      <p class="text-base-content/70 mb-6">
+        AIによるTIL生成にはタネが必要です。<br>
+        以下の方法でタネを増やすことができます：
+      </p>
+      
+      <div class="space-y-3 mb-6">
+        <div class="flex items-center justify-between p-3 bg-base-200 rounded-lg">
+          <div class="flex items-center gap-2">
+            <%= image_tag 'watering_can.png', class: 'size-6' %>
+            <span class="text-sm">水やりボタン</span>
+            <div class="tooltip tooltip-right" data-tip="日記一覧ページのヘッダーにあります">
+              <div class="w-4 h-4 rounded-full bg-base-300 hover:bg-primary hover:text-primary-content flex items-center justify-center cursor-help transition-all duration-200 hover:scale-110">
+                <svg class="h-2.5 w-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <% unless current_user.can_increment_seed_count? %>
+            <span class="text-xs text-base-content/60">本日獲得済み</span>
+          <% end %>
+        </div>
+        
+        <div class="flex items-center justify-between p-3 bg-base-200 rounded-lg">
+          <div class="flex items-center gap-2">
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+            <span class="text-sm">X共有</span>
+            <div class="tooltip tooltip-right" data-tip="日記詳細ページのX共有ボタンから獲得">
+              <div class="w-4 h-4 rounded-full bg-base-300 hover:bg-primary hover:text-primary-content flex items-center justify-center cursor-help transition-all duration-200 hover:scale-110">
+                <svg class="h-2.5 w-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <% unless current_user.can_increment_seed_count_by_share? %>
+            <span class="text-xs text-base-content/60">本日獲得済み</span>
+          <% end %>
+        </div>
+      </div>
+      
+      <div class="modal-action">
+        <form method="dialog" class="flex gap-2 w-full">
+          <button class="btn btn-ghost flex-1">キャンセル</button>
+          <%= content_for(:continue_button) if content_for?(:continue_button) %>
+        </form>
+      </div>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
+
+<script>
+  function showSeedShortageModal() {
+    document.getElementById('seedShortageModal').showModal();
+  }
+  
+  function closeSeedShortageModal() {
+    document.getElementById('seedShortageModal').close();
+  }
+</script>
