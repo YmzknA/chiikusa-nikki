@@ -8,6 +8,13 @@
   font-style: normal;
 }
 
+.stick-regular {
+  font-family: "Stick", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
 /* Radio button styles for emoji selection */
 input[type="radio"]:checked + .emoji-label,
 label:has(input[type="radio"]:checked) {
