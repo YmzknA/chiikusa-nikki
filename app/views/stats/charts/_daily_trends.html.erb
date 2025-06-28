@@ -1,0 +1,56 @@
+<%= turbo_frame_tag "daily-trends-chart", class: "lg:col-span-2" do %>
+  <div class="neuro-card p-6">
+    <!-- チャートヘッダー -->
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="flex items-center gap-2 text-2xl font-bold text-primary">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+        </svg>
+        日毎の推移
+      </h2>
+      
+      <!-- 表示切り替えコントロール -->
+      <div data-controller="chart-period"
+           data-chart-period-chart-type-value="daily-trends">
+        <div class="flex items-center gap-4">
+          <%= select_tag :view_type, 
+              options_for_select([
+                ['直近30日', 'recent'],
+                ['月ごと', 'monthly']
+              ], local_assigns[:view_type] || @view_type),
+              { 
+                class: "neuro-input px-3 py-2 text-sm",
+                data: { action: "change->chart-period#updateChart" }
+              } %>
+          
+          <!-- 月選択コントロール -->
+          <div data-chart-period-target="monthControls" 
+               class="flex items-center gap-2 <%= 'hidden' if (local_assigns[:view_type] || @view_type) == 'recent' %>">
+            <%= month_field_tag :target_month, local_assigns[:target_month] || @target_month,
+                { 
+                  class: "neuro-input px-3 py-2 text-sm",
+                  data: { action: "change->chart-period#updateChart" }
+                } %>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- チャートコンテナ -->
+    <div class="neuro-input p-6 w-full">
+      <div data-controller="chart" 
+           data-chart-type-value="<%= (local_assigns[:daily_trends_chart] || @daily_trends_chart)[:type] %>"
+           data-chart-data-value="<%= (local_assigns[:daily_trends_chart] || @daily_trends_chart)[:data].to_json %>"
+           data-chart-options-value="<%= (local_assigns[:daily_trends_chart] || @daily_trends_chart)[:options].to_json %>">
+        <canvas class="w-full" style="height: 400px;"></canvas>
+      </div>
+    </div>
+    
+    <div class="mt-4">
+      <div class="neuro-badge p-4 text-sm text-base-content/70">
+        📈 <strong>対象期間:</strong> 直近30日間または選択した月<br>
+        記録した日のみを表示し、線でつないで推移を確認。継続記録でパターンを把握しましょう。
+      </div>
+    </div>
+  </div>
+<% end %>

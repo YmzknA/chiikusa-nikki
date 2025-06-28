@@ -1,0 +1,46 @@
+<%= turbo_frame_tag "weekday-pattern-chart" do %>
+  <div class="neuro-card p-6">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="flex items-center gap-2 text-xl font-bold text-primary">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
+        曜日別パターン
+      </h2>
+      
+      <div data-controller="chart-period"
+           data-chart-period-chart-type-value="weekday-pattern">
+        <div class="flex items-center gap-2">
+          <%= select_tag :weekday_months,
+              options_for_select([
+                ['直近1ヶ月', 1],
+                ['過去2ヶ月', 2],
+                ['過去3ヶ月', 3],
+                ['過去6ヶ月', 6],
+                ['過去1年', 12]
+              ], params[:weekday_months]&.to_i || 1),
+              { 
+                class: "neuro-input px-3 py-2 text-sm",
+                data: { action: "change->chart-period#updateChart" }
+              } %>
+        </div>
+      </div>
+    </div>
+    
+    <div class="neuro-input p-4 w-full">
+      <div data-controller="weekday-chart" 
+           data-weekday-chart-type-value="<%= (local_assigns[:weekday_pattern_chart] || @weekday_pattern_chart)[:type] %>"
+           data-weekday-chart-data-value="<%= (local_assigns[:weekday_pattern_chart] || @weekday_pattern_chart)[:data].to_json %>"
+           data-weekday-chart-options-value="<%= (local_assigns[:weekday_pattern_chart] || @weekday_pattern_chart)[:options].to_json %>">
+        <canvas class="w-full" style="height: 300px;"></canvas>
+      </div>
+    </div>
+    
+    <div class="mt-4">
+      <div class="neuro-badge p-3 text-sm text-base-content/70">
+        📅 <strong>対象期間:</strong> 選択した期間<br>
+        曜日ごとの平均パフォーマンスで生活リズムを把握
+      </div>
+    </div>
+  </div>
+<% end %>
