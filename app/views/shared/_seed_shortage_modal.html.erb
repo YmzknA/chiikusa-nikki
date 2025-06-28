@@ -6,10 +6,10 @@
     
     <div class="text-center">
       <div class="mb-4">
-        <%= image_tag "seed.png", alt: "種", class: "w-16 h-16 mx-auto opacity-50" %>
+        <%= image_tag "logo.png", alt: "種", class: "w-16 h-16 mx-auto" %>
       </div>
       
-      <h3 class="text-lg font-bold text-base-content mb-4">🌱 種が不足しています</h3>
+      <h3 class="text-lg font-bold text-base-content mb-4">種が不足しています</h3>
       
       <p class="text-base-content/70 mb-6">
         AIによるTIL生成には種が必要です。<br>
@@ -19,7 +19,7 @@
       <div class="space-y-3 mb-6">
         <div class="flex items-center justify-between p-3 bg-base-200 rounded-lg">
           <div class="flex items-center gap-2">
-            <span>🌱</span>
+            <%= image_tag 'watering_can.png', class: 'size-6' %>
             <span class="text-sm">水やりボタン</span>
           </div>
           <% unless current_user.can_increment_seed_count? %>
@@ -29,7 +29,9 @@
         
         <div class="flex items-center justify-between p-3 bg-base-200 rounded-lg">
           <div class="flex items-center gap-2">
-            <span>🐦</span>
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
             <span class="text-sm">X共有</span>
           </div>
           <% unless current_user.can_increment_seed_count_by_share? %>
