@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     collection do
       post :increment_seed
       post :share_on_x
+      get :search_by_date
     end
   end
 

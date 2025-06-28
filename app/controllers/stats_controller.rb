@@ -235,7 +235,6 @@ class StatsController < ApplicationController
     }
   end
 
-
   def build_achievement_gauge_chart
     # 今月の進捗レベル4-5の達成率を計算
     current_month_start = Date.current.beginning_of_month
@@ -469,10 +468,9 @@ class StatsController < ApplicationController
     levels.sum.to_f / levels.length
   end
 
-
   def build_learning_intensity_heatmap
-    # 過去90日間の学習強度ヒートマップ（縦：曜日、横：週）
-    start_date = 90.days.ago.to_date
+    # 過去半年間の学習強度ヒートマップ（縦：曜日、横：週）
+    start_date = 180.days.ago.to_date
     end_date = Date.current
 
     # 日記データを取得
@@ -482,8 +480,8 @@ class StatsController < ApplicationController
 
     # 最初の日曜日を計算
     first_sunday = start_date - start_date.wday.days
-    
-    # 週数を計算（約13週間）
+
+    # 週数を計算（約26週間）
     total_days = (end_date - first_sunday).to_i + 1
     weeks_count = (total_days / 7.0).ceil
 
@@ -496,18 +494,18 @@ class StatsController < ApplicationController
     # 各週のデータを処理
     (0...weeks_count).each do |week_index|
       (0..6).each do |wday|
-        date = first_sunday + (week_index * 7 + wday).days
-        
+        date = first_sunday + ((week_index * 7) + wday).days
+
         if date <= end_date
           diary = diaries_data[date]&.first
           intensity = calculate_learning_intensity(diary)
-          
+
           weekday_data[wday] << {
             date: date,
             intensity: intensity,
             week_index: week_index,
             is_future: date > Date.current,
-            is_in_range: date >= start_date && date <= end_date
+            is_in_range: date.between?(start_date, end_date)
           }
         else
           # 範囲外の日は空データ
@@ -537,7 +535,7 @@ class StatsController < ApplicationController
         plugins: {
           title: {
             display: true,
-            text: "学習強度ヒートマップ（直近90日）",
+            text: "学習強度ヒートマップ（直近半年）",
             font: { size: 16, weight: "bold" }
           },
           legend: {
