@@ -13,5 +13,5 @@ application.register("water-effect", WaterEffectController)
 import XShareController from "./x_share_controller"
 application.register("x-share", XShareController)
 
-import Chart from 'stimulus-chartjs'
-application.register('chart', Chart)
+import ChartDebugController from "./chart_debug_controller"
+application.register("chart", ChartDebugController)
