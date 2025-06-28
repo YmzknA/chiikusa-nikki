@@ -19,17 +19,13 @@ class DiariesController < ApplicationController
     @diary = Diary.new
     @questions = Question.all
     @date = params[:date] || Date.current
-
-    # 既存日記のチェック
     @existing_diary = current_user.diaries.find_by(date: @date)
   end
 
   def edit
     @questions = Question.all
-    # 現在の選択状態を取得
-    @selected_answers = {}
-    @diary.diary_answers.includes(:question).each do |diary_answer|
-      @selected_answers[diary_answer.question.identifier] = diary_answer.answer_id.to_s
+    @selected_answers = @diary.diary_answers.includes(:question).each_with_object({}) do |diary_answer, hash|
+      hash[diary_answer.question.identifier] = diary_answer.answer_id.to_s
     end
   end
 
@@ -37,8 +33,8 @@ class DiariesController < ApplicationController
     @diary = current_user.diaries.build(diary_params)
     if @diary.save
       diary_service.create_diary_answers(diary_answer_params)
-      skip_ai_generation = params[:skip_ai_generation] == "true"
-      result = diary_service.handle_til_generation_and_redirect(skip_ai_generation: skip_ai_generation)
+      skip_ai = params[:skip_ai_generation] == "true"
+      result = diary_service.handle_til_generation_and_redirect(skip_ai_generation: skip_ai)
       redirect_to result[:redirect_to], notice: result[:notice]
     else
       handle_creation_error
@@ -48,10 +44,7 @@ class DiariesController < ApplicationController
   def update
     if @diary.update(diary_update_params)
       diary_service.update_diary_answers(diary_answer_params)
-      regenerate_ai = params[:regenerate_ai] == "1"
-
-      diary_service.regenerate_til_candidates_if_needed if regenerate_ai
-
+      diary_service.regenerate_til_candidates_if_needed if params[:regenerate_ai] == "1"
       redirect_to diary_path(@diary), notice: "日記を更新しました"
     else
       handle_update_error
@@ -73,69 +66,64 @@ class DiariesController < ApplicationController
     end
 
     result = current_user.github_service.push_til(@diary)
+    redirect_path = result[:requires_reauth] ? "/users/auth/github" : diary_path(@diary)
+    flash_type = result[:success] ? :notice : :alert
 
-    if result[:success]
-      redirect_to diary_path(@diary), notice: result[:message]
-    elsif result[:requires_reauth]
-      redirect_to "/users/auth/github", alert: result[:message]
-    elsif result[:rate_limited]
-      redirect_to diary_path(@diary), alert: result[:message]
-    else
-      redirect_to diary_path(@diary), alert: result[:message]
-    end
+    redirect_to redirect_path, flash_type => result[:message]
   end
 
   def increment_seed
+    seed_service = SeedService.new(current_user).increment_daily_seed
+
     respond_to do |format|
-      if current_user.increment_seed_count
-        format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.update("flash-messages", partial: "shared/flash", locals: {
-                                  flash: { notice: "種を増やしました！💧🌱" }
-                                }),
-            turbo_stream.update("seed-count", current_user.seed_count)
-          ]
-        end
-        format.html { redirect_to diaries_path, notice: "種を増やしました！" }
-      else
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.update("flash-messages", partial: "shared/flash", locals: {
-                                                     flash: { alert: "本日は既に種を増やしています。" }
-                                                   })
-        end
-        format.html { redirect_to diaries_path, alert: "本日は既に種を増やしています。" }
+      format.turbo_stream do
+        render_seed_turbo_stream(seed_service)
       end
+      format.html { redirect_to diaries_path, notice: seed_service.html_message_for_increment }
     end
   end
 
   def share_on_x
     @diary = current_user.diaries.find(params[:diary_id]) if params[:diary_id]
+    seed_service = SeedService.new(current_user).increment_share_seed
 
     respond_to do |format|
-      if current_user.increment_seed_count_by_share
-        format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.update("flash-messages", partial: "shared/flash", locals: {
-                                  flash: { notice: "種を増やしました！ 🌱" }
-                                }),
-            turbo_stream.update("seed-count", current_user.seed_count)
-          ]
-        end
-        format.html { redirect_to diary_path(@diary), notice: "Xで共有して種を増やしました！" }
-        format.json { render json: { success: true, seed_count: current_user.seed_count } }
-      else
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.update("flash-messages", partial: "shared/flash", locals: {
-                                                     flash: { alert: "本日は既にX共有で種を増やしています。" }
-                                                   })
-        end
-        format.html { redirect_to diary_path(@diary), alert: "本日は既にX共有で種を増やしています。" }
-        format.json { render json: { success: false, message: "本日は既にX共有で種を増やしています。" } }
+      format.turbo_stream do
+        render_seed_turbo_stream(seed_service)
       end
+      format.html { redirect_to diary_path(@diary), flash_type_for_seed(seed_service) => seed_service.message }
+      format.json { render json: json_response_for_seed(seed_service) }
     end
   end
 
   private
+
+  def render_seed_turbo_stream(seed_service)
+    if seed_service.success
+      render turbo_stream: [
+        turbo_stream.update("flash-messages", partial: "shared/flash", locals: {
+                              flash: { notice: seed_service.message }
+                            }),
+        turbo_stream.update("seed-count", current_user.seed_count)
+      ]
+    else
+      render turbo_stream: turbo_stream.update("flash-messages", partial: "shared/flash", locals: {
+                                                 flash: { alert: seed_service.message }
+                                               })
+    end
+  end
+
+  def flash_type_for_seed(seed_service)
+    seed_service.success ? :notice : :alert
+  end
+
+  def json_response_for_seed(seed_service)
+    if seed_service.success
+      { success: true, seed_count: current_user.seed_count }
+    else
+      { success: false, message: seed_service.message }
+    end
+  end
 
   def set_diary
     @diary = current_user.diaries.find(params[:id])
@@ -144,14 +132,17 @@ class DiariesController < ApplicationController
   end
 
   def set_diary_for_show
-    if user_signed_in?
-      @diary = current_user.diaries.find_by(id: params[:id])
-      @diary ||= Diary.public_diaries.includes(:user, :diary_answers, :til_candidates).find(params[:id])
-    else
-      @diary = Diary.public_diaries.includes(:user, :diary_answers, :til_candidates).find(params[:id])
-    end
+    @diary = if user_signed_in?
+               current_user.diaries.find_by(id: params[:id]) || public_diary_scope.find(params[:id])
+             else
+               public_diary_scope.find(params[:id])
+             end
   rescue ActiveRecord::RecordNotFound
     redirect_to user_signed_in? ? diaries_path : root_path, alert: "指定された日記は見つかりません。"
+  end
+
+  def public_diary_scope
+    Diary.public_diaries.includes(:user, :diary_answers, :til_candidates)
   end
 
   def diary_service
@@ -167,45 +158,30 @@ class DiariesController < ApplicationController
   end
 
   def diary_answer_params
-    # 動的にQuestionのidentifierを取得してpermitする
     question_identifiers = Question.pluck(:identifier).map(&:to_sym)
-    Rails.logger.debug "Question identifiers: #{question_identifiers}"
-
-    if params[:diary_answers].present?
-      permitted_params = params.permit(diary_answers: question_identifiers)[:diary_answers]
-      Rails.logger.debug "Permitted diary_answer_params: #{permitted_params.inspect}"
-      permitted_params || {}
-    else
-      Rails.logger.debug "No diary_answers parameter found"
-      {}
-    end
+    params[:diary_answers].present? ? params.permit(diary_answers: question_identifiers)[:diary_answers] || {} : {}
   end
 
   def handle_creation_error
-    error_data = diary_service.handle_creation_error(Question.all, params, current_user)
-    @questions = error_data[:questions]
-    @selected_answers = error_data[:selected_answers]
-    @date = error_data[:date]
-    @existing_diary_for_error = error_data[:existing_diary_for_error]
-    flash.now[:alert] = error_data[:flash_message] if error_data[:flash_message]
-    render :new
+    handle_error_data(diary_service.handle_creation_error(Question.all, params, current_user), :new)
   end
 
   def handle_update_error
-    error_data = diary_service.handle_update_error(Question.all)
-    @questions = error_data[:questions]
-    @selected_answers = error_data[:selected_answers]
-    render :edit
+    handle_error_data(diary_service.handle_update_error(Question.all), :edit)
+  end
+
+  def handle_error_data(error_data, view)
+    @questions, @selected_answers = error_data.values_at(:questions, :selected_answers)
+    @date = error_data[:date] if view == :new
+    @existing_diary_for_error = error_data[:existing_diary_for_error] if view == :new
+    flash.now[:alert] = error_data[:flash_message] if error_data[:flash_message]
+    render view
   end
 
   def check_github_repository_status
-    return unless current_user.github_repo_configured?
+    return unless current_user.github_repo_configured? && !current_user.verify_github_repository?
 
-    return if current_user.verify_github_repository?
-
-    log_message = "Repository #{current_user.github_repo_name} not found for user #{current_user.id}. " \
-                  "Resetting upload status."
-    Rails.logger.info log_message
+    Rails.logger.info "Repository #{current_user.github_repo_name} not found for user #{current_user.id}"
     flash.now[:alert] = "設定されたGitHubリポジトリが見つかりません。GitHub設定を確認してください。"
   end
 end
