@@ -1,0 +1,63 @@
+<div class="stick-regular min-h-screen lemonade-background flex items-center justify-center p-4">
+  <div class="neuro-card p-8 max-w-sm w-full text-center relative">
+
+    <%# Logo/Icon %>
+    <!-- Chart Icon -->
+    <div class="mb-6">
+      <div class="neuro-icon size-40 mx-auto flex items-center justify-center">
+        <%= image_tag 'logo_with_title.png', class: 'size-28' %>
+      </div>
+    </div>
+
+    <!-- Welcome Message -->
+    <h2 class="text-2xl font-bold text-base-content mb-2">
+      ようこそ！
+    </h2>
+    <p class="text-base-content/70 mb-8 text-lg">あなたのお名前を<br>教えてください 🌱</p>
+
+    <%= form_with model: current_user, url: setup_username_path, method: :patch, local: true, class: "space-y-6" do |form| %>
+      <% if current_user.errors.any? %>
+        <div class="alert alert-error text-left">
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div>
+            <h3 class="font-bold">エラーが発生しました</h3>
+            <ul class="mt-1">
+              <% current_user.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="space-y-4">
+        <%= form.text_field :username, 
+            class: "neuro-input w-full text-center text-lg py-4 px-6 font-medium", 
+            placeholder: "あなたのお名前",
+            value: "",
+            required: true,
+            autofocus: true,
+            maxlength: 50
+        %>
+        
+        <p class="text-sm text-base-content/60">
+          日記で表示されるお名前です<br>
+          後からプロフィールで変更できます
+        </p>
+      </div>
+
+      <div class="divider my-6"></div>
+
+      <!-- Button -->
+      <%= form.submit "草を生やし始める", class: "neuro-button w-full font-medium py-4 px-6 transition-all duration-200" %>
+    <% end %>
+
+    <div class="mt-6">
+      <p class="text-sm text-base-content/50">
+        設定完了後、すぐに日記を書き始められます！
+      </p>
+    </div>
+  </div>
+</div>
