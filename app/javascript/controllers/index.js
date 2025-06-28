@@ -15,3 +15,15 @@ application.register("x-share", XShareController)
 
 import ChartDebugController from "./chart_debug_controller"
 application.register("chart", ChartDebugController)
+
+import ChartSwitcherController from "./chart_switcher_controller"
+application.register("chart-switcher", ChartSwitcherController)
+
+import WeekdayChartController from "./weekday_chart_controller"
+application.register("weekday-chart", WeekdayChartController)
+
+import HeatmapController from "./heatmap_controller"
+application.register("heatmap", HeatmapController)
+
+import CalendarController from "./calendar_controller"
+application.register("calendar", CalendarController)
