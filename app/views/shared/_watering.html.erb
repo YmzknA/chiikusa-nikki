@@ -1,0 +1,24 @@
+<% if current_user.can_increment_seed_count? %>
+  <div class="flex items-center gap-2" 
+       data-controller="water-effect" 
+       data-water-effect-url-value="<%= increment_seed_diaries_path %>">
+    <button type="button" 
+            class="neuro-button p-2 water-button" 
+            data-water-effect-target="button"
+            data-action="click->water-effect#water">
+            <%= image_tag 'watering_can.png', class: 'size-6' %>
+    </button>
+  </div>
+<% else %>
+  <div class="flex items-center gap-2" 
+       data-controller="water-effect" 
+       data-water-effect-url-value="<%= increment_seed_diaries_path %>">
+    <button type="button" 
+            class="neuro-button p-2 water-button" 
+            data-water-effect-target="button"
+            data-action="click->water-effect#water">
+            <%= image_tag 'watering_can_empty.png', class: 'size-6' %>
+    </button>
+  </div>
+<% end %>
+
