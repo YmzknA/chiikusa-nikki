@@ -8,14 +8,14 @@ class SeedService
 
   # 🌱ボタンクリックでタネを増加
   def increment_daily_seed
-    @success = user.add_seed_by_watering
+    @success = user.increment_seed_by_watering
     @message = success ? "タネを増やしました！💧🌱" : "本日は既にタネを増やしています。"
     self
   end
 
   # X共有でタネを増加
   def increment_share_seed
-    @success = user.add_seed_by_sharing
+    @success = user.increment_seed_by_sharing
     @message = success ? "Xで共有してタネを増やしました！" : "本日は既にX共有でタネを増やしています。"
     self
   end

@@ -267,7 +267,7 @@ class User < ApplicationRecord
   end
 
   # rubocop:disable Naming/PredicateMethod
-  def add_seed_by_watering
+  def increment_seed_by_watering
     return false if last_seed_incremented_at&.today?
     return false if seed_count >= 5
 
@@ -276,7 +276,7 @@ class User < ApplicationRecord
     true
   end
 
-  def add_seed_by_sharing
+  def increment_seed_by_sharing
     return false if last_shared_at&.today?
     return false if seed_count >= 5
 
