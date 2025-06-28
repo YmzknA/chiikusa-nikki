@@ -33,7 +33,7 @@ class DiariesController < ApplicationController
     @diary = current_user.diaries.build(diary_params)
     if @diary.save
       diary_service.create_diary_answers(diary_answer_params)
-      skip_ai = params[:skip_ai_generation] == "true"
+      skip_ai = params[:skip_ai_generation] == "true" || params[:use_ai_generation] != "1"
       result = diary_service.handle_til_generation_and_redirect(skip_ai_generation: skip_ai)
       redirect_to result[:redirect_to], notice: result[:notice]
     else
