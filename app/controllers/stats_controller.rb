@@ -202,17 +202,7 @@ class StatsController < ApplicationController
           line: {
             spanGaps: true
           }
-        },
-        onClick: "function(event, elements) {
-          if (elements.length > 0) {
-            const datasetIndex = elements[0].datasetIndex;
-            const index = elements[0].index;
-            const diaryId = this.data.diary_ids[index];
-            if (diaryId) {
-              window.location.href = '/diaries/' + diaryId;
-            }
-          }
-        }"
+        }
       }
     }
   end

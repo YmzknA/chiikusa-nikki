@@ -32,6 +32,19 @@ export default class extends Controller {
       ...this.optionsValue
     }
 
+    // 日毎推移チャートの場合、クリックイベントを追加
+    if (this.typeValue === 'line' && this.dataValue.diary_ids) {
+      customOptions.onClick = (event, elements) => {
+        if (elements.length > 0) {
+          const index = elements[0].index
+          const diaryId = this.dataValue.diary_ids[index]
+          if (diaryId) {
+            window.location.href = `/diaries/${diaryId}`
+          }
+        }
+      }
+    }
+
     // 日毎推移チャートの場合のツールチップカスタマイズ
     if (this.typeValue === 'line' && customOptions.plugins && customOptions.plugins.title && 
         (customOptions.plugins.title.text.includes('推移') || customOptions.plugins.title.text.includes('直近') || customOptions.plugins.title.text.includes('月の'))) {
