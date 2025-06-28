@@ -16,8 +16,6 @@ application.register("x-share", XShareController)
 import ChartDebugController from "./chart_debug_controller"
 application.register("chart", ChartDebugController)
 
-import ChartSwitcherController from "./chart_switcher_controller"
-application.register("chart-switcher", ChartSwitcherController)
 
 import WeekdayChartController from "./weekday_chart_controller"
 application.register("weekday-chart", WeekdayChartController)
@@ -30,3 +28,6 @@ application.register("calendar", CalendarController)
 
 import BackNavigationController from "./back_navigation_controller"
 application.register("back-navigation", BackNavigationController)
+
+import ChartPeriodController from "./chart_period_controller"
+application.register("chart-period", ChartPeriodController)
