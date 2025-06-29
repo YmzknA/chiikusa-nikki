@@ -23,7 +23,7 @@ FactoryBot.define do
     end
 
     after(:build) do |question|
-      question.answers << build(:answer, :level_one, question: question) if question.answers.empty?
+      question.answers << build(:answer, :level_1, question: question) if question.answers.empty?
     end
   end
 end

@@ -6,7 +6,7 @@ FactoryBot.define do
 
     trait :mood_good do
       question { create(:question, :mood) }
-      answer { create(:answer, :level_four, question: question) }
+      answer { create(:answer, :level_4, question: question) }
     end
 
     trait :motivation_high do

@@ -3,33 +3,33 @@ FactoryBot.define do
     association :question
     sequence(:label) { |n| "Answer #{n}" }
     sequence(:level) { |n| n }
-    emoji { "😊" }
+    emoji { "⭐" }
 
-    trait :level_one do
+    trait :level_1 do
       label { "Very Low" }
       emoji { "😞" }
       level { 1 }
     end
 
-    trait :level_two do
+    trait :level_2 do
       label { "Low" }
-      emoji { "😐" }
+      emoji { "😔" }
       level { 2 }
     end
 
-    trait :level_three do
+    trait :level_3 do
       label { "Medium" }
-      emoji { "🙂" }
+      emoji { "😐" }
       level { 3 }
     end
 
-    trait :level_four do
+    trait :level_4 do
       label { "High" }
-      emoji { "😊" }
+      emoji { "🙂" }
       level { 4 }
     end
 
-    trait :level_five do
+    trait :level_5 do
       label { "Very High" }
       emoji { "😄" }
       level { 5 }
