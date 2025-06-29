@@ -315,4 +315,238 @@ RSpec.describe OpenaiService, type: :service do
       end
     end
   end
+
+  describe "Performance and load testing scenarios" do
+    context "when handling concurrent requests" do
+      it "handles multiple TIL generation requests" do
+        responses = Array.new(3) do |i|
+          {
+            "choices" => [
+              {
+                "message" => {
+                  "content" => "TIL #{i + 1}: Concurrent processing test content"
+                }
+              }
+            ]
+          }
+        end
+        
+        allow(mock_client).to receive(:chat).and_return(*responses)
+        
+        threads = 5.times.map do |i|
+          Thread.new do
+            service.generate_tils("Concurrent test #{i}")
+          end
+        end
+        
+        results = threads.map(&:value)
+        
+        expect(results).to all(be_an(Array))
+        expect(results.all? { |r| r.size == 3 }).to be true
+      end
+    end
+
+    context "when handling large input data" do
+      let(:large_notes) { "- " + ("Learning content " * 500) }
+      
+      before do
+        allow(mock_client).to receive(:chat).and_return({
+          "choices" => [{ "message" => { "content" => "Generated TIL for large input" } }]
+        })
+      end
+      
+      it "processes large notes efficiently" do
+        start_time = Time.current
+        result = service.generate_tils(large_notes)
+        end_time = Time.current
+        
+        expect(result).to be_an(Array)
+        expect(result.size).to eq(3)
+        expect(end_time - start_time).to be < 10.seconds # Reasonable timeout
+      end
+    end
+
+    context "when API responses are slow" do
+      before do
+        allow(mock_client).to receive(:chat) do
+          sleep(0.1) # Simulate slow API
+          {
+            "choices" => [
+              {
+                "message" => {
+                  "content" => "Slow response TIL content"
+                }
+              }
+            ]
+          }
+        end
+      end
+      
+      it "handles slow API responses" do
+        result = service.generate_tils(notes)
+        
+        expect(result).to be_an(Array)
+        expect(result.size).to eq(3)
+      end
+    end
+  end
+
+  describe "Security and input validation" do
+    context "with malicious input" do
+      let(:malicious_inputs) do
+        [
+          "'; DROP TABLE users; --",
+          "<script>alert('xss')</script>",
+          "\x00\x01\x02", # Binary data
+          "a" * 100000,    # Extremely long input
+          "\u{1F4A9}" * 1000 # Unicode spam
+        ]
+      end
+      
+      before do
+        allow(mock_client).to receive(:chat).and_return({
+          "choices" => [{ "message" => { "content" => "Safe TIL content" } }]
+        })
+      end
+      
+      it "safely handles malicious inputs" do
+        malicious_inputs.each do |malicious_input|
+          result = service.generate_tils(malicious_input)
+          
+          expect(result).to be_an(Array)
+          expect(result.size).to eq(3)
+          expect(result.first).to eq("Safe TIL content")
+        end
+      end
+    end
+
+    context "with special characters and encoding" do
+      let(:unicode_notes) { "今日は日本語で学習した。\u{1F4DD}\u{1F680}" }
+      
+      before do
+        allow(mock_client).to receive(:chat).and_return({
+          "choices" => [{ "message" => { "content" => "Japanese TIL content" } }]
+        })
+      end
+      
+      it "handles Unicode and special characters correctly" do
+        result = service.generate_tils(unicode_notes)
+        
+        expect(result).to be_an(Array)
+        expect(result.size).to eq(3)
+      end
+    end
+  end
+
+  describe "Edge cases and boundary conditions" do
+    context "with boundary input sizes" do
+      let(:test_cases) do
+        [
+          { input: "", expected_result: nil },
+          { input: "a", expected_result: Array },
+          { input: "a" * 1000, expected_result: Array },
+          { input: "- " + ("item\n" * 100), expected_result: Array }
+        ]
+      end
+      
+      before do
+        allow(mock_client).to receive(:chat).and_return({
+          "choices" => [{ "message" => { "content" => "Boundary test TIL" } }]
+        })
+      end
+      
+      it "handles various input sizes correctly" do
+        test_cases.each do |test_case|
+          result = service.generate_tils(test_case[:input])
+          
+          if test_case[:expected_result] == Array
+            expect(result).to be_an(Array)
+            expect(result.size).to eq(3)
+          else
+            expect(result).to be test_case[:expected_result]
+          end
+        end
+      end
+    end
+
+    context "with API rate limiting simulation" do
+      before do
+        call_count = 0
+        allow(mock_client).to receive(:chat) do
+          call_count += 1
+          if call_count <= 2
+            raise StandardError, "Rate limit exceeded"
+          else
+            {
+              "choices" => [
+                {
+                  "message" => {
+                    "content" => "Rate limit recovery TIL"
+                  }
+                }
+              ]
+            }
+          end
+        end
+        allow(Rails.logger).to receive(:error)
+      end
+      
+      it "handles rate limiting gracefully" do
+        result = service.generate_tils(notes)
+        
+        expect(result).to be_nil
+        expect(Rails.logger).to have_received(:error).with("OpenAI API Error: Rate limit exceeded")
+      end
+    end
+  end
+
+  describe "Response quality validation" do
+    context "with various response qualities" do
+      let(:response_scenarios) do
+        [
+          {
+            name: "high quality",
+            content: "今日はRSpecを使用したテスト駆動開発について学んだ。テストファーストのアプローチで、より堅牢なコードを書けるようになった。",
+            should_include: true
+          },
+          {
+            name: "too short",
+            content: "学んだ。",
+            should_include: true # Service should still include it
+          },
+          {
+            name: "too long",
+            content: "a" * 1000,
+            should_include: true # Service should still include it
+          },
+          {
+            name: "empty",
+            content: "",
+            should_include: false
+          },
+          {
+            name: "whitespace only",
+            content: "   \n\t  ",
+            should_include: false
+          }
+        ]
+      end
+      
+      it "validates and filters responses appropriately" do
+        response_scenarios.each do |scenario|
+          allow(mock_client).to receive(:chat).and_return({
+            "choices" => [{ "message" => { "content" => scenario[:content] } }]
+          })
+          
+          result = service.generate_tils(notes)
+          
+          if scenario[:should_include]
+            expect(result).to include(scenario[:content])
+          else
+            expect(result).not_to include(scenario[:content])
+          end
+        end
+      end
+    end
+  end
 end
