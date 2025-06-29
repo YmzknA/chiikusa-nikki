@@ -53,6 +53,7 @@ group :development, :test do
 
   gem "rspec-rails", "~> 6.0"
   gem "shoulda-matchers", "~> 5.3"
+  gem "factory_bot_rails", "~> 6.0"
   gem "webdrivers", "~> 5.0"
 end
 
@@ -72,6 +73,7 @@ gem "omniauth", "~> 2.1"
 gem "omniauth-rails_csrf_protection"
 
 gem "ruby-openai"
+gem "faraday-retry"
 
 gem "octokit", "~> 10.0"
 
