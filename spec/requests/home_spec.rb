@@ -1,10 +1,32 @@
 require "rails_helper"
 
-RSpec.describe "Homes", type: :request do
-  describe "GET /index" do
+RSpec.describe "Home", type: :request do
+  describe "GET /" do
+    it "returns http success for root path" do
+      get "/"
+      expect(response).to have_http_status(:success)
+    end
+
+    it "renders the home page" do
+      get "/"
+      expect(response.body).to include("html")
+    end
+
+    it "does not require authentication" do
+      get "/"
+      expect(response).not_to redirect_to(new_user_session_path)
+    end
+  end
+
+  describe "GET /home/index" do
     it "returns http success" do
       get "/home/index"
       expect(response).to have_http_status(:success)
+    end
+
+    it "redirects to root path" do
+      get "/home/index"
+      expect(response).to redirect_to(root_path)
     end
   end
 end
