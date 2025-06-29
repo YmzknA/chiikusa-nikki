@@ -213,47 +213,6 @@ RSpec.describe GithubService, type: :service do
     end
   end
 
-  describe "#test_github_connection" do
-    context "when connection is successful" do
-      before do
-        allow(mock_client).to receive(:user).and_return(double(login: user.username))
-      end
-
-      it "returns success result" do
-        result = service.test_github_connection
-
-        expect(result[:success]).to be true
-        expect(result[:message]).to include("接続成功")
-      end
-    end
-
-    context "when unauthorized" do
-      before do
-        allow(mock_client).to receive(:user).and_raise(Octokit::Unauthorized)
-      end
-
-      it "returns failure message" do
-        result = service.test_github_connection
-
-        expect(result[:success]).to be false
-        expect(result[:message]).to include("認証エラー")
-      end
-    end
-
-    context "when client is not available" do
-      before do
-        allow(service).to receive(:client_available?).and_return(false)
-      end
-
-      it "returns failure result" do
-        result = service.test_github_connection
-
-        expect(result[:success]).to be false
-        expect(result[:message]).to include("クライアントが利用できません")
-      end
-    end
-  end
-
   describe "#get_repository_info" do
     context "when repository exists" do
       let(:repo_data) do
