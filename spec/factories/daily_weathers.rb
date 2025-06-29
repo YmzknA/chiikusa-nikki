@@ -5,7 +5,7 @@ FactoryBot.define do
       {
         temperature: rand(15..35),
         humidity: rand(40..80),
-        description: ["Sunny", "Cloudy", "Rainy", "Snowy"].sample,
+        description: %w[Sunny Cloudy Rainy Snowy].sample,
         location: "Tokyo"
       }
     end

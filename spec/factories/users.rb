@@ -3,7 +3,7 @@ FactoryBot.define do
     sequence(:email) { |n| "user#{n}@example.com" }
     sequence(:username) { |n| "testuser#{n}" }
     seed_count { 3 }
-    
+
     # デフォルトではGitHub認証ユーザーとして作成
     sequence(:github_id) { |n| "github_#{n}_#{SecureRandom.hex(4)}" }
     providers { ["github"] }
@@ -28,7 +28,7 @@ FactoryBot.define do
       sequence(:github_id) { |n| "github_#{n}_#{SecureRandom.hex(4)}" }
       sequence(:google_id) { |n| "google_#{n}_#{SecureRandom.hex(4)}" }
       google_email { email }
-      providers { ["github", "google_oauth2"] }
+      providers { %w[github google_oauth2] }
       encrypted_access_token { "github_token" }
       encrypted_google_access_token { "google_token" }
     end
