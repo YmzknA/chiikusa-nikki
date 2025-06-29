@@ -301,6 +301,106 @@ end
 
 YOLOモードで実行時も絶対にdocker内および、現在のディレクトリ以上に影響を与える行為は行わないでください。
 
+## UI回帰テスト（Tailwind移行対応）
+
+### 📋 Tailwind CSS移行前のUI回帰テスト戦略
+
+現在のCSSからTailwind CSSへの移行時にUIの破綻を防ぐため、包括的なUI回帰テストスイートを整備済み。
+
+#### テストファイル構成
+- `spec/ui_regression/ui_elements_spec.rb` - コアUI要素テスト
+- `spec/ui_regression/css_functionality_spec.rb` - CSS機能テスト
+- `spec/ui_regression/page_layouts_spec.rb` - ページレイアウトテスト
+- `spec/ui_regression/style_components_spec.rb` - スタイルコンポーネントテスト
+- `spec/support/ui_regression_helpers.rb` - UI回帰テスト用ヘルパー
+
+#### テスト実行コマンド
+```bash
+# UI回帰テスト全体実行
+bundle exec rspec spec/ui_regression/ --format documentation
+
+# 特定のUI要素テスト
+bundle exec rspec spec/ui_regression/ui_elements_spec.rb
+
+# 現在のUI状態をベースライン化（移行前に実行推奨）
+bundle exec rspec spec/ui_regression/ --format documentation > ui_baseline.txt
+```
+
+#### Tailwind移行時の推奨手順
+
+**🔧 移行前（必須）**
+1. **現在のUIベースライン確立**
+   ```bash
+   # 現在のUI状態をキャプチャ
+   docker compose exec web bundle exec rspec spec/ui_regression/ --format documentation > ui_baseline_$(date +%Y%m%d).txt
+   ```
+
+2. **主要画面のスクリーンショット保存**
+   - 日記一覧ページ
+   - 日記作成フォーム
+   - 日記詳細ページ
+   - プロフィールページ
+   - GitHub設定ページ
+
+3. **現在のCSSクラス一覧化**
+   - `.neuro-card` - カードコンポーネント
+   - `.neuro-button` - メインボタンスタイル
+   - `.neuro-button-secondary` - セカンダリボタンスタイル
+   - `.lemonade-background` - テーマ背景
+   - `.m-plus-1p-regular` - フォントファミリー
+
+**⚙️ 移行中**
+1. **段階的なコンポーネント移行**
+   - 1つのコンポーネントずつTailwindに変更
+   - 各変更後にUI回帰テスト実行
+   - 失敗テストは新しいTailwindクラスに合わせて更新
+
+2. **継続的なビジュアル確認**
+   ```bash
+   # コンポーネント変更後の確認
+   docker compose exec web bundle exec rspec spec/ui_regression/ui_elements_spec.rb
+   ```
+
+**✅ 移行後**
+1. **全テストパス確認**
+   ```bash
+   # 全UI回帰テストの実行
+   docker compose exec web bundle exec rspec spec/ui_regression/
+   ```
+
+2. **テストスイートの更新**
+   - 古いCSSクラス名をTailwindクラスに更新
+   - 新しいレスポンシブデザインパターンに対応
+   - パフォーマンス・アクセシビリティ確認
+
+#### 🎯 テストでカバーしている内容
+
+**UI要素の確認**
+- ヘッダーナビゲーション構造
+- 日記カード表示とレイアウト
+- フォーム要素の配置と機能
+- ボタンスタイルとインタラクション
+- テーマ・カラーシステム適用状況
+
+**レスポンシブデザイン**
+- モバイル・タブレット対応レイアウト
+- グリッドシステムの動作
+- Flexboxレイアウトの確認
+
+**アクセシビリティ**
+- フォーカス状態の確認
+- セマンティックHTML構造
+- ARIA属性の適用状況
+
+#### ⚠️ 重要な注意事項
+
+- **移行前のベースライン確立は必須** - 現在のUI状態を正確に記録
+- **段階的移行を推奨** - 全画面を一度に変更せず、コンポーネント単位で実施
+- **ビジュアル確認との併用** - テストだけでなく実際の画面確認も並行実施
+- **パフォーマンス影響の監視** - CSS変更によるロード時間への影響を確認
+
+この回帰テストにより、**Tailwind移行時のUI破綻を早期発見し、安全な移行が可能**。
+
 ### GitHubにリポジトリを作成し、ファイルを上げる機能の実装にあたり、同様の機能があるアプリや参考資料
 - https://github.com/topi0247/leaf-record
 - https://github.com/topi0247/leaf-record/blob/main/back/app/services/github.rb
