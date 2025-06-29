@@ -13,6 +13,22 @@
 # it.
 #
 # See https://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
+
+# External API mocking setup
+require 'webmock/rspec'
+require 'vcr'
+
+# Block all external HTTP requests
+WebMock.disable_net_connect!(allow_localhost: true)
+
+# VCR configuration for recording/replaying HTTP interactions
+VCR.configure do |config|
+  config.cassette_library_dir = "spec/fixtures/vcr_cassettes"
+  config.hook_into :webmock
+  config.configure_rspec_metadata!
+  config.allow_http_connections_when_no_cassette = false
+end
+
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
