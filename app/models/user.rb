@@ -267,6 +267,7 @@ class User < ApplicationRecord
   end
 
   # These methods return boolean status, but are action methods, not predicates
+  # rubocop:disable Naming/PredicateMethod
   def add_seed_from_watering!
     return false if last_seed_incremented_at&.today?
     return false if seed_count >= 5
@@ -284,6 +285,7 @@ class User < ApplicationRecord
     update!(last_seed_incremented_at: Time.current)
     true
   end
+  # rubocop:enable Naming/PredicateMethod
 
   def can_increment_seed_count?
     !last_seed_incremented_at&.today? && seed_count < 5
