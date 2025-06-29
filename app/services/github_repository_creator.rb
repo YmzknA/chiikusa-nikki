@@ -10,7 +10,10 @@ module GithubRepositoryCreator
   end
 
   def perform_repository_creation(repo_name)
-    Rails.logger.info "Creating repository: #{repo_name} for user: #{@user.username}"
+    # GitHubの実際のusernameを取得・保存
+    ensure_github_username_updated
+    
+    Rails.logger.info "Creating repository: #{repo_name} for GitHub user: #{@user.github_username}"
 
     repository = create_github_repository(repo_name)
     setup_initial_readme(repository, repo_name)
@@ -60,5 +63,20 @@ module GithubRepositoryCreator
       message: "リポジトリ「#{repo_name}」を作成しました",
       repository_url: repository.html_url
     }
+  end
+
+  private
+
+  def ensure_github_username_updated
+    return if @user.github_username.present?
+    
+    begin
+      github_user = @client.user
+      @user.update!(github_username: github_user.login)
+      Rails.logger.info "Updated github_username for user #{@user.id}: #{github_user.login}"
+    rescue Octokit::Error => e
+      Rails.logger.error "Failed to fetch GitHub username during repository creation: #{e.message}"
+      raise StandardError, "GitHubユーザー名の取得に失敗しました"
+    end
   end
 end
