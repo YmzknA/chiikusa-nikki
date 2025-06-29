@@ -1,15 +1,15 @@
 #!/usr/bin/env ruby
 
 # Configure Rails environment
-ENV['RAILS_ENV'] = 'test'
-require_relative 'config/environment'
+ENV["RAILS_ENV"] = "test"
+require_relative "config/environment"
 
 # Run a simple test to verify the setup
 puts "Testing database connection..."
 begin
   ActiveRecord::Base.connection.execute("SELECT 1")
   puts "✅ Database connection successful"
-rescue => e
+rescue StandardError => e
   puts "❌ Database connection failed: #{e.message}"
   exit 1
 end
@@ -24,16 +24,16 @@ begin
     icon: "🤔"
   )
   puts "✅ Question created successfully: #{question.id}"
-  
+
   puts "Testing Answer model..."
   answer = Answer.create!(
     question: question,
-    label: "テスト回答", 
+    label: "テスト回答",
     level: 3,
     emoji: "😊"
   )
   puts "✅ Answer created successfully: #{answer.id}"
-  
+
   puts "Testing User model..."
   user = User.create!(
     email: "test@example.com",
@@ -44,7 +44,7 @@ begin
     seed_count: 5
   )
   puts "✅ User created successfully: #{user.id}"
-  
+
   puts "Testing Diary model..."
   diary = Diary.create!(
     user: user,
@@ -53,8 +53,7 @@ begin
     is_public: false
   )
   puts "✅ Diary created successfully: #{diary.id}"
-  
-rescue => e
+rescue StandardError => e
   puts "❌ Model creation failed: #{e.message}"
   puts "Backtrace: #{e.backtrace.first(5).join("\n")}"
   exit 1
@@ -62,10 +61,10 @@ end
 
 puts "\nTesting FactoryBot setup..."
 begin
-  require 'factory_bot'
+  require "factory_bot"
   FactoryBot.find_definitions
   puts "✅ FactoryBot definitions loaded successfully"
-rescue => e
+rescue StandardError => e
   puts "❌ FactoryBot setup failed: #{e.message}"
 end
 
