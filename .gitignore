@@ -42,11 +42,10 @@
 # Ignore Claude Code directory
 .claude/
 
-/CLAUDE.md
-/GEMINI.md
-
-# Ignore PR draft files
-pr.md
-
-GEMINI.md
+# Ignore Claude and Gemini documentation files
 CLAUDE.md
+GEMINI.md
+
+# Ignore work log and PR draft files
+work_log/
+pr.md
