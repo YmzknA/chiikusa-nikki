@@ -15,8 +15,8 @@
 # See https://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
 # External API mocking setup
-require 'webmock/rspec'
-require 'vcr'
+require "webmock/rspec"
+require "vcr"
 
 # Block all external HTTP requests
 WebMock.disable_net_connect!(allow_localhost: true)

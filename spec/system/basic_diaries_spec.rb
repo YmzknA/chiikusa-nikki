@@ -9,14 +9,14 @@ RSpec.describe "Basic Diaries UI", type: :system do
     # Setup basic test data
     question
     answer
-    
+
     # Mock external services for system tests
     stub_request(:post, /api\.openai\.com/).to_return(
       status: 200,
       body: { choices: [{ message: { content: "Test TIL content" } }] }.to_json,
-      headers: { 'Content-Type' => 'application/json' }
+      headers: { "Content-Type" => "application/json" }
     )
-    
+
     login_as(user, scope: :user)
   end
 
@@ -26,10 +26,10 @@ RSpec.describe "Basic Diaries UI", type: :system do
 
       # Fill in basic diary form
       fill_in "日記のメモ", with: "今日はRailsの勉強をした"
-      
+
       # Select answers (simplified)
       first(".answer-option").click
-      
+
       click_button "日記を作成"
 
       # Verify basic creation
