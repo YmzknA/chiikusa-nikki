@@ -282,7 +282,7 @@ class User < ApplicationRecord
     return false if seed_count >= 5
 
     increment!(:seed_count)
-    update!(last_seed_incremented_at: Time.current)
+    update!(last_shared_at: Time.current)
     true
   end
   # rubocop:enable Naming/PredicateMethod
