@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_06_27_202540) do
+ActiveRecord::Schema[7.2].define(version: 2025_06_29_160939) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -102,6 +102,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_06_27_202540) do
     t.integer "seed_count", default: 0, null: false
     t.datetime "last_seed_incremented_at"
     t.datetime "last_shared_at"
+    t.string "github_username"
     t.index ["email"], name: "index_users_on_email"
     t.index ["github_id"], name: "index_users_on_github_id", unique: true
     t.index ["google_email"], name: "index_users_on_google_email"
