@@ -4,7 +4,7 @@ RSpec.describe "Diaries", type: :request do
   let(:user) { create(:user, :with_github) }
   let(:diary) { create(:diary, user: user) }
   let(:question) { create(:question, :mood) }
-  let(:answer) { create(:answer, :level_4, question: question) }
+  let(:answer) { create(:answer, :level_four, question: question) }
 
   before do
     sign_in user
@@ -17,7 +17,7 @@ RSpec.describe "Diaries", type: :request do
     end
 
     it "displays user's diaries" do
-      diary = create(:diary, user: user)
+      create(:diary, user: user)
       get diaries_path
       expect(response).to have_http_status(:success)
       expect(response.body).to include("ちいくさ日記")

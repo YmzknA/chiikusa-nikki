@@ -17,5 +17,4 @@ RSpec.describe "Home", type: :request do
       expect(response).not_to redirect_to(new_user_session_path)
     end
   end
-
 end

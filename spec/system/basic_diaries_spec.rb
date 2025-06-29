@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe "Basic Diaries UI", type: :system do
   let(:user) { create(:user, :with_github) }
   let(:question) { create(:question, :mood) }
-  let(:answer) { create(:answer, :level_4, question: question) }
+  let(:answer) { create(:answer, :level_four, question: question) }
 
   before do
     # Setup basic test data
@@ -24,8 +24,8 @@ RSpec.describe "Basic Diaries UI", type: :system do
     it "can access diary pages without errors" do
       visit diaries_path
       expect(page).to have_http_status(200)
-      
-      visit new_diary_path  
+
+      visit new_diary_path
       expect(page).to have_http_status(200)
     end
   end

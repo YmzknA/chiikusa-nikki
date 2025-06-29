@@ -90,7 +90,6 @@ RSpec.describe "Stats", type: :request do
 
       expect(response).to render_template("stats/charts/_distribution")
     end
-
   end
 
   describe "with user data" do
