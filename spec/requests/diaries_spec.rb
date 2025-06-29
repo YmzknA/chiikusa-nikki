@@ -376,7 +376,7 @@ RSpec.describe "Diaries", type: :request do
 
       get public_diaries_path
 
-      expect(response.body).to include(public_diary.date.strftime("%Y年%m月%d日"))
+      expect(response.body).to include(public_diary.date.strftime("%Y/%m/%d"))
       expect(response.body).not_to include(private_diary.date.strftime("%Y年%m月%d日"))
     end
 
