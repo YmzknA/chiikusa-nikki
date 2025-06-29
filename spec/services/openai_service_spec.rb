@@ -14,7 +14,7 @@ RSpec.describe OpenaiService, type: :service do
       expect(OpenAI::Client).to receive(:new).with(
         access_token: Rails.application.credentials.dig(:openai, :api_key)
       )
-      
+
       described_class.new
     end
   end
@@ -39,7 +39,7 @@ RSpec.describe OpenaiService, type: :service do
 
       it "generates 3 TIL candidates" do
         result = service.generate_tils(notes)
-        
+
         expect(result).to be_an(Array)
         expect(result.size).to eq(3)
         expect(mock_client).to have_received(:chat).exactly(3).times
@@ -47,7 +47,7 @@ RSpec.describe OpenaiService, type: :service do
 
       it "uses correct model and parameters" do
         service.generate_tils(notes)
-        
+
         expect(mock_client).to have_received(:chat).with(
           parameters: hash_including(
             model: "gpt-4.1-nano-2025-04-14",
@@ -63,7 +63,7 @@ RSpec.describe OpenaiService, type: :service do
 
       it "includes system prompt with instructions" do
         service.generate_tils(notes)
-        
+
         system_message = mock_client.received_messages.first.dig(:parameters, :messages, 0)
         expect(system_message[:role]).to eq("system")
         expect(system_message[:content]).to include("プログラミング初心者または中級者")
@@ -73,7 +73,7 @@ RSpec.describe OpenaiService, type: :service do
 
       it "includes user notes in prompt" do
         service.generate_tils(notes)
-        
+
         user_message = mock_client.received_messages.first.dig(:parameters, :messages, 1)
         expect(user_message[:role]).to eq("user")
         expect(user_message[:content]).to include(notes)
@@ -136,7 +136,7 @@ RSpec.describe OpenaiService, type: :service do
 
       it "filters out empty or nil responses" do
         result = service.generate_tils(notes)
-        
+
         expect(result).to eq(["Valid TIL content"])
       end
     end
@@ -149,7 +149,7 @@ RSpec.describe OpenaiService, type: :service do
 
       it "handles errors gracefully and logs them" do
         result = service.generate_tils(notes)
-        
+
         expect(result).to be_nil
         expect(Rails.logger).to have_received(:error).with("OpenAI API Error: API Error")
         expect(Rails.logger).to have_received(:error).with(kind_of(String)) # backtrace
@@ -169,7 +169,7 @@ RSpec.describe OpenaiService, type: :service do
 
       it "handles malformed responses gracefully" do
         result = service.generate_tils(notes)
-        
+
         expect(result).to eq([])
       end
     end
@@ -214,7 +214,7 @@ RSpec.describe OpenaiService, type: :service do
 
     it "generates exactly 3 TIL candidates" do
       result = service.send(:generate_smart_tils, notes)
-      
+
       expect(result).to be_an(Array)
       expect(result.size).to eq(3)
       expect(result).to all(be_a(String))
@@ -222,7 +222,7 @@ RSpec.describe OpenaiService, type: :service do
 
     it "uses high temperature for creative responses" do
       service.send(:generate_smart_tils, notes)
-      
+
       expect(mock_client).to have_received(:chat).with(
         parameters: hash_including(temperature: 1.5)
       ).exactly(3).times
@@ -230,7 +230,7 @@ RSpec.describe OpenaiService, type: :service do
 
     it "limits response length appropriately" do
       service.send(:generate_smart_tils, notes)
-      
+
       expect(mock_client).to have_received(:chat).with(
         parameters: hash_including(max_tokens: 150)
       ).exactly(3).times
@@ -240,15 +240,15 @@ RSpec.describe OpenaiService, type: :service do
   describe "system prompt validation" do
     before do
       allow(mock_client).to receive(:chat).and_return({
-        "choices" => [{ "message" => { "content" => "Test TIL" } }]
-      })
+                                                        "choices" => [{ "message" => { "content" => "Test TIL" } }]
+                                                      })
     end
 
     it "includes all required instructions in system prompt" do
       service.generate_tils(notes)
-      
+
       system_content = mock_client.received_messages.first.dig(:parameters, :messages, 0, :content)
-      
+
       expect(system_content).to include("3文~5文")
       expect(system_content).to include("箇条書きではなく自然な文章")
       expect(system_content).to include("今日は〜を学んだ")
@@ -257,9 +257,9 @@ RSpec.describe OpenaiService, type: :service do
 
     it "provides clear output format instructions" do
       service.generate_tils(notes)
-      
+
       system_content = mock_client.received_messages.first.dig(:parameters, :messages, 0, :content)
-      
+
       expect(system_content).to include("学んだことや、今日やったことを具体的に")
       expect(system_content).to include("〜ができるようになった")
       expect(system_content).to include("〜を理解した")
@@ -284,9 +284,9 @@ RSpec.describe OpenaiService, type: :service do
     it "handles various error types gracefully" do
       error_scenarios.each do |error_class, error_message|
         allow(mock_client).to receive(:chat).and_raise(error_class, error_message)
-        
+
         result = service.generate_tils(notes)
-        
+
         expect(result).to be_nil
         expect(Rails.logger).to have_received(:error).with("OpenAI API Error: #{error_message}")
       end
@@ -330,36 +330,36 @@ RSpec.describe OpenaiService, type: :service do
             ]
           }
         end
-        
+
         allow(mock_client).to receive(:chat).and_return(*responses)
-        
+
         threads = 5.times.map do |i|
           Thread.new do
             service.generate_tils("Concurrent test #{i}")
           end
         end
-        
+
         results = threads.map(&:value)
-        
+
         expect(results).to all(be_an(Array))
         expect(results.all? { |r| r.size == 3 }).to be true
       end
     end
 
     context "when handling large input data" do
-      let(:large_notes) { "- " + ("Learning content " * 500) }
-      
+      let(:large_notes) { "- #{'Learning content ' * 500}" }
+
       before do
         allow(mock_client).to receive(:chat).and_return({
-          "choices" => [{ "message" => { "content" => "Generated TIL for large input" } }]
-        })
+                                                          "choices" => [{ "message" => { "content" => "Generated TIL for large input" } }]
+                                                        })
       end
-      
+
       it "processes large notes efficiently" do
         start_time = Time.current
         result = service.generate_tils(large_notes)
         end_time = Time.current
-        
+
         expect(result).to be_an(Array)
         expect(result.size).to eq(3)
         expect(end_time - start_time).to be < 10.seconds # Reasonable timeout
@@ -381,10 +381,10 @@ RSpec.describe OpenaiService, type: :service do
           }
         end
       end
-      
+
       it "handles slow API responses" do
         result = service.generate_tils(notes)
-        
+
         expect(result).to be_an(Array)
         expect(result.size).to eq(3)
       end
@@ -398,21 +398,21 @@ RSpec.describe OpenaiService, type: :service do
           "'; DROP TABLE users; --",
           "<script>alert('xss')</script>",
           "\x00\x01\x02", # Binary data
-          "a" * 100000,    # Extremely long input
+          "a" * 100_000, # Extremely long input
           "\u{1F4A9}" * 1000 # Unicode spam
         ]
       end
-      
+
       before do
         allow(mock_client).to receive(:chat).and_return({
-          "choices" => [{ "message" => { "content" => "Safe TIL content" } }]
-        })
+                                                          "choices" => [{ "message" => { "content" => "Safe TIL content" } }]
+                                                        })
       end
-      
+
       it "safely handles malicious inputs" do
         malicious_inputs.each do |malicious_input|
           result = service.generate_tils(malicious_input)
-          
+
           expect(result).to be_an(Array)
           expect(result.size).to eq(3)
           expect(result.first).to eq("Safe TIL content")
@@ -422,16 +422,16 @@ RSpec.describe OpenaiService, type: :service do
 
     context "with special characters and encoding" do
       let(:unicode_notes) { "今日は日本語で学習した。\u{1F4DD}\u{1F680}" }
-      
+
       before do
         allow(mock_client).to receive(:chat).and_return({
-          "choices" => [{ "message" => { "content" => "Japanese TIL content" } }]
-        })
+                                                          "choices" => [{ "message" => { "content" => "Japanese TIL content" } }]
+                                                        })
       end
-      
+
       it "handles Unicode and special characters correctly" do
         result = service.generate_tils(unicode_notes)
-        
+
         expect(result).to be_an(Array)
         expect(result.size).to eq(3)
       end
@@ -445,20 +445,20 @@ RSpec.describe OpenaiService, type: :service do
           { input: "", expected_result: nil },
           { input: "a", expected_result: Array },
           { input: "a" * 1000, expected_result: Array },
-          { input: "- " + ("item\n" * 100), expected_result: Array }
+          { input: "- #{"item\n" * 100}", expected_result: Array }
         ]
       end
-      
+
       before do
         allow(mock_client).to receive(:chat).and_return({
-          "choices" => [{ "message" => { "content" => "Boundary test TIL" } }]
-        })
+                                                          "choices" => [{ "message" => { "content" => "Boundary test TIL" } }]
+                                                        })
       end
-      
+
       it "handles various input sizes correctly" do
         test_cases.each do |test_case|
           result = service.generate_tils(test_case[:input])
-          
+
           if test_case[:expected_result] == Array
             expect(result).to be_an(Array)
             expect(result.size).to eq(3)
@@ -474,26 +474,24 @@ RSpec.describe OpenaiService, type: :service do
         call_count = 0
         allow(mock_client).to receive(:chat) do
           call_count += 1
-          if call_count <= 2
-            raise StandardError, "Rate limit exceeded"
-          else
-            {
-              "choices" => [
-                {
-                  "message" => {
-                    "content" => "Rate limit recovery TIL"
-                  }
+          raise StandardError, "Rate limit exceeded" if call_count <= 2
+
+          {
+            "choices" => [
+              {
+                "message" => {
+                  "content" => "Rate limit recovery TIL"
                 }
-              ]
-            }
-          end
+              }
+            ]
+          }
         end
         allow(Rails.logger).to receive(:error)
       end
-      
+
       it "handles rate limiting gracefully" do
         result = service.generate_tils(notes)
-        
+
         expect(result).to be_nil
         expect(Rails.logger).to have_received(:error).with("OpenAI API Error: Rate limit exceeded")
       end
@@ -531,15 +529,15 @@ RSpec.describe OpenaiService, type: :service do
           }
         ]
       end
-      
+
       it "validates and filters responses appropriately" do
         response_scenarios.each do |scenario|
           allow(mock_client).to receive(:chat).and_return({
-            "choices" => [{ "message" => { "content" => scenario[:content] } }]
-          })
-          
+                                                            "choices" => [{ "message" => { "content" => scenario[:content] } }]
+                                                          })
+
           result = service.generate_tils(notes)
-          
+
           if scenario[:should_include]
             expect(result).to include(scenario[:content])
           else
