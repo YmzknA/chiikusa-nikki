@@ -31,6 +31,7 @@ RSpec.describe "GithubSettings", type: :request do
       mock_service = instance_double(GithubService)
       allow(user).to receive(:github_service).and_return(mock_service)
       allow(mock_service).to receive(:repository_exists?).and_return(false)
+      allow(mock_service).to receive(:test_github_connection).and_return({ success: false })
 
       get github_settings_path
 

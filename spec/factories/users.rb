@@ -6,11 +6,13 @@ FactoryBot.define do
 
     # デフォルトではGitHub認証ユーザーとして作成
     sequence(:github_id) { |n| "github_#{n}_#{SecureRandom.hex(4)}" }
+    sequence(:github_username) { |n| "testuser#{n}" }
     providers { ["github"] }
     encrypted_access_token { "test_token" }
 
     trait :with_github do
       sequence(:github_id) { |n| "github_#{n}_#{SecureRandom.hex(4)}" }
+      sequence(:github_username) { |n| "testuser#{n}" }
       providers { ["github"] }
       encrypted_access_token { "github_token" }
     end
@@ -26,6 +28,7 @@ FactoryBot.define do
 
     trait :with_both_providers do
       sequence(:github_id) { |n| "github_#{n}_#{SecureRandom.hex(4)}" }
+      sequence(:github_username) { |n| "testuser#{n}" }
       sequence(:google_id) { |n| "google_#{n}_#{SecureRandom.hex(4)}" }
       google_email { email }
       providers { %w[github google_oauth2] }
