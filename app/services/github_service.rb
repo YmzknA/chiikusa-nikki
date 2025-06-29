@@ -45,13 +45,14 @@ class GithubService
   def repository_exists?(repo_name)
     return false if repo_name.blank?
     return false if @user.access_token.blank?
+    return false if @user.github_username.blank?
 
     begin
-      repository = @client.repository("#{@user.username}/#{repo_name}")
+      repository = @client.repository("#{@user.github_username}/#{repo_name}")
       Rails.logger.info "Repository verification successful: #{repository.full_name}"
       true
     rescue Octokit::NotFound
-      Rails.logger.warn "Repository not found: #{@user.username}/#{repo_name}"
+      Rails.logger.warn "Repository not found: #{@user.github_username}/#{repo_name}"
       false
     rescue Octokit::Unauthorized, Octokit::Forbidden => e
       Rails.logger.error "GitHub API access denied: #{e.message}"
@@ -68,8 +69,9 @@ class GithubService
     # CLAUDE.mdルール準拠: 既にアップロード済みの場合はボタンを無効化
     return { success: false, message: "すでにGitHubにアップロード済みです" } if diary.github_uploaded?
     return { success: false, message: "GitHubクライアントが利用できません" } unless client_available?
+    return { success: false, message: "GitHubユーザー名が取得できません" } if @user.github_username.blank?
 
-    repo_full_name = "#{@user.username}/#{@user.github_repo_name}"
+    repo_full_name = "#{@user.github_username}/#{@user.github_repo_name}"
     # CLAUDE.mdルール準拠: ファイル名は「yymmdd_til」形式
     file_path = "#{diary.date.strftime('%y%m%d')}_til.md"
     content = generate_til_content(diary)
@@ -139,10 +141,10 @@ class GithubService
   end
 
   def get_repository_info(repo_name)
-    return nil if repo_name.blank? || @user.access_token.blank?
+    return nil if repo_name.blank? || @user.access_token.blank? || @user.github_username.blank?
 
     begin
-      repository = @client.repository("#{@user.username}/#{repo_name}")
+      repository = @client.repository("#{@user.github_username}/#{repo_name}")
       {
         name: repository.name,
         full_name: repository.full_name,
@@ -155,6 +157,45 @@ class GithubService
     rescue Octokit::Error => e
       Rails.logger.error "Failed to get repository info: #{e.message}"
       nil
+    end
+  end
+
+  def fetch_and_update_github_username
+    return false unless client_available?
+
+    begin
+      github_user = @client.user
+      @user.update!(github_username: github_user.login)
+      Rails.logger.info "Updated github_username for user #{@user.id}: #{github_user.login}"
+      true
+    rescue Octokit::Error => e
+      Rails.logger.error "Failed to fetch GitHub username: #{e.message}"
+      false
+    rescue StandardError => e
+      Rails.logger.error "Unexpected error while fetching GitHub username: #{e.message}"
+      false
+    end
+  end
+
+  def test_github_connection
+    return { success: false, message: "GitHubクライアントが利用できません" } unless client_available?
+
+    begin
+      github_user = @client.user
+      {
+        success: true,
+        message: "GitHub接続成功",
+        username: github_user.login,
+        email: github_user.email
+      }
+    rescue Octokit::Unauthorized
+      { success: false, message: "GitHub認証が無効です。再認証が必要です。" }
+    rescue Octokit::Forbidden
+      { success: false, message: "GitHub APIへのアクセスが制限されています。" }
+    rescue Octokit::Error => e
+      { success: false, message: "GitHub API エラー: #{e.message}" }
+    rescue StandardError => e
+      { success: false, message: "予期しないエラーが発生しました: #{e.message}" }
     end
   end
 end
