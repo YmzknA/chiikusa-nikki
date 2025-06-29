@@ -5,31 +5,31 @@ FactoryBot.define do
     sequence(:level) { |n| n }
     emoji { "😊" }
 
-    trait :level_1 do
+    trait :level_one do
       label { "Very Low" }
       emoji { "😞" }
       level { 1 }
     end
 
-    trait :level_2 do
+    trait :level_two do
       label { "Low" }
       emoji { "😐" }
       level { 2 }
     end
 
-    trait :level_3 do
+    trait :level_three do
       label { "Medium" }
       emoji { "🙂" }
       level { 3 }
     end
 
-    trait :level_4 do
+    trait :level_four do
       label { "High" }
       emoji { "😊" }
       level { 4 }
     end
 
-    trait :level_5 do
+    trait :level_five do
       label { "Very High" }
       emoji { "😄" }
       level { 5 }

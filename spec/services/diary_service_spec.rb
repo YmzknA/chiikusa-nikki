@@ -5,7 +5,7 @@ RSpec.describe DiaryService, type: :service do
   let(:diary) { create(:diary, user: user) }
   let(:service) { described_class.new(diary, user) }
   let(:question) { create(:question, :mood) }
-  let(:answer) { create(:answer, :level_4, question: question) }
+  let(:answer) { create(:answer, :level_four, question: question) }
 
   describe "#initialize" do
     it "sets diary and user" do
@@ -87,7 +87,7 @@ RSpec.describe DiaryService, type: :service do
 
   describe "#update_diary_answers" do
     let(:existing_answer) { create(:diary_answer, diary: diary, question: question, answer: answer) }
-    let(:new_answer) { create(:answer, :level_2, question: question) }
+    let(:new_answer) { create(:answer, :level_two, question: question) }
     let(:update_params) { { question.identifier => new_answer.id } }
 
     before do
