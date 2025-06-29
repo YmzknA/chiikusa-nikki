@@ -56,6 +56,7 @@ group :development, :test do
   gem "factory_bot_rails", "~> 6.0"
   gem "webmock", "~> 3.0"
   gem "vcr", "~> 6.0"
+  gem "rails-controller-testing"
 end
 
 group :development do
