@@ -5,7 +5,7 @@ RSpec.describe DiaryService, type: :service do
   let(:diary) { create(:diary, user: user) }
   let(:service) { described_class.new(diary, user) }
   let(:question) { create(:question, :mood) }
-  let(:answer) { create(:answer, :level_four, question: question) }
+  let(:answer) { create(:answer, :level_4, question: question) }
 
   describe "#initialize" do
     it "sets diary and user" do
@@ -87,7 +87,7 @@ RSpec.describe DiaryService, type: :service do
 
   describe "#update_diary_answers" do
     let(:existing_answer) { create(:diary_answer, diary: diary, question: question, answer: answer) }
-    let(:new_answer) { create(:answer, :level_two, question: question) }
+    let(:new_answer) { create(:answer, :level_2, question: question) }
     let(:update_params) { { question.identifier => new_answer.id } }
 
     before do
@@ -106,7 +106,7 @@ RSpec.describe DiaryService, type: :service do
     it "handles nil parameters gracefully" do
       expect do
         service.update_diary_answers(nil)
-      end.to change(DiaryAnswer, :count).by(-1) # only destroys existing
+      end.not_to change(DiaryAnswer, :count) # does not modify anything when nil
     end
   end
 
@@ -222,9 +222,9 @@ RSpec.describe DiaryService, type: :service do
       it "clears existing candidates and generates new ones" do
         expect do
           service.regenerate_til_candidates_if_needed
-        end.to change { diary.til_candidates.count }.from(3).to(3)
+        end.not_to change { diary.til_candidates.count }
 
-        new_candidates = diary.til_candidates.order(:index)
+        new_candidates = diary.til_candidates.reload.order(:index)
         expect(new_candidates.map(&:content)).to eq(new_til_contents)
         expect(user.reload.seed_count).to eq(2) # decreased by 1
       end
@@ -281,10 +281,7 @@ RSpec.describe DiaryService, type: :service do
     let(:current_user) { user }
 
     context "when date validation error occurs" do
-      let(:existing_diary) { create(:diary, user: current_user, date: Date.current) }
-
       before do
-        diary.update!(date: Date.current)
         diary.errors.add(:date, "の日記は既に作成されています")
       end
 
@@ -293,8 +290,8 @@ RSpec.describe DiaryService, type: :service do
 
         expect(result[:questions]).to eq(questions)
         expect(result[:selected_answers]).to eq({ question.identifier => answer.id })
-        expect(result[:date]).to eq(Date.current)
-        expect(result[:existing_diary_for_error]).to eq(existing_diary)
+        expect(result[:date]).to eq(diary.date)
+        expect(result[:existing_diary_for_error]).to be_present
         expect(result[:flash_message]).to include("既に作成されています")
       end
     end

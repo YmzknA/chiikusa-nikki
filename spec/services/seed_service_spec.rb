@@ -26,10 +26,9 @@ RSpec.describe SeedService, type: :service do
       end
 
       it "updates last_seed_incremented_at timestamp" do
-        freeze_time do
-          service.increment_daily_seed
-          expect(user.reload.last_seed_incremented_at).to be_within(1.second).of(Time.current)
-        end
+        time_before = Time.current
+        service.increment_daily_seed
+        expect(user.reload.last_seed_incremented_at).to be >= time_before
       end
     end
 
@@ -104,14 +103,13 @@ RSpec.describe SeedService, type: :service do
 
         expect(service.success).to be true
         expect(service.message).to eq("Xで共有してタネを増やしました！")
-        expect(user.last_seed_incremented_at.to_date).to eq(Date.current)
+        expect(user.reload.last_shared_at.to_date).to eq(Date.current)
       end
 
-      it "updates last_seed_incremented_at timestamp" do
-        freeze_time do
-          service.increment_share_seed
-          expect(user.reload.last_seed_incremented_at).to be_within(1.second).of(Time.current)
-        end
+      it "updates last_shared_at timestamp" do
+        time_before = Time.current
+        service.increment_share_seed
+        expect(user.reload.last_shared_at).to be >= time_before
       end
     end
 

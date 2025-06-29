@@ -39,12 +39,10 @@ RSpec.describe OpenaiService, type: :service do
         service.generate_tils(notes)
 
         expect(mock_client).to have_received(:chat).exactly(3).times.with(
-          hash_including(
-            parameters: hash_including(
-              model: "gpt-4.1-nano-2025-04-14",
-              max_tokens: 150,
-              temperature: 1.5
-            )
+          parameters: hash_including(
+            model: "gpt-4.1-nano-2025-04-14",
+            max_tokens: 150,
+            temperature: 1.5
           )
         )
       end
@@ -53,13 +51,11 @@ RSpec.describe OpenaiService, type: :service do
         service.generate_tils(notes)
 
         expect(mock_client).to have_received(:chat).exactly(3).times.with(
-          hash_including(
-            parameters: hash_including(
-              messages: array_including(
-                hash_including(
-                  role: "system",
-                  content: a_string_including("プログラミング初心者または中級者", "TIL（Today I Learned）", "3文~5文")
-                )
+          parameters: hash_including(
+            messages: array_including(
+              hash_including(
+                role: "system",
+                content: a_string_including("プログラミング初心者または中級者", "TIL（Today I Learned）", "3文~5文")
               )
             )
           )
@@ -70,13 +66,11 @@ RSpec.describe OpenaiService, type: :service do
         service.generate_tils(notes)
 
         expect(mock_client).to have_received(:chat).exactly(3).times.with(
-          hash_including(
-            parameters: hash_including(
-              messages: array_including(
-                hash_including(
-                  role: "user",
-                  content: a_string_including(notes)
-                )
+          parameters: hash_including(
+            messages: array_including(
+              hash_including(
+                role: "user",
+                content: a_string_including(notes)
               )
             )
           )
