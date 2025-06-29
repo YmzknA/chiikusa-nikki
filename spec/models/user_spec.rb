@@ -450,7 +450,7 @@ RSpec.describe User, type: :model do
             expect(result).to be true
           end.to change(user, :seed_count).by(1)
 
-          expect(user.last_seed_incremented_at.to_date).to eq(Date.current)
+          expect(user.last_shared_at.to_date).to eq(Date.current)
         end
       end
 

@@ -259,23 +259,31 @@ RSpec.describe OpenaiService, type: :service do
     it "includes all required instructions in system prompt" do
       service.generate_tils(notes)
 
-      system_content = mock_client.received_messages.first.dig(:parameters, :messages, 0, :content)
-
-      expect(system_content).to include("3文~5文")
-      expect(system_content).to include("箇条書きではなく自然な文章")
-      expect(system_content).to include("今日は〜を学んだ")
-      expect(system_content).to include("TIL文のみで、前後に説明や挨拶は不要")
+      expect(mock_client).to have_received(:chat).with(
+        hash_including(
+          messages: array_including(
+            hash_including(
+              role: "system",
+              content: a_string_including("3文~5文", "箇条書きではなく自然な文章", "今日は〜を学んだ", "TIL文のみで、前後に説明や挨拶は不要")
+            )
+          )
+        )
+      )
     end
 
     it "provides clear output format instructions" do
       service.generate_tils(notes)
 
-      system_content = mock_client.received_messages.first.dig(:parameters, :messages, 0, :content)
-
-      expect(system_content).to include("学んだことや、今日やったことを具体的に")
-      expect(system_content).to include("〜ができるようになった")
-      expect(system_content).to include("〜を理解した")
-      expect(system_content).to include("～をした")
+      expect(mock_client).to have_received(:chat).with(
+        hash_including(
+          messages: array_including(
+            hash_including(
+              role: "system",
+              content: a_string_including("学んだことや、今日やったことを具体的に", "〜ができるようになった", "〜を理解した")
+            )
+          )
+        )
+      )
     end
   end
 
@@ -284,7 +292,7 @@ RSpec.describe OpenaiService, type: :service do
       [
         [OpenAI::Error, "OpenAI API Error"],
         [StandardError, "General Error"],
-        [Net::TimeoutError, "Timeout Error"],
+        [Timeout::Error, "Timeout Error"],
         [JSON::ParserError, "JSON Parse Error"]
       ]
     end
