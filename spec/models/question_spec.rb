@@ -8,7 +8,7 @@ RSpec.describe Question, type: :model do
 
   describe "validations" do
     subject { build(:question) }
-    
+
     it "creates valid question with factory" do
       question = build(:question)
       expect(question).to be_valid
@@ -120,13 +120,13 @@ RSpec.describe Question, type: :model do
       it "handles associated records on deletion" do
         answer_ids = question.answers.pluck(:id)
         diary_answer_ids = question.diary_answers.pluck(:id)
-        
+
         question.destroy
-        
+
         answer_ids.each do |id|
           expect(Answer.find_by(id: id)).to be_nil
         end
-        
+
         diary_answer_ids.each do |id|
           expect(DiaryAnswer.find_by(id: id)).to be_nil
         end
@@ -135,10 +135,9 @@ RSpec.describe Question, type: :model do
 
     describe "encoding and special characters" do
       it "handles Japanese text properly" do
-        question = create(:question, 
-          identifier: "japanese_test",
-          label: "今日の気分はいかがですか？ 😊"
-        )
+        question = create(:question,
+                          identifier: "japanese_test",
+                          label: "今日の気分はいかがですか？ 😊")
         expect(question.reload.label).to include("😊")
       end
     end
@@ -146,11 +145,11 @@ RSpec.describe Question, type: :model do
     describe "performance with large datasets" do
       it "performs efficiently with many answers" do
         question = create(:question)
-        
+
         expect do
-          100.times { |i| create(:answer, question: question, level: i % 5 + 1) }
+          100.times { |i| create(:answer, question: question, level: (i % 5) + 1) }
         end.to change(question.answers, :count).by(100)
-        
+
         expect(question.answers.count).to eq(100)
       end
     end

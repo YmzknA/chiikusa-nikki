@@ -8,7 +8,7 @@ RSpec.describe Answer, type: :model do
   describe "validations" do
     let(:question) { create(:question) }
     subject { build(:answer, question: question) }
-    
+
     context "when valid attributes" do
       it "is valid with all required attributes" do
         expect(subject).to be_valid
@@ -109,7 +109,7 @@ RSpec.describe Answer, type: :model do
       it "associates appropriate emojis with levels" do
         low_mood = mood_question.answers.find_by(level: 1)
         high_mood = mood_question.answers.find_by(level: 5)
-        
+
         expect(low_mood.emoji).to eq("😞")
         expect(high_mood.emoji).to eq("😄")
       end
@@ -127,7 +127,7 @@ RSpec.describe Answer, type: :model do
       it "is destroyed when question is destroyed" do
         answer_ids = answers.pluck(:id)
         mood_question.destroy
-        
+
         answer_ids.each do |id|
           expect(Answer.find_by(id: id)).to be_nil
         end
@@ -153,7 +153,7 @@ RSpec.describe Answer, type: :model do
 
     it "creates valid level answers" do
       (1..5).each do |level|
-        answer = build(:answer, "level_#{level}".to_sym)
+        answer = build(:answer, :"level_#{level}")
         expect(answer).to be_valid
         expect(answer.level).to eq(level)
       end
@@ -180,7 +180,7 @@ RSpec.describe Answer, type: :model do
     describe "encoding and special characters" do
       it "handles various emoji properly" do
         emojis = ["😀", "😢", "🔥", "❄️", "✅"]
-        
+
         emojis.each_with_index do |emoji, index|
           answer = create(:answer, question: question, emoji: emoji, level: index + 1)
           expect(answer.reload.emoji).to eq(emoji)
@@ -188,11 +188,10 @@ RSpec.describe Answer, type: :model do
       end
 
       it "handles Japanese labels" do
-        answer = create(:answer, 
-          question: question, 
-          label: "とても良い気分です",
-          emoji: "😄"
-        )
+        answer = create(:answer,
+                        question: question,
+                        label: "とても良い気分です",
+                        emoji: "😄")
         expect(answer.reload.label).to include("とても")
       end
     end
@@ -202,7 +201,7 @@ RSpec.describe Answer, type: :model do
         answers_data = 50.times.map do |i|
           {
             question: question,
-            level: i % 5 + 1,
+            level: (i % 5) + 1,
             label: "Answer #{i}",
             emoji: ["😀", "😔", "😐", "🙂", "😄"][i % 5]
           }

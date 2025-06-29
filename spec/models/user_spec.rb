@@ -10,7 +10,7 @@ RSpec.describe User, type: :model do
 
     describe "email validation" do
       it { is_expected.to validate_presence_of(:email) }
-      
+
       it "validates email format" do
         user.email = "invalid-email"
         expect(user).not_to be_valid
@@ -23,7 +23,7 @@ RSpec.describe User, type: :model do
       end
 
       it "does not enforce email uniqueness" do
-        existing_user = create(:user, email: "test@example.com")
+        create(:user, email: "test@example.com")
         new_user = build(:user, email: "test@example.com", github_id: "different_id")
         expect(new_user).to be_valid
       end
@@ -114,10 +114,10 @@ RSpec.describe User, type: :model do
         # Ensure no user with this github_id exists
         User.where(github_id: "12345").destroy_all
       end
-      
+
       it "creates a new GitHub user" do
         expect do
-          result = described_class.from_omniauth(github_auth)
+          described_class.from_omniauth(github_auth)
         end.to change(described_class, :count).by(1)
 
         user = described_class.last
@@ -129,7 +129,7 @@ RSpec.describe User, type: :model do
       it "creates a new Google user" do
         # Ensure no user with this google_id exists
         User.where(google_id: "67890").destroy_all
-        
+
         expect do
           described_class.from_omniauth(google_auth)
         end.to change(described_class, :count).by(1)
@@ -166,7 +166,7 @@ RSpec.describe User, type: :model do
 
       it "adds Google provider to existing user" do
         user = described_class.from_omniauth(google_auth, current_user)
-        
+
         expect(user.id).to eq(current_user.id)
         expect(user.google_id).to eq("67890")
         expect(user.providers).to include("google_oauth2")
@@ -174,7 +174,7 @@ RSpec.describe User, type: :model do
 
       it "raises error when provider is already taken" do
         create(:user, :with_google, google_id: "67890")
-        
+
         expect do
           described_class.from_omniauth(google_auth, current_user)
         end.to raise_error(StandardError, /この.*アカウントは既に別のユーザーに連携されています/)
@@ -338,7 +338,8 @@ RSpec.describe User, type: :model do
       end
 
       it "returns false when github_id is missing" do
-        user.update!(github_id: nil, encrypted_access_token: "token", providers: ["google_oauth2"], google_id: "123", encrypted_google_access_token: "token")
+        user.update!(github_id: nil, encrypted_access_token: "token", providers: ["google_oauth2"], google_id: "123",
+                     encrypted_google_access_token: "token")
         expect(user.github_auth?).to be false
       end
 
@@ -350,7 +351,7 @@ RSpec.describe User, type: :model do
 
     describe "#google_auth?" do
       it "returns true when both google_id and google_access_token are present" do
-        user.update!(google_id: "123", encrypted_google_access_token: "token", providers: ["github", "google_oauth2"])
+        user.update!(google_id: "123", encrypted_google_access_token: "token", providers: %w[github google_oauth2])
         expect(user.google_auth?).to be true
       end
 
@@ -360,7 +361,7 @@ RSpec.describe User, type: :model do
       end
 
       it "returns false when google_access_token is missing" do
-        user.update!(google_id: "123", encrypted_google_access_token: nil, providers: ["github", "google_oauth2"])
+        user.update!(google_id: "123", encrypted_google_access_token: nil, providers: %w[github google_oauth2])
         expect(user.google_auth?).to be false
       end
     end
@@ -372,14 +373,15 @@ RSpec.describe User, type: :model do
       end
 
       it "returns false when github is not in providers array" do
-        user.update!(providers: ["google_oauth2"], github_id: nil, encrypted_access_token: nil, google_id: "123", encrypted_google_access_token: "token")
+        user.update!(providers: ["google_oauth2"], github_id: nil, encrypted_access_token: nil, google_id: "123",
+                     encrypted_google_access_token: "token")
         expect(user.github_connected?).to be false
       end
     end
 
     describe "#google_connected?" do
       it "returns true when google_oauth2 is in providers array" do
-        user.update!(providers: ["github", "google_oauth2"], google_id: "123", encrypted_google_access_token: "token")
+        user.update!(providers: %w[github google_oauth2], google_id: "123", encrypted_google_access_token: "token")
         expect(user.google_connected?).to be true
       end
 

@@ -57,7 +57,7 @@ RSpec.describe DiaryService, type: :service do
     context "with invalid parameters" do
       it "ignores invalid question identifiers" do
         invalid_params = { "invalid_question" => answer.id }
-        
+
         expect do
           service.create_diary_answers(invalid_params)
         end.not_to change(DiaryAnswer, :count)
@@ -65,7 +65,7 @@ RSpec.describe DiaryService, type: :service do
 
       it "ignores blank answer IDs" do
         blank_params = { question.identifier => "" }
-        
+
         expect do
           service.create_diary_answers(blank_params)
         end.not_to change(DiaryAnswer, :count)
@@ -238,7 +238,7 @@ RSpec.describe DiaryService, type: :service do
       it "does not regenerate" do
         expect do
           service.regenerate_til_candidates_if_needed
-        end.not_to change { diary.til_candidates.count }
+        end.not_to(change { diary.til_candidates.count })
 
         expect(user.reload.seed_count).to eq(3) # unchanged
       end
@@ -253,7 +253,7 @@ RSpec.describe DiaryService, type: :service do
       it "does not regenerate and logs info" do
         expect do
           service.regenerate_til_candidates_if_needed
-        end.not_to change { diary.til_candidates.count }
+        end.not_to(change { diary.til_candidates.count })
 
         expect(Rails.logger).to have_received(:info).with(/Seed count is zero/)
       end
@@ -359,14 +359,14 @@ RSpec.describe DiaryService, type: :service do
   describe "private method behavior" do
     it "properly initializes instance variables" do
       custom_service = described_class.new(diary, user)
-      
+
       expect(custom_service.instance_variable_get(:@diary)).to eq(diary)
       expect(custom_service.instance_variable_get(:@user)).to eq(user)
     end
 
     it "falls back to diary user when user not provided" do
       service_without_user = described_class.new(diary)
-      
+
       expect(service_without_user.instance_variable_get(:@user)).to eq(diary.user)
     end
   end

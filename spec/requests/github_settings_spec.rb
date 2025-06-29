@@ -19,9 +19,9 @@ RSpec.describe "GithubSettings", type: :request do
       allow(user).to receive(:github_service).and_return(mock_service)
       allow(mock_service).to receive(:repository_exists?).and_return(true)
       allow(mock_service).to receive(:test_github_connection).and_return({ success: true })
-      
+
       get github_settings_path
-      
+
       expect(assigns(:repo_exists)).to be true
       expect(assigns(:connection_test_result)).to be_present
     end
@@ -31,9 +31,9 @@ RSpec.describe "GithubSettings", type: :request do
       mock_service = instance_double(GithubService)
       allow(user).to receive(:github_service).and_return(mock_service)
       allow(mock_service).to receive(:repository_exists?).and_return(false)
-      
+
       get github_settings_path
-      
+
       expect(assigns(:repo_exists)).to be false
       expect(flash.now[:alert]).to include("見つかりません")
     end
@@ -57,9 +57,9 @@ RSpec.describe "GithubSettings", type: :request do
         allow(mock_service).to receive(:create_repository)
           .with("test-repo")
           .and_return({ success: true, message: "Repository created" })
-        
+
         patch github_settings_path, params: { github_repo_name: "test-repo" }
-        
+
         expect(response).to redirect_to(github_settings_path)
         expect(flash[:notice]).to include("Repository created")
         expect(user.reload.github_repo_name).to eq("test-repo")
@@ -69,9 +69,9 @@ RSpec.describe "GithubSettings", type: :request do
         allow(mock_service).to receive(:create_repository)
           .with("invalid-repo")
           .and_return({ success: false, message: "Creation failed" })
-        
+
         patch github_settings_path, params: { github_repo_name: "invalid-repo" }
-        
+
         expect(response).to redirect_to(github_settings_path)
         expect(flash[:alert]).to include("Creation failed")
         expect(user.reload.github_repo_name).to be_nil
@@ -81,9 +81,9 @@ RSpec.describe "GithubSettings", type: :request do
         allow(mock_service).to receive(:create_repository)
           .with("auth-repo")
           .and_return({ success: false, requires_reauth: true, message: "Reauth required" })
-        
+
         patch github_settings_path, params: { github_repo_name: "auth-repo" }
-        
+
         expect(response).to redirect_to("/users/auth/github")
         expect(flash[:alert]).to include("Reauth required")
       end
@@ -92,14 +92,14 @@ RSpec.describe "GithubSettings", type: :request do
     context "with invalid parameters" do
       it "rejects blank repository name" do
         patch github_settings_path, params: { github_repo_name: "" }
-        
+
         expect(response).to redirect_to(github_settings_path)
         expect(flash[:alert]).to include("入力してください")
       end
 
       it "rejects whitespace-only repository name" do
         patch github_settings_path, params: { github_repo_name: "   " }
-        
+
         expect(response).to redirect_to(github_settings_path)
         expect(flash[:alert]).to include("入力してください")
       end
@@ -119,7 +119,7 @@ RSpec.describe "GithubSettings", type: :request do
 
     it "resets GitHub repository settings" do
       delete github_settings_path
-      
+
       expect(response).to redirect_to(github_settings_path)
       expect(flash[:notice]).to include("リセットしました")
       expect(user.reload.github_repo_name).to be_nil
@@ -143,9 +143,9 @@ RSpec.describe "GithubSettings", type: :request do
       user.update!(github_repo_name: "existing-repo")
       allow(mock_service).to receive(:repository_exists?).and_return(true)
       allow(mock_service).to receive(:test_github_connection).and_return({ success: true })
-      
+
       get github_settings_path
-      
+
       expect(assigns(:repo_exists)).to be true
       expect(flash.now[:alert]).to be_nil
     end
@@ -154,9 +154,9 @@ RSpec.describe "GithubSettings", type: :request do
       user.update!(github_repo_name: "test-repo")
       allow(mock_service).to receive(:repository_exists?).and_return(true)
       allow(mock_service).to receive(:test_github_connection).and_raise(StandardError, "Connection failed")
-      
+
       get github_settings_path
-      
+
       expect(assigns(:connection_test_result)).to eq({ success: false, message: "接続テストでエラーが発生しました" })
     end
   end
@@ -170,7 +170,7 @@ RSpec.describe "GithubSettings", type: :request do
 
     it "handles missing access token" do
       get github_settings_path
-      
+
       expect(response).to have_http_status(:success)
       expect(assigns(:repo_exists)).to be false
       expect(assigns(:connection_test_result)).to be_nil

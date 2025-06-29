@@ -13,24 +13,24 @@ end
 chrome_options = Selenium::WebDriver::Chrome::Options.new
 
 # 基本オプション
-chrome_options.add_argument('--headless=new')  # 新しいヘッドレスモード
-chrome_options.add_argument('--no-sandbox')    # Docker環境では必須
-chrome_options.add_argument('--disable-dev-shm-usage')  # メモリ不足対策
-chrome_options.add_argument('--disable-gpu')   # GPU無効化
-chrome_options.add_argument('--disable-web-security')
-chrome_options.add_argument('--allow-running-insecure-content')
-chrome_options.add_argument('--disable-extensions')
-chrome_options.add_argument('--disable-plugins')
-chrome_options.add_argument('--disable-images')
-chrome_options.add_argument('--disable-background-timer-throttling')
-chrome_options.add_argument('--disable-backgrounding-occluded-windows')
-chrome_options.add_argument('--disable-renderer-backgrounding')
+chrome_options.add_argument("--headless=new")  # 新しいヘッドレスモード
+chrome_options.add_argument("--no-sandbox")    # Docker環境では必須
+chrome_options.add_argument("--disable-dev-shm-usage") # メモリ不足対策
+chrome_options.add_argument("--disable-gpu") # GPU無効化
+chrome_options.add_argument("--disable-web-security")
+chrome_options.add_argument("--allow-running-insecure-content")
+chrome_options.add_argument("--disable-extensions")
+chrome_options.add_argument("--disable-plugins")
+chrome_options.add_argument("--disable-images")
+chrome_options.add_argument("--disable-background-timer-throttling")
+chrome_options.add_argument("--disable-backgrounding-occluded-windows")
+chrome_options.add_argument("--disable-renderer-backgrounding")
 
 # ウィンドウサイズ設定
-chrome_options.add_argument('--window-size=1400,1400')
+chrome_options.add_argument("--window-size=1400,1400")
 
 # Chrome binary設定（Docker環境）
-chrome_binary = ENV['CHROME_BINARY'] || '/usr/bin/google-chrome'
+chrome_binary = ENV["CHROME_BINARY"] || "/usr/bin/google-chrome"
 chrome_options.binary = chrome_binary if File.exist?(chrome_binary)
 
 # カスタムドライバーの登録
@@ -45,8 +45,8 @@ end
 # rack_test用の設定（非JSテスト）
 Capybara.register_driver :rack_test do |app|
   Capybara::RackTest::Driver.new(app, headers: {
-    'HTTP_USER_AGENT' => 'Capybara'
-  })
+                                   "HTTP_USER_AGENT" => "Capybara"
+                                 })
 end
 
 RSpec.configure do |config|
@@ -78,9 +78,9 @@ RSpec.configure do |config|
 end
 
 # デバッグ用設定（開発時のみ）
-if ENV['DEBUG_CAPYBARA']
+if ENV["DEBUG_CAPYBARA"]
   Capybara.configure do |config|
-    config.save_path = Rails.root.join('tmp/capybara')
-    config.automatic_screenshot_path = Rails.root.join('tmp/capybara')
+    config.save_path = Rails.root.join("tmp/capybara")
+    config.automatic_screenshot_path = Rails.root.join("tmp/capybara")
   end
 end

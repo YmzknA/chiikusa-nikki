@@ -15,9 +15,9 @@ RSpec.describe GithubService, type: :service do
       before do
         allow(service).to receive(:validate_repository_creation).and_return(nil)
         allow(service).to receive(:perform_repository_creation).and_return({
-          success: true,
-          message: "リポジトリを作成しました"
-        })
+                                                                             success: true,
+                                                                             message: "リポジトリを作成しました"
+                                                                           })
       end
 
       it "creates repository successfully" do
@@ -31,9 +31,9 @@ RSpec.describe GithubService, type: :service do
     context "when validation fails" do
       before do
         allow(service).to receive(:validate_repository_creation).and_return({
-          success: false,
-          message: "Validation failed"
-        })
+                                                                              success: false,
+                                                                              message: "Validation failed"
+                                                                            })
       end
 
       it "returns validation error" do
@@ -124,14 +124,14 @@ RSpec.describe GithubService, type: :service do
     context "when upload succeeds" do
       before do
         allow(service).to receive(:create_or_update_file).and_return({
-          success: true,
-          commit_sha: "abc123"
-        })
+                                                                       success: true,
+                                                                       commit_sha: "abc123"
+                                                                     })
       end
 
       it "uploads TIL successfully" do
         result = service.push_til(diary)
-        
+
         expect(result[:success]).to be true
         expect(result[:message]).to include("アップロードしました")
         expect(diary.reload.github_uploaded).to be true
@@ -151,9 +151,9 @@ RSpec.describe GithubService, type: :service do
     context "when upload fails" do
       before do
         allow(service).to receive(:create_or_update_file).and_return({
-          success: false,
-          message: "Upload failed"
-        })
+                                                                       success: false,
+                                                                       message: "Upload failed"
+                                                                     })
       end
 
       it "returns error message" do
@@ -178,7 +178,7 @@ RSpec.describe GithubService, type: :service do
 
     it "clears all GitHub-related audit fields" do
       service.reset_all_diaries_upload_status
-      
+
       user.diaries.each do |diary|
         expect(diary.github_uploaded).to be false
         expect(diary.github_uploaded_at).to be_nil
@@ -274,7 +274,7 @@ RSpec.describe GithubService, type: :service do
 
       it "returns repository information" do
         result = service.get_repository_info("test-repo")
-        
+
         expect(result[:name]).to eq("test-repo")
         expect(result[:full_name]).to eq("#{user.username}/test-repo")
         expect(result[:private]).to be false
@@ -311,14 +311,14 @@ RSpec.describe GithubService, type: :service do
     context "when file operation succeeds" do
       before do
         allow(service).to receive(:handle_file_operation).and_return({
-          success: true,
-          commit_sha: "abc123"
-        })
+                                                                       success: true,
+                                                                       commit_sha: "abc123"
+                                                                     })
       end
 
       it "returns success result" do
         result = service.create_or_update_file(repo_name, file_path, content, commit_message)
-        
+
         expect(result[:success]).to be true
         expect(result[:commit_sha]).to eq("abc123")
       end
@@ -331,7 +331,7 @@ RSpec.describe GithubService, type: :service do
 
       it "returns error message" do
         result = service.create_or_update_file(repo_name, file_path, content, commit_message)
-        
+
         expect(result[:success]).to be false
         expect(result[:message]).to include("クライアントが利用できません")
       end
@@ -341,14 +341,14 @@ RSpec.describe GithubService, type: :service do
       before do
         allow(service).to receive(:handle_file_operation).and_raise(Octokit::NotFound)
         allow(service).to receive(:handle_repository_not_found_error).and_return({
-          success: false,
-          message: "Repository not found"
-        })
+                                                                                   success: false,
+                                                                                   message: "Repository not found"
+                                                                                 })
       end
 
       it "handles error gracefully" do
         result = service.create_or_update_file(repo_name, file_path, content, commit_message)
-        
+
         expect(result[:success]).to be false
         expect(result[:message]).to include("Repository not found")
       end
@@ -367,7 +367,7 @@ RSpec.describe GithubService, type: :service do
       error_cases.each do |error_class, handler_method|
         allow(service).to receive(:handle_file_operation).and_raise(error_class)
         allow(service).to receive(handler_method).and_return({ success: false, message: "Error handled" })
-        
+
         result = service.create_or_update_file("repo", "file", "content", "message")
         expect(result[:success]).to be false
       end
@@ -377,19 +377,19 @@ RSpec.describe GithubService, type: :service do
   describe "Performance and scalability tests" do
     context "with large content uploads" do
       let(:large_diary) { create(:diary, :with_selected_til, user: user, notes: "Large content " * 1000) }
-      
+
       before do
         allow(service).to receive(:create_or_update_file).and_return({
-          success: true,
-          commit_sha: "abc123"
-        })
+                                                                       success: true,
+                                                                       commit_sha: "abc123"
+                                                                     })
       end
-      
+
       it "handles large TIL content efficiently" do
         start_time = Time.current
         result = service.push_til(large_diary)
         end_time = Time.current
-        
+
         expect(result[:success]).to be true
         expect(end_time - start_time).to be < 5.seconds
       end
@@ -397,21 +397,21 @@ RSpec.describe GithubService, type: :service do
 
     context "with concurrent operations" do
       let(:diaries) { create_list(:diary, 5, :with_selected_til, user: user) }
-      
+
       before do
         allow(service).to receive(:create_or_update_file).and_return({
-          success: true,
-          commit_sha: "abc123"
-        })
+                                                                       success: true,
+                                                                       commit_sha: "abc123"
+                                                                     })
       end
-      
+
       it "handles multiple simultaneous uploads" do
         threads = diaries.map do |diary|
           Thread.new { service.push_til(diary) }
         end
-        
+
         results = threads.map(&:value)
-        
+
         expect(results).to all(satisfy { |r| r[:success] == true })
         expect(diaries.all? { |d| d.reload.github_uploaded? }).to be true
       end
@@ -422,18 +422,16 @@ RSpec.describe GithubService, type: :service do
         call_count = 0
         allow(mock_client).to receive(:create_contents) do
           call_count += 1
-          if call_count <= 2
-            raise Octokit::TooManyRequests.new(response_headers: { "retry-after" => "60" })
-          else
-            double(commit: double(sha: "success_sha"))
-          end
+          raise Octokit::TooManyRequests.new(response_headers: { "retry-after" => "60" }) if call_count <= 2
+
+          double(commit: double(sha: "success_sha"))
         end
         allow(service).to receive(:handle_file_operation).and_call_original
       end
-      
+
       it "handles GitHub rate limiting" do
         result = service.create_or_update_file("repo", "file", "content", "message")
-        
+
         expect(result[:success]).to be false
       end
     end
@@ -449,29 +447,29 @@ RSpec.describe GithubService, type: :service do
           commit_message: ["<script>alert('pwned')</script>", "'; DROP TABLE commits; --"]
         }
       end
-      
+
       before do
         allow(service).to receive(:create_or_update_file).and_call_original
         allow(service).to receive(:handle_file_operation).and_return({
-          success: true,
-          commit_sha: "safe_sha"
-        })
+                                                                       success: true,
+                                                                       commit_sha: "safe_sha"
+                                                                     })
       end
-      
+
       it "safely handles malicious repository names" do
         malicious_inputs[:repo_name].each do |malicious_name|
           result = service.create_or_update_file(malicious_name, "safe.md", "content", "message")
           expect(result).to be_a(Hash)
         end
       end
-      
+
       it "safely handles malicious file paths" do
         malicious_inputs[:file_path].each do |malicious_path|
           result = service.create_or_update_file("safe/repo", malicious_path, "content", "message")
           expect(result).to be_a(Hash)
         end
       end
-      
+
       it "safely handles malicious content" do
         malicious_inputs[:content].each do |malicious_content|
           result = service.create_or_update_file("safe/repo", "safe.md", malicious_content, "message")
@@ -486,7 +484,7 @@ RSpec.describe GithubService, type: :service do
         result = service.repository_exists?(long_name)
         expect(result).to be false
       end
-      
+
       it "handles empty and nil inputs gracefully" do
         expect(service.repository_exists?("")).to be false
         expect(service.repository_exists?(nil)).to be false
@@ -506,11 +504,11 @@ RSpec.describe GithubService, type: :service do
           { "name" => nil, "full_name" => "" }
         ]
       end
-      
+
       it "handles malformed repository responses" do
         malformed_responses.each do |response|
           allow(mock_client).to receive(:repository).and_return(response)
-          
+
           result = service.get_repository_info("test-repo")
           expect(result).to be_nil
         end
@@ -526,15 +524,15 @@ RSpec.describe GithubService, type: :service do
           OpenSSL::SSL::SSLError.new("SSL error")
         ]
       end
-      
+
       before do
         allow(Rails.logger).to receive(:error)
       end
-      
+
       it "handles various network errors gracefully" do
         network_errors.each do |error|
           allow(mock_client).to receive(:repository).and_raise(error)
-          
+
           result = service.repository_exists?("test-repo")
           expect(result).to be false
           expect(Rails.logger).to have_received(:error)
@@ -556,10 +554,10 @@ RSpec.describe GithubService, type: :service do
           )
         )
       end
-      
+
       it "handles partial repository information gracefully" do
         result = service.get_repository_info("test-repo")
-        
+
         expect(result[:name]).to eq("test-repo")
         expect(result[:private]).to be_nil
         expect(result[:description]).to eq("")
@@ -569,20 +567,20 @@ RSpec.describe GithubService, type: :service do
 
   describe "Audit and logging functionality" do
     let(:diary_with_audit) { create(:diary, :with_selected_til, user: user) }
-    
+
     before do
       allow(service).to receive(:create_or_update_file).and_return({
-        success: true,
-        commit_sha: "audit_sha_123"
-      })
+                                                                     success: true,
+                                                                     commit_sha: "audit_sha_123"
+                                                                   })
     end
-    
+
     it "properly sets audit fields on successful upload" do
       freeze_time do
         result = service.push_til(diary_with_audit)
-        
+
         expect(result[:success]).to be true
-        
+
         diary_with_audit.reload
         expect(diary_with_audit.github_uploaded).to be true
         expect(diary_with_audit.github_uploaded_at).to be_within(1.second).of(Time.current)
@@ -591,15 +589,15 @@ RSpec.describe GithubService, type: :service do
         expect(diary_with_audit.github_repository_url).to include(user.github_repo_name)
       end
     end
-    
+
     it "preserves audit trail during reset operations" do
       # First upload
       service.push_til(diary_with_audit)
-      original_uploaded_at = diary_with_audit.reload.github_uploaded_at
-      
+      diary_with_audit.reload.github_uploaded_at
+
       # Reset
       service.reset_all_diaries_upload_status
-      
+
       diary_with_audit.reload
       expect(diary_with_audit.github_uploaded).to be false
       expect(diary_with_audit.github_uploaded_at).to be_nil
@@ -629,16 +627,14 @@ RSpec.describe GithubService, type: :service do
           }
         ]
       end
-      
+
       it "generates appropriate content for various scenarios" do
         test_scenarios.each do |scenario|
           test_diary = create(:diary, user: user, **scenario[:diary_attrs])
-          if scenario[:diary_attrs][:selected_til_index]
-            create_list(:til_candidate, 3, diary: test_diary)
-          end
-          
+          create_list(:til_candidate, 3, diary: test_diary) if scenario[:diary_attrs][:selected_til_index]
+
           content = service.send(:generate_til_content, test_diary)
-          
+
           expect(content).to include("# TIL - #{test_diary.date.strftime('%Y年%m月%d日')}")
           expect(content).to be_a(String)
           expect(content.length).to be > 10

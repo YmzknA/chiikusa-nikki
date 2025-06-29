@@ -20,7 +20,7 @@ RSpec.describe "Stats", type: :request do
 
     it "builds all required charts" do
       get stats_path
-      
+
       expect(assigns(:daily_trends_chart)).to be_present
       expect(assigns(:monthly_posts_chart)).to be_present
       expect(assigns(:learning_intensity_heatmap)).to be_present
@@ -31,7 +31,7 @@ RSpec.describe "Stats", type: :request do
 
     it "uses default parameters when none provided" do
       get stats_path
-      
+
       expect(assigns(:view_type)).to eq("recent")
       expect(assigns(:target_month)).to eq(Date.current.strftime("%Y-%m"))
       expect(assigns(:weekday_months)).to eq(1)
@@ -45,7 +45,7 @@ RSpec.describe "Stats", type: :request do
         weekday_months: 3,
         distribution_months: 6
       }
-      
+
       expect(assigns(:view_type)).to eq("monthly")
       expect(assigns(:target_month)).to eq("2024-01")
       expect(assigns(:weekday_months)).to eq(3)
@@ -57,7 +57,7 @@ RSpec.describe "Stats", type: :request do
         weekday_months: 15,
         distribution_months: 0
       }
-      
+
       expect(assigns(:weekday_months)).to eq(12)
       expect(assigns(:distribution_months)).to eq(1)
     end
@@ -71,30 +71,30 @@ RSpec.describe "Stats", type: :request do
 
   describe "Turbo Frame requests" do
     it "renders daily trends partial for turbo frame request" do
-      get stats_path, 
+      get stats_path,
           headers: { "Turbo-Frame" => "daily-trends-chart" }
-      
+
       expect(response).to render_template("stats/charts/_daily_trends")
     end
 
     it "renders weekday pattern partial for turbo frame request" do
-      get stats_path, 
+      get stats_path,
           headers: { "Turbo-Frame" => "weekday-pattern-chart" }
-      
+
       expect(response).to render_template("stats/charts/_weekday_pattern")
     end
 
     it "renders distribution partial for turbo frame request" do
-      get stats_path, 
+      get stats_path,
           headers: { "Turbo-Frame" => "distribution-chart" }
-      
+
       expect(response).to render_template("stats/charts/_distribution")
     end
 
     it "renders default partial for unknown turbo frame" do
-      get stats_path, 
+      get stats_path,
           headers: { "Turbo-Frame" => "unknown-chart" }
-      
+
       expect(response).to render_template("stats/_index")
     end
   end
@@ -107,16 +107,16 @@ RSpec.describe "Stats", type: :request do
 
     it "processes user's diary data for charts" do
       get stats_path
-      
+
       expect(response).to have_http_status(:success)
       expect(assigns(:daily_trends_chart)).to be_present
     end
 
     it "handles empty data gracefully" do
       user.diaries.destroy_all
-      
+
       get stats_path
-      
+
       expect(response).to have_http_status(:success)
     end
   end
@@ -133,11 +133,11 @@ RSpec.describe "Stats", type: :request do
     end
 
     it "handles non-numeric month parameters" do
-      get stats_path, params: { 
+      get stats_path, params: {
         weekday_months: "invalid",
         distribution_months: "invalid"
       }
-      
+
       expect(assigns(:weekday_months)).to eq(1)
       expect(assigns(:distribution_months)).to eq(1)
     end

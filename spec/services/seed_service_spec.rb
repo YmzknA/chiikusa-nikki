@@ -42,7 +42,7 @@ RSpec.describe SeedService, type: :service do
         expect do
           result = service.increment_daily_seed
           expect(result).to eq(service)
-        end.not_to change { user.reload.seed_count }
+        end.not_to(change { user.reload.seed_count })
 
         expect(service.success).to be false
         expect(service.message).to eq("本日は既にタネを増やしています。")
@@ -58,7 +58,7 @@ RSpec.describe SeedService, type: :service do
         expect do
           result = service.increment_daily_seed
           expect(result).to eq(service)
-        end.not_to change { user.reload.seed_count }
+        end.not_to(change { user.reload.seed_count })
 
         expect(service.success).to be false
         expect(service.message).to eq("本日は既にタネを増やしています。")
@@ -124,7 +124,7 @@ RSpec.describe SeedService, type: :service do
         expect do
           result = service.increment_share_seed
           expect(result).to eq(service)
-        end.not_to change { user.reload.seed_count }
+        end.not_to(change { user.reload.seed_count })
 
         expect(service.success).to be false
         expect(service.message).to eq("本日は既にX共有でタネを増やしています。")
@@ -140,7 +140,7 @@ RSpec.describe SeedService, type: :service do
         expect do
           result = service.increment_share_seed
           expect(result).to eq(service)
-        end.not_to change { user.reload.seed_count }
+        end.not_to(change { user.reload.seed_count })
 
         expect(service.success).to be false
         expect(service.message).to eq("本日は既にX共有でタネを増やしています。")
@@ -172,7 +172,7 @@ RSpec.describe SeedService, type: :service do
       it "respects share-specific limits" do
         expect do
           service.increment_share_seed
-        end.not_to change { user.reload.seed_count }
+        end.not_to(change { user.reload.seed_count })
 
         expect(service.success).to be false
         expect(service.message).to include("X共有で")
@@ -293,7 +293,7 @@ RSpec.describe SeedService, type: :service do
       it "respects current timezone for daily limits" do
         # Set increment time to yesterday in current timezone
         user.update!(last_seed_incremented_at: 1.day.ago.in_time_zone)
-        
+
         expect do
           service.increment_daily_seed
         end.to change { user.reload.seed_count }.by(1)

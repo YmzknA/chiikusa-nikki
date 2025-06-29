@@ -3,8 +3,8 @@ require "rails_helper"
 RSpec.describe DailyWeather, type: :model do
   describe "validations" do
     subject { build(:daily_weather) }
-    
-    # Note: These validations may not be implemented in the model yet
+
+    # NOTE: These validations may not be implemented in the model yet
     # it { is_expected.to validate_presence_of(:date) }
     # it { is_expected.to validate_uniqueness_of(:date) }
   end
@@ -16,10 +16,10 @@ RSpec.describe DailyWeather, type: :model do
     end
 
     it "validates date uniqueness" do
-      # Note: This test is commented out as date uniqueness validation may not be implemented
+      # NOTE: This test is commented out as date uniqueness validation may not be implemented
       # create(:daily_weather, date: Date.current)
       # duplicate_weather = build(:daily_weather, date: Date.current)
-      # 
+      #
       # expect(duplicate_weather).not_to be_valid
       # expect(duplicate_weather.errors[:date]).to include("has already been taken")
     end

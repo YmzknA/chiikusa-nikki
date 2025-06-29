@@ -49,7 +49,7 @@ RSpec.describe "Profiles", type: :request do
     context "with valid parameters" do
       it "updates the user's profile" do
         patch profile_path, params: update_params
-        
+
         user.reload
         expect(user.username).to eq("updated_username")
         expect(response).to redirect_to(profile_path)
@@ -60,9 +60,9 @@ RSpec.describe "Profiles", type: :request do
     context "with invalid parameters" do
       it "renders edit template with errors" do
         update_params[:user][:username] = ""
-        
+
         patch profile_path, params: update_params
-        
+
         expect(response).to render_template(:edit)
         expect(response).to have_http_status(:unprocessable_entity)
       end
@@ -70,9 +70,9 @@ RSpec.describe "Profiles", type: :request do
       it "does not update with invalid username" do
         original_username = user.username
         update_params[:user][:username] = ""
-        
+
         patch profile_path, params: update_params
-        
+
         user.reload
         expect(user.username).to eq(original_username)
       end
@@ -92,7 +92,7 @@ RSpec.describe "Profiles", type: :request do
     end
 
     it "shows Google connection status" do
-      user.update!(providers: ["github", "google_oauth2"], google_id: "google123")
+      user.update!(providers: %w[github google_oauth2], google_id: "google123")
       get profile_path
       expect(response.body).to include("Google")
     end

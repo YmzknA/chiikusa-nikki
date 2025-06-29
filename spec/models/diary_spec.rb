@@ -17,7 +17,7 @@ RSpec.describe Diary, type: :model do
       it "validates uniqueness of date scoped to user" do
         create(:diary, user: user, date: Date.current)
         duplicate_diary = build(:diary, user: user, date: Date.current)
-        
+
         expect(duplicate_diary).not_to be_valid
         expect(duplicate_diary.errors[:date]).to include("の日記は既に作成されています")
       end
@@ -26,7 +26,7 @@ RSpec.describe Diary, type: :model do
         other_user = create(:user, github_id: "different_id")
         create(:diary, user: user, date: Date.current)
         diary_for_other_user = build(:diary, user: other_user, date: Date.current)
-        
+
         expect(diary_for_other_user).to be_valid
       end
     end
@@ -108,7 +108,7 @@ RSpec.describe Diary, type: :model do
 
     describe "#selected_til_content" do
       let(:diary_with_tils) { create(:diary, :with_til_candidates, user: user) }
-      
+
       context "when TIL is selected" do
         it "returns the content of selected TIL candidate" do
           diary_with_tils.update!(selected_til_index: 0)

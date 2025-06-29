@@ -8,7 +8,7 @@ RSpec.describe TilCandidate, type: :model do
   describe "validations" do
     let(:diary) { create(:diary) }
     let(:til_candidate) { build(:til_candidate, diary: diary) }
-    
+
     context "when valid attributes" do
       it "is valid with all required attributes" do
         expect(til_candidate).to be_valid
@@ -34,7 +34,7 @@ RSpec.describe TilCandidate, type: :model do
       end
 
       it "handles very long content" do
-        til_candidate.content = "A" * 10000
+        til_candidate.content = "A" * 10_000
         expect(til_candidate).to be_valid
       end
     end
@@ -97,7 +97,7 @@ RSpec.describe TilCandidate, type: :model do
       it "is destroyed when diary is destroyed" do
         candidate_ids = til_candidates.pluck(:id)
         diary.destroy
-        
+
         candidate_ids.each do |id|
           expect(TilCandidate.find_by(id: id)).to be_nil
         end
@@ -138,10 +138,9 @@ RSpec.describe TilCandidate, type: :model do
 
     describe "data integrity" do
       it "handles encoding issues gracefully" do
-        til_candidate = create(:til_candidate, 
-          diary: diary, 
-          content: "Test with special chars: 日本語 émoji 🚀"
-        )
+        til_candidate = create(:til_candidate,
+                               diary: diary,
+                               content: "Test with special chars: 日本語 émoji 🚀")
         expect(til_candidate.reload.content).to include("日本語")
       end
 

@@ -66,7 +66,7 @@ RSpec.describe "Diaries", type: :request do
     end
 
     it "redirects when diary not found" do
-      get diary_path(999999)
+      get diary_path(999_999)
       expect(response).to redirect_to(diaries_path)
     end
 
@@ -85,7 +85,7 @@ RSpec.describe "Diaries", type: :request do
     end
 
     it "loads selected answers" do
-      diary_answer = create(:diary_answer, diary: diary, question: question, answer: answer)
+      create(:diary_answer, diary: diary, question: question, answer: answer)
       get edit_diary_path(diary)
       selected_answers = assigns(:selected_answers)
       expect(selected_answers[question.identifier]).to eq(answer.id.to_s)
@@ -118,29 +118,29 @@ RSpec.describe "Diaries", type: :request do
       it "redirects with TIL generation when notes present" do
         user.update!(seed_count: 3)
         allow_any_instance_of(OpenaiService).to receive(:generate_tils).and_return(["TIL 1", "TIL 2", "TIL 3"])
-        
+
         post diaries_path, params: { diary: diary_params, diary_answers: diary_answers_params }
-        
+
         expect(response).to redirect_to(edit_diary_path(Diary.last))
       end
 
       it "redirects without TIL generation when notes blank" do
         diary_params[:notes] = ""
-        
+
         post diaries_path, params: { diary: diary_params, diary_answers: diary_answers_params }
-        
+
         expect(response).to redirect_to(diary_path(Diary.last))
       end
 
       it "skips AI generation when requested" do
         user.update!(seed_count: 3)
-        
-        post diaries_path, params: { 
-          diary: diary_params, 
+
+        post diaries_path, params: {
+          diary: diary_params,
           diary_answers: diary_answers_params,
           skip_ai_generation: "true"
         }
-        
+
         expect(response).to redirect_to(diary_path(Diary.last))
       end
     end
@@ -148,18 +148,18 @@ RSpec.describe "Diaries", type: :request do
     context "with invalid parameters" do
       it "renders new template when date is duplicate" do
         create(:diary, user: user, date: Date.current)
-        
+
         post diaries_path, params: { diary: diary_params, diary_answers: diary_answers_params }
-        
+
         expect(response).to render_template(:new)
         expect(assigns(:existing_diary_for_error)).to be_present
       end
 
       it "renders new template with validation errors" do
         diary_params[:date] = nil
-        
+
         post diaries_path, params: { diary: diary_params, diary_answers: diary_answers_params }
-        
+
         expect(response).to render_template(:new)
       end
     end
@@ -171,7 +171,7 @@ RSpec.describe "Diaries", type: :request do
     context "with valid parameters" do
       it "updates the diary" do
         patch diary_path(diary), params: { diary: update_params }
-        
+
         diary.reload
         expect(diary.notes).to eq("Updated notes")
         expect(diary.is_public).to be true
@@ -180,13 +180,14 @@ RSpec.describe "Diaries", type: :request do
 
       it "regenerates TIL candidates when requested" do
         user.update!(seed_count: 3)
-        allow_any_instance_of(OpenaiService).to receive(:generate_tils).and_return(["New TIL 1", "New TIL 2", "New TIL 3"])
-        
-        patch diary_path(diary), params: { 
-          diary: update_params, 
+        allow_any_instance_of(OpenaiService).to receive(:generate_tils).and_return(["New TIL 1", "New TIL 2",
+                                                                                    "New TIL 3"])
+
+        patch diary_path(diary), params: {
+          diary: update_params,
           regenerate_ai: "1"
         }
-        
+
         expect(response).to redirect_to(diary_path(diary))
       end
     end
@@ -194,48 +195,48 @@ RSpec.describe "Diaries", type: :request do
     context "with invalid parameters" do
       it "renders edit template with validation errors" do
         patch diary_path(diary), params: { diary: { date: nil } }
-        
+
         expect(response).to render_template(:edit)
       end
 
       it "handles unauthorized access to other user's diary" do
         other_user = create(:user, github_id: "other_user")
         other_diary = create(:diary, user: other_user)
-        
+
         patch diary_path(other_diary), params: { diary: update_params }
-        
+
         expect(response).to redirect_to(diaries_path)
       end
 
       it "prevents TIL regeneration without sufficient seeds" do
         user.update!(seed_count: 0)
-        
-        patch diary_path(diary), params: { 
-          diary: update_params, 
+
+        patch diary_path(diary), params: {
+          diary: update_params,
           regenerate_ai: "1"
         }
-        
+
         expect(response).to render_template(:edit)
         expect(flash[:alert]).to include("種が不足")
       end
 
       it "handles invalid selected_til_index" do
         update_params[:selected_til_index] = 999
-        
+
         patch diary_path(diary), params: { diary: update_params }
-        
+
         expect(response).to redirect_to(diary_path(diary))
-        
+
         diary.reload
         expect(diary.selected_til_index).to eq(999)
       end
 
       it "handles concurrent updates gracefully" do
         original_updated_at = diary.updated_at
-        
+
         patch diary_path(diary), params: { diary: { notes: "First update" } }
         patch diary_path(diary), params: { diary: { notes: "Second update" } }
-        
+
         diary.reload
         expect(diary.notes).to eq("Second update")
         expect(diary.updated_at).to be > original_updated_at
@@ -246,11 +247,11 @@ RSpec.describe "Diaries", type: :request do
   describe "DELETE /diaries/:id" do
     it "destroys the diary" do
       diary_to_delete = create(:diary, user: user)
-      
+
       expect do
         delete diary_path(diary_to_delete)
       end.to change(Diary, :count).by(-1)
-      
+
       expect(response).to redirect_to(diaries_path)
     end
 
@@ -272,17 +273,17 @@ RSpec.describe "Diaries", type: :request do
       mock_service = instance_double(GithubService)
       allow(user).to receive(:github_service).and_return(mock_service)
       allow(mock_service).to receive(:push_til).and_return({ success: true, message: "Uploaded successfully" })
-      
+
       post upload_to_github_diary_path(github_diary)
-      
+
       expect(response).to redirect_to(diary_path(github_diary))
     end
 
     it "shows error when upload not possible" do
       github_diary.update!(github_uploaded: true)
-      
+
       post upload_to_github_diary_path(github_diary)
-      
+
       expect(response).to redirect_to(diary_path(github_diary))
       expect(flash[:alert]).to include("アップロードできません")
     end
@@ -293,22 +294,22 @@ RSpec.describe "Diaries", type: :request do
       expect do
         post increment_seed_diaries_path
       end.to change { user.reload.seed_count }.by(1)
-      
+
       expect(response).to redirect_to(diaries_path)
     end
 
     it "responds with turbo stream" do
       post increment_seed_diaries_path, headers: { "Accept" => "text/vnd.turbo-stream.html" }
-      
+
       expect(response.media_type).to eq("text/vnd.turbo-stream.html")
     end
 
     it "does not increment when limit reached" do
       user.update!(seed_count: 5)
-      
+
       expect do
         post increment_seed_diaries_path
-      end.not_to change { user.reload.seed_count }
+      end.not_to(change { user.reload.seed_count })
     end
   end
 
@@ -320,10 +321,10 @@ RSpec.describe "Diaries", type: :request do
     end
 
     it "responds with JSON" do
-      post share_on_x_diaries_path, 
+      post share_on_x_diaries_path,
            params: { diary_id: diary.id },
            headers: { "Accept" => "application/json" }
-      
+
       expect(response.media_type).to eq("application/json")
       json_response = JSON.parse(response.body)
       expect(json_response["success"]).to be true
@@ -332,30 +333,30 @@ RSpec.describe "Diaries", type: :request do
 
   describe "GET /diaries/search_by_date" do
     it "returns diary ID for existing date" do
-      get search_by_date_diaries_path, 
+      get search_by_date_diaries_path,
           params: { date: diary.date.to_s },
           headers: { "Accept" => "application/json" }
-      
+
       expect(response).to have_http_status(:success)
       json_response = JSON.parse(response.body)
       expect(json_response["diary_id"]).to eq(diary.id)
     end
 
     it "returns null for non-existing date" do
-      get search_by_date_diaries_path, 
+      get search_by_date_diaries_path,
           params: { date: (Date.current + 1.year).to_s },
           headers: { "Accept" => "application/json" }
-      
+
       expect(response).to have_http_status(:success)
       json_response = JSON.parse(response.body)
       expect(json_response["diary_id"]).to be_nil
     end
 
     it "returns error for invalid date format" do
-      get search_by_date_diaries_path, 
+      get search_by_date_diaries_path,
           params: { date: "invalid-date" },
           headers: { "Accept" => "application/json" }
-      
+
       expect(response).to have_http_status(:bad_request)
       json_response = JSON.parse(response.body)
       expect(json_response["error"]).to include("Invalid date format")
@@ -372,18 +373,18 @@ RSpec.describe "Diaries", type: :request do
     it "shows only public diaries" do
       public_diary = create(:diary, :public)
       private_diary = create(:diary, is_public: false)
-      
+
       get public_diaries_path
-      
+
       expect(response.body).to include(public_diary.date.strftime("%Y年%m月%d日"))
       expect(response.body).not_to include(private_diary.date.strftime("%Y年%m月%d日"))
     end
 
     it "limits to 20 diaries" do
       create_list(:diary, 25, :public)
-      
+
       get public_diaries_path
-      
+
       expect(assigns(:diaries).count).to eq(20)
     end
   end
@@ -397,21 +398,21 @@ RSpec.describe "Diaries", type: :request do
           create(:question, :motivation),
           create(:question, :progress)
         ]
-        
+
         questions.each { |q| create_list(:answer, 5, question: q) }
-        
+
         diary_answers = questions.each_with_object({}) do |question, hash|
           hash[question.identifier] = question.answers.sample.id
         end
-        
+
         allow_any_instance_of(OpenaiService).to receive(:generate_tils)
           .and_return(["TIL 1", "TIL 2", "TIL 3"])
-        
+
         post diaries_path, params: {
           diary: { date: Date.current, notes: "Learned about Rails testing", is_public: false },
           diary_answers: diary_answers
         }
-        
+
         created_diary = Diary.last
         expect(created_diary.diary_answers.count).to eq(3)
         expect(created_diary.til_candidates.count).to eq(3)
@@ -420,15 +421,15 @@ RSpec.describe "Diaries", type: :request do
 
       it "handles complete editing workflow with TIL selection" do
         diary_with_tils = create(:diary, :with_til_candidates, user: user)
-        
+
         patch diary_path(diary_with_tils), params: {
-          diary: { 
-            notes: "Updated notes", 
+          diary: {
+            notes: "Updated notes",
             selected_til_index: 1,
-            is_public: true 
+            is_public: true
           }
         }
-        
+
         diary_with_tils.reload
         expect(diary_with_tils.selected_til_index).to eq(1)
         expect(diary_with_tils.is_public).to be true
@@ -438,14 +439,14 @@ RSpec.describe "Diaries", type: :request do
       it "completes GitHub upload workflow" do
         user.update!(github_repo_name: "my-til-repo")
         diary_with_til = create(:diary, :with_selected_til, user: user)
-        
+
         mock_service = instance_double(GithubService)
         allow(user).to receive(:github_service).and_return(mock_service)
         allow(mock_service).to receive(:push_til)
           .and_return({ success: true, message: "Successfully uploaded" })
-        
+
         post upload_to_github_diary_path(diary_with_til)
-        
+
         expect(response).to redirect_to(diary_path(diary_with_til))
         expect(flash[:notice]).to include("GitHubにアップロードしました")
       end
@@ -455,24 +456,24 @@ RSpec.describe "Diaries", type: :request do
       it "handles rapid consecutive diary creation attempts" do
         diary_params = { date: Date.current, notes: "Test", is_public: false }
         diary_answers_params = { question.identifier => answer.id }
-        
+
         post diaries_path, params: { diary: diary_params, diary_answers: diary_answers_params }
-        
+
         expect do
           post diaries_path, params: { diary: diary_params, diary_answers: diary_answers_params }
         end.not_to change(Diary, :count)
       end
 
       it "handles large volume requests gracefully" do
-        100.times do |i|
+        100.times do |_i|
           get diaries_path
         end
         expect(response).to have_http_status(:success)
       end
 
       it "handles memory-intensive operations" do
-        diary_with_large_notes = create(:diary, user: user, notes: "A" * 50000)
-        
+        diary_with_large_notes = create(:diary, user: user, notes: "A" * 50_000)
+
         get diary_path(diary_with_large_notes)
         expect(response).to have_http_status(:success)
         expect(response.body).to include("A" * 100)
@@ -483,30 +484,30 @@ RSpec.describe "Diaries", type: :request do
       it "prevents access to other users' private diaries" do
         other_user = create(:user, github_id: "other_user_id")
         private_diary = create(:diary, user: other_user, is_public: false)
-        
+
         get diary_path(private_diary)
         expect(response).to redirect_to(diaries_path)
       end
 
       it "prevents SQL injection in date search" do
         malicious_date = "'; DROP TABLE diaries; --"
-        
-        get search_by_date_diaries_path, 
+
+        get search_by_date_diaries_path,
             params: { date: malicious_date },
             headers: { "Accept" => "application/json" }
-        
+
         expect(response).to have_http_status(:bad_request)
         expect(Diary.count).to be > 0
       end
 
       it "sanitizes user input in notes" do
         malicious_notes = "<script>alert('xss')</script>Evil content"
-        
+
         post diaries_path, params: {
           diary: { date: Date.current, notes: malicious_notes },
           diary_answers: { question.identifier => answer.id }
         }
-        
+
         created_diary = Diary.last
         expect(created_diary.notes).to include("Evil content")
         expect(created_diary.notes).not_to include("<script>")
@@ -522,18 +523,18 @@ RSpec.describe "Diaries", type: :request do
         start_time = Time.current
         get diaries_path
         end_time = Time.current
-        
+
         expect(response).to have_http_status(:success)
         expect(end_time - start_time).to be < 1.second
       end
 
       it "handles search operations efficiently" do
         start_time = Time.current
-        get search_by_date_diaries_path, 
+        get search_by_date_diaries_path,
             params: { date: Date.current.to_s },
             headers: { "Accept" => "application/json" }
         end_time = Time.current
-        
+
         expect(response).to have_http_status(:success)
         expect(end_time - start_time).to be < 0.5.seconds
       end
