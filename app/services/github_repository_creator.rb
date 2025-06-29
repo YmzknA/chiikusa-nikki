@@ -12,7 +12,7 @@ module GithubRepositoryCreator
   def perform_repository_creation(repo_name)
     # GitHubの実際のusernameを取得・保存
     ensure_github_username_updated
-    
+
     Rails.logger.info "Creating repository: #{repo_name} for GitHub user: #{@user.github_username}"
 
     repository = create_github_repository(repo_name)
@@ -69,7 +69,7 @@ module GithubRepositoryCreator
 
   def ensure_github_username_updated
     return if @user.github_username.present?
-    
+
     begin
       github_user = @client.user
       @user.update!(github_username: github_user.login)

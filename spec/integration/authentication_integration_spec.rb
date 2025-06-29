@@ -1,18 +1,17 @@
 require "rails_helper"
 
 RSpec.describe "Authentication Integration", type: :request do
-  
   def stub_env_for_omniauth
     # Stub the environment for OmniAuth
   end
-  
+
   def request_with_omniauth_env(auth_hash)
     { "omniauth.auth" => auth_hash }
   end
   before do
     # Clean up database to avoid uniqueness conflicts
     User.destroy_all
-    
+
     OmniAuth.config.test_mode = true
     # Clear any existing mock auth
     OmniAuth.config.mock_auth[:github] = nil
@@ -65,7 +64,7 @@ RSpec.describe "Authentication Integration", type: :request do
       it "creates new user with GitHub authentication" do
         # Mock the OmniAuth environment directly in the request
         stub_env_for_omniauth
-        
+
         expect do
           get "/users/auth/github/callback", env: request_with_omniauth_env(github_auth_hash)
         end.to change(User, :count).by(1)
@@ -81,7 +80,7 @@ RSpec.describe "Authentication Integration", type: :request do
       end
 
       it "authenticates existing GitHub user" do
-        existing_user = create(:user, :with_github, github_id: "12345", username: "configured_user")
+        create(:user, :with_github, github_id: "12345", username: "configured_user")
 
         expect do
           get "/users/auth/github/callback"
@@ -91,7 +90,8 @@ RSpec.describe "Authentication Integration", type: :request do
       end
 
       it "updates user information on subsequent logins" do
-        user = create(:user, :with_github, github_id: "12345", encrypted_access_token: "old_token", username: "update_test_user")
+        user = create(:user, :with_github, github_id: "12345", encrypted_access_token: "old_token",
+                                           username: "update_test_user")
 
         get "/users/auth/github/callback"
 
@@ -119,7 +119,7 @@ RSpec.describe "Authentication Integration", type: :request do
       end
 
       it "authenticates existing Google user" do
-        existing_user = create(:user, :with_google, google_id: "67890", username: "configured_google_user")
+        create(:user, :with_google, google_id: "67890", username: "configured_google_user")
 
         expect do
           get "/users/auth/google_oauth2/callback"
@@ -275,7 +275,7 @@ RSpec.describe "Authentication Integration", type: :request do
                                }
                              })
     end
-    
+
     let(:github_auth_test) do
       OmniAuth::AuthHash.new({
                                provider: "github",

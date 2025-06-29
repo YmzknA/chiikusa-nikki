@@ -16,7 +16,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   def handle_oauth(provider_name)
     auth = request.env["omniauth.auth"]
-    
+
     Rails.logger.debug "OmniAuth callback - Provider: #{provider_name}"
     Rails.logger.debug "Auth present: #{auth.present?}"
     Rails.logger.debug "Auth data: #{auth&.to_hash}"

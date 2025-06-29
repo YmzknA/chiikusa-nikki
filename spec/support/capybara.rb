@@ -75,7 +75,7 @@ RSpec.configure do |config|
       page.driver.browser.manage.window.resize_to(768, 1024)
     end
   end
-  
+
   # System test authentication helper
   config.include AuthenticationHelpers, type: :system
 end

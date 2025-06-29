@@ -26,7 +26,7 @@ RSpec.describe "Basic Error Handling", type: :request do
           use_ai_generation: "1"
         }
 
-        # Application renders new form when creation fails  
+        # Application renders new form when creation fails
         expect(response).to have_http_status(:ok)
         expect(response).to render_template(:new)
       end

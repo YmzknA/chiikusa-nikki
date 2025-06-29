@@ -55,12 +55,11 @@ class User < ApplicationRecord
 
     if user.save
       Rails.logger.info "OAuth user created/updated: #{user.username} (#{user.email}) - Provider: #{provider}"
-      user
     else
       Rails.logger.error "Failed to save OAuth user: #{user.errors.full_messages.join(', ')}"
       Rails.logger.error "User attributes: #{user.attributes.inspect}"
-      user
     end
+    user
   end
 
   def self.add_provider_to_user(user, auth)
@@ -73,11 +72,10 @@ class User < ApplicationRecord
 
     if user.save
       Rails.logger.info "Provider #{provider} added to existing user #{user.id}: #{user.username}"
-      user
     else
       Rails.logger.error "Failed to save provider to user #{user.id}: #{user.errors.full_messages.join(', ')}"
-      user
     end
+    user
   end
 
   def self.validate_provider_not_taken(provider, uid, user_id)

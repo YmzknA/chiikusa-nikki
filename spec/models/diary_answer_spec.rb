@@ -103,7 +103,10 @@ RSpec.describe DiaryAnswer, type: :model do
     describe "statistical analysis support" do
       let!(:multiple_diaries) { create_list(:diary, 5, user: user) }
       let!(:mood_answers) do
-        mood_question_clean = build(:question, :mood).tap { |q| q.answers.clear; q.save! }
+        mood_question_clean = build(:question, :mood).tap do |q|
+          q.answers.clear
+          q.save!
+        end
         5.times.map { |i| create(:answer, question: mood_question_clean, level: i + 1) }
       end
 
