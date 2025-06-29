@@ -120,11 +120,11 @@ RSpec.describe "GitHub Integration", type: :system do
 
     it "handles authentication errors during upload" do
       allow(mock_github_service).to receive(:push_til)
-        .and_return({ 
-          success: false, 
-          requires_reauth: true, 
-          message: "認証が必要です" 
-        })
+        .and_return({
+                      success: false,
+                      requires_reauth: true,
+                      message: "認証が必要です"
+                    })
 
       visit diary_path(diary)
 
@@ -140,8 +140,8 @@ RSpec.describe "GitHub Integration", type: :system do
     end
 
     it "shows upload status on diary list" do
-      uploaded_diary = create(:diary, :github_uploaded, user: user)
-      unuploaded_diary = create(:diary, :with_selected_til, user: user)
+      create(:diary, :github_uploaded, user: user)
+      create(:diary, :with_selected_til, user: user)
 
       visit diaries_path
 
@@ -171,8 +171,8 @@ RSpec.describe "GitHub Integration", type: :system do
 
       visit diary_path(diary)
 
-      expect(page).to have_link("GitHubで表示", 
-        href: "https://github.com/testuser/test-til/blob/main/250629_til.md")
+      expect(page).to have_link("GitHubで表示",
+                                href: "https://github.com/testuser/test-til/blob/main/250629_til.md")
     end
   end
 
@@ -239,11 +239,11 @@ RSpec.describe "GitHub Integration", type: :system do
   describe "GitHub connection status", js: true do
     it "shows connection test results" do
       allow(mock_github_service).to receive(:test_github_connection)
-        .and_return({ 
-          success: true, 
-          message: "接続成功",
-          user_info: { login: "testuser", public_repos: 5 }
-        })
+        .and_return({
+                      success: true,
+                      message: "接続成功",
+                      user_info: { login: "testuser", public_repos: 5 }
+                    })
 
       visit github_settings_path
 
@@ -261,15 +261,15 @@ RSpec.describe "GitHub Integration", type: :system do
 
     it "shows GitHub user information" do
       allow(mock_github_service).to receive(:test_github_connection)
-        .and_return({ 
-          success: true,
-          user_info: {
-            login: "testuser",
-            name: "Test User",
-            public_repos: 10,
-            total_private_repos: 5
-          }
-        })
+        .and_return({
+                      success: true,
+                      user_info: {
+                        login: "testuser",
+                        name: "Test User",
+                        public_repos: 10,
+                        total_private_repos: 5
+                      }
+                    })
 
       visit github_settings_path
 
@@ -292,10 +292,10 @@ RSpec.describe "GitHub Integration", type: :system do
 
     it "handles rate limiting" do
       allow(mock_github_service).to receive(:push_til)
-        .and_return({ 
-          success: false, 
-          message: "API制限に達しました。しばらく待ってから再試行してください。" 
-        })
+        .and_return({
+                      success: false,
+                      message: "API制限に達しました。しばらく待ってから再試行してください。"
+                    })
 
       visit diary_path(diary)
 
@@ -363,8 +363,8 @@ RSpec.describe "GitHub Integration", type: :system do
     end
 
     it "shows GitHub status in diary summary" do
-      uploaded_diary = create(:diary, :github_uploaded, user: user)
-      
+      create(:diary, :github_uploaded, user: user)
+
       visit diaries_path
 
       expect(page).to have_content("GitHub: アップロード済み")
