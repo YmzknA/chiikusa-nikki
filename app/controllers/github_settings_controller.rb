@@ -37,6 +37,12 @@ class GithubSettingsController < ApplicationController
     return false unless current_user.github_repo_configured?
     return false unless current_user.access_token.present?
 
+    # github_usernameが設定されていない場合は取得を試行
+    if current_user.github_username.blank?
+      current_user.github_service.fetch_and_update_github_username
+      current_user.reload
+    end
+
     repo_exists = current_user.verify_github_repository?
 
     unless repo_exists
