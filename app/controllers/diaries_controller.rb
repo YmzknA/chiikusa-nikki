@@ -96,6 +96,19 @@ class DiariesController < ApplicationController
     end
   end
 
+  def search_by_date
+    date = Date.parse(params[:date])
+    diary = current_user.diaries.find_by(date: date)
+
+    if diary
+      render json: { diary_id: diary.id }
+    else
+      render json: { diary_id: nil }
+    end
+  rescue Date::Error
+    render json: { error: "Invalid date format" }, status: 400
+  end
+
   private
 
   def render_seed_turbo_stream(seed_service)

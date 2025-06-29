@@ -13,5 +13,21 @@ application.register("water-effect", WaterEffectController)
 import XShareController from "./x_share_controller"
 application.register("x-share", XShareController)
 
-import Chart from 'stimulus-chartjs'
-application.register('chart', Chart)
+import ChartDebugController from "./chart_debug_controller"
+application.register("chart", ChartDebugController)
+
+
+import WeekdayChartController from "./weekday_chart_controller"
+application.register("weekday-chart", WeekdayChartController)
+
+import HeatmapController from "./heatmap_controller"
+application.register("heatmap", HeatmapController)
+
+import CalendarController from "./calendar_controller"
+application.register("calendar", CalendarController)
+
+import BackNavigationController from "./back_navigation_controller"
+application.register("back-navigation", BackNavigationController)
+
+import ChartPeriodController from "./chart_period_controller"
+application.register("chart-period", ChartPeriodController)

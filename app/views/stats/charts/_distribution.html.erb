@@ -1,0 +1,46 @@
+<%= turbo_frame_tag "distribution-chart" do %>
+  <div class="neuro-card p-6">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="flex items-center gap-2 text-xl font-bold text-primary">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+        </svg>
+        各項目のレベル分布
+      </h2>
+      
+      <div data-controller="chart-period"
+           data-chart-period-chart-type-value="distribution">
+        <div class="flex items-center gap-2">
+          <%= select_tag :distribution_months,
+              options_for_select([
+                ['直近1ヶ月', 1],
+                ['過去2ヶ月', 2],
+                ['過去3ヶ月', 3],
+                ['過去6ヶ月', 6],
+                ['過去1年', 12]
+              ], params[:distribution_months]&.to_i || 1),
+              { 
+                class: "neuro-input px-3 py-2 text-sm",
+                data: { action: "change->chart-period#updateChart" }
+              } %>
+        </div>
+      </div>
+    </div>
+    
+    <div class="neuro-input p-4 w-full">
+      <div data-controller="chart" 
+           data-chart-type-value="<%= (local_assigns[:distribution_chart] || @distribution_chart)[:type] %>"
+           data-chart-data-value="<%= (local_assigns[:distribution_chart] || @distribution_chart)[:data].to_json %>"
+           data-chart-options-value="<%= (local_assigns[:distribution_chart] || @distribution_chart)[:options].to_json %>">
+        <canvas class="w-full" style="height: 300px;"></canvas>
+      </div>
+    </div>
+    
+    <div class="mt-4">
+      <div class="neuro-badge p-3 text-sm text-base-content/70">
+        📊 <strong>対象期間:</strong> 選択した期間<br>
+        レベル1〜5の出現頻度を確認。どの状態が多いか把握できます。
+      </div>
+    </div>
+  </div>
+<% end %>
