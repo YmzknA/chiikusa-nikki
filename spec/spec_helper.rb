@@ -19,7 +19,7 @@ require "webmock/rspec"
 require "vcr"
 
 # Block all external HTTP requests
-WebMock.disable_net_connect!(allow_localhost: true)
+WebMock.disable_net_connect!(allow_localhost: true, allow: %w[127.0.0.1 localhost])
 
 # VCR configuration for recording/replaying HTTP interactions
 VCR.configure do |config|

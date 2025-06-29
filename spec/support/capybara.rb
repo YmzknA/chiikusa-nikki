@@ -68,13 +68,16 @@ RSpec.configure do |config|
 
   # システムテスト用の追加設定
   config.before(:each, type: :system) do |example|
-    # レスポンシブテスト用のビューポート設定
-    if example.metadata[:mobile]
+    # レスポンシブテスト用のビューポート設定（JS有効時のみ）
+    if example.metadata[:mobile] && page.driver.respond_to?(:browser) && page.driver.browser.respond_to?(:manage)
       page.driver.browser.manage.window.resize_to(375, 667)
-    elsif example.metadata[:tablet]
+    elsif example.metadata[:tablet] && page.driver.respond_to?(:browser) && page.driver.browser.respond_to?(:manage)
       page.driver.browser.manage.window.resize_to(768, 1024)
     end
   end
+  
+  # System test authentication helper
+  config.include AuthenticationHelpers, type: :system
 end
 
 # デバッグ用設定（開発時のみ）
