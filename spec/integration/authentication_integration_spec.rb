@@ -13,30 +13,30 @@ RSpec.describe "Authentication Integration", type: :request do
   describe "OAuth authentication workflows" do
     let(:github_auth_hash) do
       OmniAuth::AuthHash.new({
-        provider: 'github',
-        uid: '12345',
-        info: {
-          email: 'test@example.com',
-          nickname: 'testuser'
-        },
-        credentials: {
-          token: 'github_token_123'
-        }
-      })
+                               provider: "github",
+                               uid: "12345",
+                               info: {
+                                 email: "test@example.com",
+                                 nickname: "testuser"
+                               },
+                               credentials: {
+                                 token: "github_token_123"
+                               }
+                             })
     end
 
     let(:google_auth_hash) do
       OmniAuth::AuthHash.new({
-        provider: 'google_oauth2',
-        uid: '67890',
-        info: {
-          email: 'test@gmail.com',
-          name: 'Test User'
-        },
-        credentials: {
-          token: 'google_token_456'
-        }
-      })
+                               provider: "google_oauth2",
+                               uid: "67890",
+                               info: {
+                                 email: "test@gmail.com",
+                                 name: "Test User"
+                               },
+                               credentials: {
+                                 token: "google_token_456"
+                               }
+                             })
     end
 
     describe "GitHub OAuth flow" do
@@ -50,17 +50,17 @@ RSpec.describe "Authentication Integration", type: :request do
         end.to change(User, :count).by(1)
 
         expect(response).to redirect_to(setup_username_path)
-        
+
         user = User.last
-        expect(user.email).to eq('test@example.com')
-        expect(user.github_id).to eq('12345')
-        expect(user.encrypted_access_token).to eq('github_token_123')
-        expect(user.providers).to include('github')
+        expect(user.email).to eq("test@example.com")
+        expect(user.github_id).to eq("12345")
+        expect(user.encrypted_access_token).to eq("github_token_123")
+        expect(user.providers).to include("github")
         expect(user.username).to eq(User::DEFAULT_USERNAME)
       end
 
       it "authenticates existing GitHub user" do
-        existing_user = create(:user, :with_github, github_id: '12345')
+        existing_user = create(:user, :with_github, github_id: "12345")
 
         expect do
           get "/users/auth/github/callback"
@@ -71,12 +71,12 @@ RSpec.describe "Authentication Integration", type: :request do
       end
 
       it "updates user information on subsequent logins" do
-        user = create(:user, :with_github, github_id: '12345', encrypted_access_token: 'old_token')
+        user = create(:user, :with_github, github_id: "12345", encrypted_access_token: "old_token")
 
         get "/users/auth/github/callback"
 
         user.reload
-        expect(user.encrypted_access_token).to eq('github_token_123')
+        expect(user.encrypted_access_token).to eq("github_token_123")
       end
     end
 
@@ -91,14 +91,14 @@ RSpec.describe "Authentication Integration", type: :request do
         end.to change(User, :count).by(1)
 
         user = User.last
-        expect(user.google_id).to eq('67890')
-        expect(user.google_email).to eq('test@gmail.com')
-        expect(user.encrypted_google_access_token).to eq('google_token_456')
-        expect(user.providers).to include('google_oauth2')
+        expect(user.google_id).to eq("67890")
+        expect(user.google_email).to eq("test@gmail.com")
+        expect(user.encrypted_google_access_token).to eq("google_token_456")
+        expect(user.providers).to include("google_oauth2")
       end
 
       it "authenticates existing Google user" do
-        existing_user = create(:user, :with_google, google_id: '67890')
+        existing_user = create(:user, :with_google, google_id: "67890")
 
         expect do
           get "/users/auth/google_oauth2/callback"
@@ -110,7 +110,7 @@ RSpec.describe "Authentication Integration", type: :request do
     end
 
     describe "provider linking workflow" do
-      let(:existing_user) { create(:user, :with_github, github_id: '12345') }
+      let(:existing_user) { create(:user, :with_github, github_id: "12345") }
 
       before do
         sign_in existing_user
@@ -126,13 +126,13 @@ RSpec.describe "Authentication Integration", type: :request do
         expect(flash[:notice]).to include("Googleアカウントを連携しました")
 
         existing_user.reload
-        expect(existing_user.google_id).to eq('67890')
-        expect(existing_user.providers).to include('google_oauth2')
-        expect(existing_user.providers).to include('github')
+        expect(existing_user.google_id).to eq("67890")
+        expect(existing_user.providers).to include("google_oauth2")
+        expect(existing_user.providers).to include("github")
       end
 
       it "prevents linking already linked provider" do
-        create(:user, :with_google, google_id: '67890')
+        create(:user, :with_google, google_id: "67890")
 
         get "/users/auth/google_oauth2/callback"
 
@@ -143,9 +143,9 @@ RSpec.describe "Authentication Integration", type: :request do
       it "handles provider linking errors gracefully" do
         # Simulate an invalid auth hash
         Rails.application.env_config["omniauth.auth"] = OmniAuth::AuthHash.new({
-          provider: 'google_oauth2',
-          uid: nil
-        })
+                                                                                 provider: "google_oauth2",
+                                                                                 uid: nil
+                                                                               })
 
         get "/users/auth/google_oauth2/callback"
 
@@ -156,21 +156,21 @@ RSpec.describe "Authentication Integration", type: :request do
 
     describe "OAuth failure handling" do
       it "handles GitHub OAuth failures" do
-        get "/users/auth/failure", params: { provider: 'github' }
+        get "/users/auth/failure", params: { provider: "github" }
 
         expect(response).to redirect_to(root_path)
         expect(flash[:alert]).to include("GitHubでのログインに失敗")
       end
 
       it "handles Google OAuth failures" do
-        get "/users/auth/failure", params: { provider: 'google_oauth2' }
+        get "/users/auth/failure", params: { provider: "google_oauth2" }
 
         expect(response).to redirect_to(root_path)
         expect(flash[:alert]).to include("Googleでのログインに失敗")
       end
 
       it "handles unknown provider failures" do
-        get "/users/auth/failure", params: { provider: 'unknown' }
+        get "/users/auth/failure", params: { provider: "unknown" }
 
         expect(response).to redirect_to(root_path)
         expect(flash[:alert]).to include("不明なプロバイダーでのログインに失敗")
@@ -198,15 +198,15 @@ RSpec.describe "Authentication Integration", type: :request do
     end
 
     it "updates username and redirects to diaries" do
-      patch users_path, params: { user: { username: 'newusername' } }
+      patch users_path, params: { user: { username: "newusername" } }
 
       expect(response).to redirect_to(diaries_path)
-      expect(user.reload.username).to eq('newusername')
+      expect(user.reload.username).to eq("newusername")
       expect(flash[:notice]).to include("プロフィールを更新")
     end
 
     it "validates username requirements" do
-      patch users_path, params: { user: { username: '' } }
+      patch users_path, params: { user: { username: "" } }
 
       expect(response).to render_template(:setup_username)
       expect(user.reload.username).to eq(User::DEFAULT_USERNAME)
@@ -220,7 +220,7 @@ RSpec.describe "Authentication Integration", type: :request do
     end
 
     it "allows access after username is configured" do
-      user.update!(username: 'configured_user')
+      user.update!(username: "configured_user")
 
       get diaries_path
 
@@ -270,14 +270,14 @@ RSpec.describe "Authentication Integration", type: :request do
   describe "authentication security measures" do
     it "prevents CSRF attacks on OAuth endpoints" do
       # Attempt to make OAuth request without proper CSRF token
-      post "/users/auth/github", headers: { 'X-CSRF-Token' => 'invalid' }
+      post "/users/auth/github", headers: { "X-CSRF-Token" => "invalid" }
 
       expect(response).to have_http_status(:unprocessable_entity)
     end
 
     it "validates OAuth state parameter" do
       # Test that OAuth flow validates state parameter
-      get "/users/auth/github/callback", params: { state: 'invalid_state' }
+      get "/users/auth/github/callback", params: { state: "invalid_state" }
 
       expect(response).to redirect_to(root_path)
       expect(flash[:alert]).to include("認証に失敗")
@@ -292,12 +292,12 @@ RSpec.describe "Authentication Integration", type: :request do
 
     it "handles malicious OAuth data safely" do
       malicious_auth = OmniAuth::AuthHash.new({
-        provider: 'github',
-        uid: '<script>alert("xss")</script>',
-        info: {
-          email: 'test@example.com<script>'
-        }
-      })
+                                                provider: "github",
+                                                uid: '<script>alert("xss")</script>',
+                                                info: {
+                                                  email: "test@example.com<script>"
+                                                }
+                                              })
 
       Rails.application.env_config["omniauth.auth"] = malicious_auth
 
@@ -306,13 +306,13 @@ RSpec.describe "Authentication Integration", type: :request do
       end.not_to raise_error
 
       user = User.last
-      expect(user.github_id).not_to include('<script>')
+      expect(user.github_id).not_to include("<script>")
     end
   end
 
   describe "provider consistency validation" do
     it "maintains provider array consistency" do
-      user = create(:user, github_id: '12345', providers: ['github'])
+      user = create(:user, github_id: "12345", providers: ["github"])
 
       # Add Google provider
       Rails.application.env_config["omniauth.auth"] = google_auth_hash
@@ -320,12 +320,12 @@ RSpec.describe "Authentication Integration", type: :request do
       get "/users/auth/google_oauth2/callback"
 
       user.reload
-      expect(user.providers).to contain_exactly('github', 'google_oauth2')
-      expect(user.google_id).to eq('67890')
+      expect(user.providers).to contain_exactly("github", "google_oauth2")
+      expect(user.google_id).to eq("67890")
     end
 
     it "validates provider consistency on user save" do
-      user = build(:user, github_id: '12345', providers: [])
+      user = build(:user, github_id: "12345", providers: [])
 
       expect(user).not_to be_valid
       expect(user.errors[:providers]).to include("GitHub IDが存在しますが、プロバイダーリストに含まれていません")
@@ -341,10 +341,10 @@ RSpec.describe "Authentication Integration", type: :request do
 
   describe "email handling and uniqueness" do
     it "allows same email for different OAuth providers" do
-      github_user = create(:user, :with_github, email: 'same@example.com')
-      
+      github_user = create(:user, :with_github, email: "same@example.com")
+
       google_auth = google_auth_hash.dup
-      google_auth.info.email = 'same@example.com'
+      google_auth.info.email = "same@example.com"
       Rails.application.env_config["omniauth.auth"] = google_auth
 
       expect do
@@ -352,13 +352,13 @@ RSpec.describe "Authentication Integration", type: :request do
       end.to change(User, :count).by(1)
 
       google_user = User.last
-      expect(google_user.email).to eq('same@example.com')
+      expect(google_user.email).to eq("same@example.com")
       expect(google_user.id).not_to eq(github_user.id)
     end
 
     it "validates email format during OAuth" do
       invalid_auth = github_auth_hash.dup
-      invalid_auth.info.email = 'invalid-email'
+      invalid_auth.info.email = "invalid-email"
       Rails.application.env_config["omniauth.auth"] = invalid_auth
 
       get "/users/auth/github/callback"
@@ -373,7 +373,7 @@ RSpec.describe "Authentication Integration", type: :request do
       get diaries_path
 
       expect(response).to redirect_to(new_user_session_path)
-      
+
       Rails.application.env_config["omniauth.auth"] = github_auth_hash
       get "/users/auth/github/callback"
 
@@ -382,7 +382,7 @@ RSpec.describe "Authentication Integration", type: :request do
     end
 
     it "redirects existing users to diaries after login" do
-      user = create(:user, :with_github, github_id: '12345')
+      create(:user, :with_github, github_id: "12345")
 
       Rails.application.env_config["omniauth.auth"] = github_auth_hash
       get "/users/auth/github/callback"
@@ -417,7 +417,7 @@ RSpec.describe "Authentication Integration", type: :request do
       threads.each(&:join)
 
       # Should only create one user despite concurrent requests
-      expect(User.where(github_id: '12345').count).to eq(1)
+      expect(User.where(github_id: "12345").count).to eq(1)
     end
   end
 end

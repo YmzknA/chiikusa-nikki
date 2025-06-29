@@ -76,10 +76,10 @@ RSpec.describe "Complete Diary Workflow Integration", type: :request do
       user.update!(github_repo_name: "test-til")
       allow(mock_github_service).to receive(:push_til)
         .and_return({
-          success: true,
-          message: "TILをGitHubにアップロードしました",
-          file_url: "https://github.com/testuser/test-til/blob/main/#{Date.current.strftime('%y%m%d')}_til.md"
-        })
+                      success: true,
+                      message: "TILをGitHubにアップロードしました",
+                      file_url: "https://github.com/testuser/test-til/blob/main/#{Date.current.strftime('%y%m%d')}_til.md"
+                    })
 
       post upload_to_github_diary_path(created_diary)
 
@@ -151,7 +151,7 @@ RSpec.describe "Complete Diary Workflow Integration", type: :request do
     let(:diary) { create(:diary, :with_til_candidates, user: user) }
 
     it "edits existing diary and regenerates TIL" do
-      original_til_count = diary.til_candidates.count
+      diary.til_candidates.count
       user.update!(seed_count: 3)
 
       allow(mock_openai_service).to receive(:generate_tils)
@@ -252,9 +252,9 @@ RSpec.describe "Complete Diary Workflow Integration", type: :request do
       # Step 2: Upload diary to GitHub
       allow(mock_github_service).to receive(:push_til)
         .and_return({
-          success: true,
-          message: "TILをGitHubにアップロードしました"
-        })
+                      success: true,
+                      message: "TILをGitHubにアップロードしました"
+                    })
 
       post upload_to_github_diary_path(diary)
 
@@ -268,10 +268,10 @@ RSpec.describe "Complete Diary Workflow Integration", type: :request do
 
       allow(mock_github_service).to receive(:push_til)
         .and_return({
-          success: false,
-          requires_reauth: true,
-          message: "認証が必要です"
-        })
+                      success: false,
+                      requires_reauth: true,
+                      message: "認証が必要です"
+                    })
 
       post upload_to_github_diary_path(diary)
 
@@ -294,7 +294,7 @@ RSpec.describe "Complete Diary Workflow Integration", type: :request do
     let!(:diary2) { create(:diary, user: user, date: Date.current - 1.day) }
 
     it "searches diary by date" do
-      get search_by_date_diaries_path, 
+      get search_by_date_diaries_path,
           params: { date: Date.current.to_s },
           headers: { "Accept" => "application/json" }
 
@@ -394,7 +394,7 @@ RSpec.describe "Complete Diary Workflow Integration", type: :request do
     end
 
     it "handles invalid diary ID gracefully" do
-      get diary_path(999999)
+      get diary_path(999_999)
 
       expect(response).to redirect_to(diaries_path)
       expect(flash[:alert]).to include("見つかりません")
