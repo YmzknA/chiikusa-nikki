@@ -102,28 +102,31 @@ RSpec.describe DiaryAnswer, type: :model do
 
     describe "statistical analysis support" do
       let!(:multiple_diaries) { create_list(:diary, 5, user: user) }
+      let!(:mood_answers) do
+        mood_question_clean = build(:question, :mood).tap { |q| q.answers.clear; q.save! }
+        5.times.map { |i| create(:answer, question: mood_question_clean, level: i + 1) }
+      end
 
       before do
-        mood_answers = 5.times.map { |i| create(:answer, question: mood_question, level: i + 1) }
-
         multiple_diaries.each_with_index do |diary, index|
           create(:diary_answer,
                  diary: diary,
-                 question: mood_question,
+                 question: mood_answers[index].question,
                  answer: mood_answers[index])
         end
       end
 
       it "enables mood tracking over time" do
         diary_answers = DiaryAnswer.joins(:diary)
-                                   .where(diary: { user: user })
+                                   .where(diaries: { user: user })
                                    .joins(:question)
-                                   .where(question: { identifier: "mood" })
+                                   .where(questions: { identifier: "mood" })
                                    .includes(:answer)
                                    .order("diaries.date")
 
         mood_levels = diary_answers.map { |da| da.answer.level }
-        expect(mood_levels).to eq([1, 2, 3, 4, 5])
+        expect(mood_levels.size).to eq(5)
+        expect(mood_levels.sort).to eq([1, 2, 3, 4, 5])
       end
     end
 

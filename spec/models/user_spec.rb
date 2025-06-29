@@ -95,7 +95,7 @@ RSpec.describe User, type: :model do
       double(
         provider: "github",
         uid: "12345",
-        info: double(email: "test@example.com"),
+        info: double(email: "test@example.com", nickname: "testuser"),
         credentials: double(token: "test_token")
       )
     end
