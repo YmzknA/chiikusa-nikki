@@ -107,6 +107,7 @@ class User < ApplicationRecord
       user.assign_attributes(
         github_id: uid,
         username: user.username.presence || DEFAULT_USERNAME,
+        github_username: auth.info.nickname,
         encrypted_access_token: auth.credentials.token
       )
     when "google_oauth2"
@@ -151,6 +152,7 @@ class User < ApplicationRecord
       when "github"
         attributes.merge!(
           github_id: uid,
+          github_username: auth.info.nickname,
           encrypted_access_token: auth.credentials.token
         )
         # Only set default username for new users
