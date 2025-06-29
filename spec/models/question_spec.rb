@@ -59,19 +59,21 @@ RSpec.describe Question, type: :model do
       end
 
       it "maintains unique identifiers" do
-        identifiers = Question.pluck(:identifier)
+        created_questions = [mood_question, motivation_question, progress_question]
+        identifiers = created_questions.map(&:identifier)
         expect(identifiers.uniq.size).to eq(identifiers.size)
+        expect(identifiers).to contain_exactly("mood", "motivation", "progress")
       end
     end
 
     describe "answers relationship" do
-      let(:clean_mood_question) do 
+      let(:clean_mood_question) do
         build(:question, identifier: "test_mood_#{SecureRandom.hex(4)}", label: "Test mood question").tap do |q|
           q.answers.clear
           q.save!
         end
       end
-      
+
       before do
         5.times do |i|
           create(:answer, question: clean_mood_question, level: i + 1)
@@ -128,7 +130,7 @@ RSpec.describe Question, type: :model do
         # Test the association configuration rather than actual deletion due to DB constraints
         answers_association = Question.reflect_on_association(:answers)
         diary_answers_association = Question.reflect_on_association(:diary_answers)
-        
+
         expect(answers_association.options[:dependent]).to eq(:destroy)
         expect(diary_answers_association.options[:dependent]).to eq(:destroy)
       end
@@ -145,7 +147,10 @@ RSpec.describe Question, type: :model do
 
     describe "performance with large datasets" do
       it "performs efficiently with many answers" do
-        question = build(:question).tap { |q| q.answers.clear; q.save! }
+        question = build(:question).tap do |q|
+          q.answers.clear
+          q.save!
+        end
 
         expect do
           100.times { |i| create(:answer, question: question, level: (i % 5) + 1) }

@@ -164,15 +164,32 @@ RSpec.describe User, type: :model do
     context "when current user is provided (linking accounts)" do
       let(:current_user) { create(:user, github_id: "existing_github_id") }
 
-      it "adds Google provider to existing user" do
-        user = described_class.from_omniauth(google_auth, current_user)
+      before do
+        # Clean up any existing users with conflicting IDs
+        User.where(google_id: "67890").destroy_all
+        User.where(google_id: "unique_google_id_999").destroy_all
+      end
 
-        expect(user.id).to eq(current_user.id)
-        expect(user.google_id).to eq("67890")
+      it "adds Google provider to existing user" do
+        # Use a unique google_id to avoid conflicts
+        google_auth_unique = double(
+          provider: "google_oauth2",
+          uid: "unique_google_id_999",
+          info: double(email: "test@example.com"),
+          credentials: double(token: "google_token")
+        )
+
+        clean_user = create(:user, github_id: "clean_github_id", google_id: nil, providers: ["github"])
+
+        user = described_class.from_omniauth(google_auth_unique, clean_user)
+
+        expect(user.id).to eq(clean_user.id)
+        expect(user.google_id).to eq("unique_google_id_999")
         expect(user.providers).to include("google_oauth2")
       end
 
       it "raises error when provider is already taken" do
+        # Create a user with the same google_id as in google_auth using factory
         create(:user, :with_google, google_id: "67890")
 
         expect do

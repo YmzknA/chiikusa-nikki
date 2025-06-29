@@ -66,9 +66,24 @@ RSpec.describe Answer, type: :model do
   end
 
   describe "business logic" do
-    let(:mood_question) { build(:question, :mood).tap { |q| q.answers.clear; q.save! } }
-    let(:motivation_question) { build(:question, :motivation).tap { |q| q.answers.clear; q.save! } }
-    let(:progress_question) { build(:question, :progress).tap { |q| q.answers.clear; q.save! } }
+    let(:mood_question) do
+      build(:question, :mood).tap do |q|
+        q.answers.clear
+        q.save!
+      end
+    end
+    let(:motivation_question) do
+      build(:question, :motivation).tap do |q|
+        q.answers.clear
+        q.save!
+      end
+    end
+    let(:progress_question) do
+      build(:question, :progress).tap do |q|
+        q.answers.clear
+        q.save!
+      end
+    end
 
     describe "level-based organization" do
       let!(:level_answers) do
@@ -149,8 +164,16 @@ RSpec.describe Answer, type: :model do
     end
 
     it "creates valid level answers" do
-      (1..5).each do |level|
-        answer = build(:answer, :"level_#{level}")
+      level_traits = {
+        1 => :level_one,
+        2 => :level_two,
+        3 => :level_three,
+        4 => :level_four,
+        5 => :level_five
+      }
+
+      level_traits.each do |level, trait|
+        answer = build(:answer, trait)
         expect(answer).to be_valid
         expect(answer.level).to eq(level)
       end
