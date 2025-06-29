@@ -22,7 +22,19 @@ RSpec.describe "Complete Diary Workflow Integration", type: :request do
   before do
     questions && answers
     sign_in user
-    allow(OpenaiService).to receive(:new).and_return(mock_openai_service)
+    
+    # Mock external API calls with WebMock
+    stub_request(:post, /api\.openai\.com/)
+      .to_return(
+        status: 200,
+        body: {
+          choices: [
+            { message: { content: "TIL 1\nTIL 2\nTIL 3" } }
+          ]
+        }.to_json,
+        headers: { 'Content-Type' => 'application/json' }
+      )
+    
     allow(user).to receive(:github_service).and_return(mock_github_service)
   end
 
