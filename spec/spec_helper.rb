@@ -27,6 +27,14 @@ VCR.configure do |config|
   config.hook_into :webmock
   config.configure_rspec_metadata!
   config.allow_http_connections_when_no_cassette = false
+  
+  # Ignore Capybara's internal requests
+  config.ignore_request do |request|
+    URI(request.uri).path == "/__identify__"
+  end
+  
+  # Ignore localhost requests for Capybara
+  config.ignore_localhost = true
 end
 
 RSpec.configure do |config|
