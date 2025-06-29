@@ -16,11 +16,17 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   def handle_oauth(provider_name)
     auth = request.env["omniauth.auth"]
+    
+    Rails.logger.debug "OmniAuth callback - Provider: #{provider_name}"
+    Rails.logger.debug "Auth present: #{auth.present?}"
+    Rails.logger.debug "Auth data: #{auth&.to_hash}"
 
     return handle_invalid_auth(auth) unless valid_oauth_request?(auth)
 
     handle_valid_oauth(auth, provider_name)
   rescue StandardError => e
+    Rails.logger.error "OAuth error: #{e.message}"
+    Rails.logger.error "Backtrace: #{e.backtrace.first(5)}"
     handle_oauth_error(e, auth)
   end
 

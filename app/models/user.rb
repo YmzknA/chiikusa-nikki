@@ -53,9 +53,14 @@ class User < ApplicationRecord
     # 新規ユーザーの場合のみパスワード設定
     user.password = Devise.friendly_token[0, 20] if user.new_record?
 
-    user.save!
-    Rails.logger.info "OAuth user created/updated: #{user.username} (#{user.email}) - Provider: #{provider}"
-    user
+    if user.save
+      Rails.logger.info "OAuth user created/updated: #{user.username} (#{user.email}) - Provider: #{provider}"
+      user
+    else
+      Rails.logger.error "Failed to save OAuth user: #{user.errors.full_messages.join(', ')}"
+      Rails.logger.error "User attributes: #{user.attributes.inspect}"
+      user
+    end
   end
 
   def self.add_provider_to_user(user, auth)
@@ -66,9 +71,13 @@ class User < ApplicationRecord
     assign_provider_attributes(user, auth)
     update_user_providers(user, provider)
 
-    user.save!
-    Rails.logger.info "Provider #{provider} added to existing user #{user.id}: #{user.username}"
-    user
+    if user.save
+      Rails.logger.info "Provider #{provider} added to existing user #{user.id}: #{user.username}"
+      user
+    else
+      Rails.logger.error "Failed to save provider to user #{user.id}: #{user.errors.full_messages.join(', ')}"
+      user
+    end
   end
 
   def self.validate_provider_not_taken(provider, uid, user_id)
@@ -131,7 +140,7 @@ class User < ApplicationRecord
       end
     end
 
-    def build_oauth_attributes(auth, _user)
+    def build_oauth_attributes(auth, user)
       provider = auth.provider
       uid = auth.uid
       email = auth.info.email
@@ -142,16 +151,18 @@ class User < ApplicationRecord
       when "github"
         attributes.merge!(
           github_id: uid,
-          username: DEFAULT_USERNAME,
           encrypted_access_token: auth.credentials.token
         )
+        # Only set default username for new users
+        attributes[:username] = DEFAULT_USERNAME if user.new_record?
       when "google_oauth2"
         attributes.merge!(
           google_id: uid,
           google_email: email,
-          username: DEFAULT_USERNAME,
           encrypted_google_access_token: auth.credentials.token
         )
+        # Only set default username for new users
+        attributes[:username] = DEFAULT_USERNAME if user.new_record?
       end
 
       attributes
