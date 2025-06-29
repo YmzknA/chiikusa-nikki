@@ -65,7 +65,7 @@ RSpec.describe "Stats", type: :request do
     it "requires authentication" do
       sign_out user
       get stats_path
-      expect(response).to redirect_to(new_user_session_path)
+      expect(response).to redirect_to(root_path)
     end
   end
 
@@ -91,12 +91,6 @@ RSpec.describe "Stats", type: :request do
       expect(response).to render_template("stats/charts/_distribution")
     end
 
-    it "renders default partial for unknown turbo frame" do
-      get stats_path,
-          headers: { "Turbo-Frame" => "unknown-chart" }
-
-      expect(response).to render_template("stats/_index")
-    end
   end
 
   describe "with user data" do

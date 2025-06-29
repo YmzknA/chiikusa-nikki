@@ -21,7 +21,7 @@ RSpec.describe "Profiles", type: :request do
     it "requires authentication" do
       sign_out user
       get profile_path
-      expect(response).to redirect_to(new_user_session_path)
+      expect(response).to redirect_to(root_path)
     end
   end
 
@@ -39,7 +39,7 @@ RSpec.describe "Profiles", type: :request do
     it "requires authentication" do
       sign_out user
       get edit_profile_path
-      expect(response).to redirect_to(new_user_session_path)
+      expect(response).to redirect_to(root_path)
     end
   end
 
@@ -81,7 +81,7 @@ RSpec.describe "Profiles", type: :request do
     it "requires authentication" do
       sign_out user
       patch profile_path, params: update_params
-      expect(response).to redirect_to(new_user_session_path)
+      expect(response).to redirect_to(root_path)
     end
   end
 

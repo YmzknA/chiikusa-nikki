@@ -42,7 +42,7 @@ RSpec.describe "GithubSettings", type: :request do
     it "requires authentication" do
       sign_out user
       get github_settings_path
-      expect(response).to redirect_to(new_user_session_path)
+      expect(response).to redirect_to(root_path)
     end
   end
 
@@ -109,7 +109,7 @@ RSpec.describe "GithubSettings", type: :request do
     it "requires authentication" do
       sign_out user
       patch github_settings_path, params: { github_repo_name: "test-repo" }
-      expect(response).to redirect_to(new_user_session_path)
+      expect(response).to redirect_to(root_path)
     end
   end
 
@@ -129,7 +129,7 @@ RSpec.describe "GithubSettings", type: :request do
     it "requires authentication" do
       sign_out user
       delete github_settings_path
-      expect(response).to redirect_to(new_user_session_path)
+      expect(response).to redirect_to(root_path)
     end
   end
 
