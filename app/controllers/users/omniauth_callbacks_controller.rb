@@ -82,9 +82,23 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     else
       log_oauth_attempt(auth.provider, auth.info.email, false)
       error_msg = @user.errors.full_messages.join(", ")
-      session["devise.#{params[:provider]}_data"] = auth.except(:extra)
+      # Use auth.provider instead of params[:provider] for security
+      safe_provider = sanitize_provider_name(auth.provider)
+      session["devise.#{safe_provider}_data"] = auth.except(:extra)
       flash[:alert] = "#{provider_name}での認証に失敗しました。#{error_msg}"
       redirect_to root_path
+    end
+  end
+
+  def sanitize_provider_name(provider)
+    # Only allow known OAuth providers
+    case provider
+    when "github"
+      "github"
+    when "google_oauth2"
+      "google_oauth2"
+    else
+      "unknown"
     end
   end
 end
