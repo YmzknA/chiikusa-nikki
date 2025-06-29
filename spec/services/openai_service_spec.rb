@@ -64,19 +64,31 @@ RSpec.describe OpenaiService, type: :service do
       it "includes system prompt with instructions" do
         service.generate_tils(notes)
 
-        system_message = mock_client.received_messages.first.dig(:parameters, :messages, 0)
-        expect(system_message[:role]).to eq("system")
-        expect(system_message[:content]).to include("プログラミング初心者または中級者")
-        expect(system_message[:content]).to include("TIL（Today I Learned）")
-        expect(system_message[:content]).to include("3文~5文")
+        expect(mock_client).to have_received(:chat).with(
+          hash_including(
+            messages: array_including(
+              hash_including(
+                role: "system",
+                content: a_string_including("プログラミング初心者または中級者", "TIL（Today I Learned）", "3文~5文")
+              )
+            )
+          )
+        )
       end
 
       it "includes user notes in prompt" do
         service.generate_tils(notes)
 
-        user_message = mock_client.received_messages.first.dig(:parameters, :messages, 1)
-        expect(user_message[:role]).to eq("user")
-        expect(user_message[:content]).to include(notes)
+        expect(mock_client).to have_received(:chat).with(
+          hash_including(
+            messages: array_including(
+              hash_including(
+                role: "user",
+                content: a_string_including(notes)
+              )
+            )
+          )
+        )
       end
     end
 
