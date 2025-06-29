@@ -25,21 +25,21 @@ RSpec.describe DiaryAnswer, type: :model do
       diary_answer = create(:diary_answer, :mood_good)
       expect(diary_answer).to be_valid
       expect(diary_answer.question.identifier).to eq("mood")
-      expect(diary_answer.answer.value).to eq(4)
+      expect(diary_answer.answer.level).to eq(4)
     end
 
     it "creates valid motivation diary answer" do
       diary_answer = create(:diary_answer, :motivation_high)
       expect(diary_answer).to be_valid
       expect(diary_answer.question.identifier).to eq("motivation")
-      expect(diary_answer.answer.value).to eq(5)
+      expect(diary_answer.answer.level).to eq(5)
     end
 
     it "creates valid progress diary answer" do
       diary_answer = create(:diary_answer, :progress_complete)
       expect(diary_answer).to be_valid
       expect(diary_answer.question.identifier).to eq("progress")
-      expect(diary_answer.answer.value).to eq(5)
+      expect(diary_answer.answer.level).to eq(5)
     end
   end
 end

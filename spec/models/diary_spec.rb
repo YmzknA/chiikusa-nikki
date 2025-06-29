@@ -73,8 +73,8 @@ RSpec.describe Diary, type: :model do
         end
       end
 
-      context "when github_uploaded is nil" do
-        before { diary.update!(github_uploaded: nil) }
+      context "when github_uploaded is false" do
+        before { diary.update!(github_uploaded: false) }
 
         it "returns false" do
           expect(diary.github_uploaded?).to be false
@@ -107,26 +107,28 @@ RSpec.describe Diary, type: :model do
     end
 
     describe "#selected_til_content" do
+      let(:diary_with_tils) { create(:diary, :with_til_candidates, user: user) }
+      
       context "when TIL is selected" do
         it "returns the content of selected TIL candidate" do
-          diary.update!(selected_til_index: 0)
-          expect(diary.selected_til_content).to be_present
+          diary_with_tils.update!(selected_til_index: 0)
+          expect(diary_with_tils.selected_til_content).to be_present
         end
       end
 
       context "when selected_til_index is nil" do
-        before { diary.update!(selected_til_index: nil) }
+        before { diary_with_tils.update!(selected_til_index: nil) }
 
         it "returns nil" do
-          expect(diary.selected_til_content).to be_nil
+          expect(diary_with_tils.selected_til_content).to be_nil
         end
       end
 
       context "when TIL candidate does not exist for the index" do
-        before { diary.update!(selected_til_index: 999) }
+        before { diary_with_tils.update!(selected_til_index: 999) }
 
         it "returns nil" do
-          expect(diary.selected_til_content).to be_nil
+          expect(diary_with_tils.selected_til_content).to be_nil
         end
       end
     end

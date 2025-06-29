@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :daily_weather do
     sequence(:date) { |n| Date.current - n.days }
-    weather_data do
+    data do
       {
         temperature: rand(15..35),
         humidity: rand(40..80),
@@ -11,7 +11,7 @@ FactoryBot.define do
     end
 
     trait :sunny do
-      weather_data do
+      data do
         {
           temperature: 25,
           humidity: 50,
@@ -22,7 +22,7 @@ FactoryBot.define do
     end
 
     trait :rainy do
-      weather_data do
+      data do
         {
           temperature: 18,
           humidity: 85,

@@ -14,7 +14,7 @@ RSpec.describe User, type: :model do
       it "validates email format" do
         user.email = "invalid-email"
         expect(user).not_to be_valid
-        expect(user.errors[:email]).to include("is invalid")
+        expect(user.errors[:email]).to include("は不正な値です")
       end
 
       it "accepts valid email format" do
@@ -31,27 +31,27 @@ RSpec.describe User, type: :model do
 
     describe "provider ID validations" do
       it "validates github_id uniqueness" do
-        create(:user, github_id: "123456")
-        user = build(:user, github_id: "123456")
+        create(:user, :with_github, github_id: "123456")
+        user = build(:user, :with_github, github_id: "123456")
         expect(user).not_to be_valid
-        expect(user.errors[:github_id]).to include("has already been taken")
+        expect(user.errors[:github_id]).to include("はすでに存在します")
       end
 
       it "validates google_id uniqueness" do
-        create(:user, google_id: "123456")
-        user = build(:user, google_id: "123456")
+        create(:user, :with_google, google_id: "123456")
+        user = build(:user, :with_google, google_id: "123456")
         expect(user).not_to be_valid
-        expect(user.errors[:google_id]).to include("has already been taken")
+        expect(user.errors[:google_id]).to include("はすでに存在します")
       end
 
       it "allows nil values for provider IDs" do
-        user = build(:user, github_id: nil, google_id: nil)
+        user = build(:user, github_id: nil, google_id: nil, providers: [])
         expect(user).not_to be_valid
         expect(user.errors[:base]).to include("少なくとも一つの認証プロバイダーが必要です")
       end
 
       it "requires at least one provider ID" do
-        user = build(:user, github_id: nil, google_id: nil)
+        user = build(:user, github_id: nil, google_id: nil, providers: [])
         expect(user).not_to be_valid
         expect(user.errors[:base]).to include("少なくとも一つの認証プロバイダーが必要です")
       end
@@ -110,9 +110,14 @@ RSpec.describe User, type: :model do
     end
 
     context "when user does not exist" do
+      before do
+        # Ensure no user with this github_id exists
+        User.where(github_id: "12345").destroy_all
+      end
+      
       it "creates a new GitHub user" do
         expect do
-          described_class.from_omniauth(github_auth)
+          result = described_class.from_omniauth(github_auth)
         end.to change(described_class, :count).by(1)
 
         user = described_class.last
@@ -122,6 +127,9 @@ RSpec.describe User, type: :model do
       end
 
       it "creates a new Google user" do
+        # Ensure no user with this google_id exists
+        User.where(google_id: "67890").destroy_all
+        
         expect do
           described_class.from_omniauth(google_auth)
         end.to change(described_class, :count).by(1)
@@ -134,7 +142,11 @@ RSpec.describe User, type: :model do
     end
 
     context "when user exists" do
-      let!(:existing_user) { create(:user, github_id: "12345") }
+      let!(:existing_user) do
+        # Clean up any existing users with this ID first
+        User.where(github_id: "12345").destroy_all
+        create(:user, :with_github, github_id: "12345")
+      end
 
       it "does not create a new user" do
         expect do
@@ -161,7 +173,7 @@ RSpec.describe User, type: :model do
       end
 
       it "raises error when provider is already taken" do
-        create(:user, google_id: "67890")
+        create(:user, :with_google, google_id: "67890")
         
         expect do
           described_class.from_omniauth(google_auth, current_user)
@@ -326,7 +338,7 @@ RSpec.describe User, type: :model do
       end
 
       it "returns false when github_id is missing" do
-        user.update!(github_id: nil, encrypted_access_token: "token")
+        user.update!(github_id: nil, encrypted_access_token: "token", providers: ["google_oauth2"], google_id: "123", encrypted_google_access_token: "token")
         expect(user.github_auth?).to be false
       end
 
@@ -338,17 +350,17 @@ RSpec.describe User, type: :model do
 
     describe "#google_auth?" do
       it "returns true when both google_id and google_access_token are present" do
-        user.update!(google_id: "123", encrypted_google_access_token: "token")
+        user.update!(google_id: "123", encrypted_google_access_token: "token", providers: ["github", "google_oauth2"])
         expect(user.google_auth?).to be true
       end
 
       it "returns false when google_id is missing" do
-        user.update!(google_id: nil, encrypted_google_access_token: "token")
+        user.update!(google_id: nil, encrypted_google_access_token: "token", providers: ["github"])
         expect(user.google_auth?).to be false
       end
 
       it "returns false when google_access_token is missing" do
-        user.update!(google_id: "123", encrypted_google_access_token: nil)
+        user.update!(google_id: "123", encrypted_google_access_token: nil, providers: ["github", "google_oauth2"])
         expect(user.google_auth?).to be false
       end
     end
@@ -360,19 +372,19 @@ RSpec.describe User, type: :model do
       end
 
       it "returns false when github is not in providers array" do
-        user.update!(providers: [])
+        user.update!(providers: ["google_oauth2"], github_id: nil, encrypted_access_token: nil, google_id: "123", encrypted_google_access_token: "token")
         expect(user.github_connected?).to be false
       end
     end
 
     describe "#google_connected?" do
       it "returns true when google_oauth2 is in providers array" do
-        user.update!(providers: ["google_oauth2"])
+        user.update!(providers: ["github", "google_oauth2"], google_id: "123", encrypted_google_access_token: "token")
         expect(user.google_connected?).to be true
       end
 
       it "returns false when google_oauth2 is not in providers array" do
-        user.update!(providers: [])
+        user.update!(providers: ["github"], google_id: nil, encrypted_google_access_token: nil)
         expect(user.google_connected?).to be false
       end
     end
@@ -504,19 +516,20 @@ RSpec.describe User, type: :model do
       end
 
       it "returns false for default username" do
-        user = create(:user, username: User::DEFAULT_USERNAME)
+        user = create(:user, :username_setup_pending)
         expect(user.username_configured?).to be false
       end
 
       it "returns false for blank username" do
-        user = create(:user, username: "")
+        user = build(:user, username: "")
+        user.save(validate: false) # Skip validations for this specific test
         expect(user.username_configured?).to be false
       end
     end
 
     describe "#username_setup_pending?" do
       it "returns true for default username" do
-        user = create(:user, username: User::DEFAULT_USERNAME)
+        user = create(:user, :username_setup_pending)
         expect(user.username_setup_pending?).to be true
       end
 

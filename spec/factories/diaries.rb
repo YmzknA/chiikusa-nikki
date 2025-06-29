@@ -25,7 +25,9 @@ FactoryBot.define do
 
     trait :with_til_candidates do
       after(:create) do |diary|
-        create_list(:til_candidate, 3, diary: diary)
+        create(:til_candidate, :first, diary: diary)
+        create(:til_candidate, :second, diary: diary)
+        create(:til_candidate, :third, diary: diary)
       end
     end
 
