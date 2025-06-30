@@ -1,14 +1,4 @@
 <div class="min-h-screen p-4">
-  <div class="container mx-auto max-w-2xl">
-    <div class="neuro-card p-4 md:p-6 mb-6">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <h1 class="text-xl md:text-2xl lg:text-3xl font-bold text-base-content flex-1 min-w-0">新しい日記 ✍️</h1>
-        <div class="flex items-center gap-2">
-          <%= render 'shared/seed_counter' %>
-        </div>
-      </div>
-    </div>
-
     <div class="neuro-card p-4 md:p-6">
       <%= form_with(model: @diary, url: diaries_path, local: true, data: { turbo: false, turbo_frame: "_top" }, class: "space-y-4 md:space-y-6") do |form| %>
         <% if @existing_diary %>
@@ -67,6 +57,15 @@
         <div class="divider my-4 md:my-6 mx-auto"></div>
 
         <div class="form-control">
+          <div class="mb-6">
+            <div class="flex flex-wrap items-center justify-start">
+              <div class="flex items-center gap-2">
+                タネ：
+                <%= render 'shared/seed_counter' %>
+              </div>
+            </div>
+          </div>
+
           <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-badge py-2 md:py-3 px-3 md:px-4">
             <%= check_box_tag "use_ai_generation", "1", true, class: "checkbox checkbox-secondary bg-gray-100", id: "use_ai_generation_checkbox" %>
             <span class="text-base-content font-semibold text-sm md:text-base">AI生成を使用する（タネを1つ消費）</span>
@@ -80,7 +79,7 @@
           </label>
         </div>
 
-        <div class="divider w-xl my-4 md:my-6 mx-auto"></div>
+        <div class="divider my-4 md:my-6 mx-auto"></div>
 
         <div class="form-control mt-6 md:mt-8">
           <%= form.submit "日記を作成 ✓", class: "neuro-button w-full py-3 md:py-4 px-4 md:px-6 font-bold text-base md:text-lg hover:cursor-pointer", onclick: "return checkSeedCountBeforeAction(event, 'use_ai_generation_checkbox')" %>

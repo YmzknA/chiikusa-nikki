@@ -1,14 +1,5 @@
-<div class="min-h-screen p-4 pb-16">
+<div class="min-h-screen p-4">
   <div class="container mx-auto max-w-2xl">
-    <div class="neuro-card p-4 md:p-6 mb-6">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <h1 class="text-xl md:text-2xl lg:text-3xl font-bold text-base-content flex-1 min-w-0">日記を編集 ✏️</h1>
-        <div class="flex items-center gap-2">
-          <%= render 'shared/seed_counter' %>
-        </div>
-      </div>
-    </div>
-
     <div class="neuro-card p-4 md:p-6">
       <%= form_with(model: @diary, local: true, class: "space-y-4 md:space-y-6") do |form| %>
         <% if @diary.errors.any? %>
@@ -99,10 +90,26 @@
         <div class="divider my-4 md:my-6 mx-auto"></div>
 
         <div class="form-control">
-          <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-badge py-2 md:py-3 px-3 md:px-4">
-            <%= check_box_tag "regenerate_ai", "1", false, class: "checkbox checkbox-secondary bg-gray-100", id: "regenerate_ai_checkbox" %>
-            <span class="text-base-content font-semibold text-sm md:text-base">AI生成を使用する（タネを1つ消費）</span>
-          </label>
+          <div class="mb-6">
+            <div class="flex flex-wrap items-center justify-start">
+              <div class="flex items-center gap-2">
+                タネ：
+                <%= render 'shared/seed_counter' %>
+              </div>
+            </div>
+          </div>
+
+          <% if @diary.til_candidates.any? %>
+            <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-badge py-2 md:py-3 px-3 md:px-4">
+              <%= check_box_tag "regenerate_ai", "1", false, class: "checkbox checkbox-secondary bg-gray-100", id: "regenerate_ai_checkbox" %>
+              <span class="text-base-content font-semibold text-sm md:text-base">AIでTIL候補を再生成を使用する（タネを1つ消費）</span>
+            </label>
+          <% else %>
+            <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-badge py-2 md:py-3 px-3 md:px-4">
+              <%= check_box_tag "regenerate_ai", "1", false, class: "checkbox checkbox-secondary bg-gray-100", id: "regenerate_ai_checkbox" %>
+              <span class="text-base-content font-semibold text-sm md:text-base">AI生成を使用する（タネを1つ消費）</span>
+            </label>
+          <% end %>
         </div>
 
         <div class="form-control">
@@ -112,7 +119,7 @@
           </label>
         </div>
 
-        <div class="divider w-xl my-4 md:my-6 mx-auto"></div>
+        <div class="divider my-4 md:my-6 mx-auto"></div>
 
         <div class="form-control mt-6 md:mt-8">
           <%= form.submit "日記を更新 ✓", class: "neuro-button w-full py-3 md:py-4 px-4 md:px-6 font-bold text-base md:text-lg hover:bg-primary-focus transition-colors hover:cursor-pointer", onclick: "return checkSeedCountBeforeAction(event, 'regenerate_ai_checkbox')" %>

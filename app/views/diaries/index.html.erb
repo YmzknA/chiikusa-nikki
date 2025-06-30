@@ -5,7 +5,7 @@
   </div>
 
   <!-- Mobile Header with Logo -->
-  <div class="sm:hidden neuro-card p-4 mb-4 flex justify-center items-center">
+  <div class="relative z-10 sm:hidden neuro-card p-4 mb-4 flex justify-center items-center">
     <%= link_to root_path do %>
       <%= image_tag "logo.png", alt: "Neuro Logo", class: "h-10 w-auto" %>
     <% end %>
@@ -15,34 +15,32 @@
     <div class="flex items-center gap-4">
       <%# ここに自分の日記一覧をリスト化して表示する %>
     </div>
-
   </div>
 
-    <div class="neuro-card p-3 sm:p-6 overflow-hidden">
-      <%= month_calendar(events: @diaries, attribute: :date, class: "table table-fixed w-full") do |date, diaries| %>
-        <div class="neuro-calendar-cell py-2 sm:py-3 px-1 sm:px-2 min-h-[50px] sm:min-h-[60px] md:min-h-[80px] relative">
-          <div class="text-xs sm:text-sm text-base-content/60 mb-1"><%= date.day %></div>
+  <div class="neuro-card p-3 sm:p-6 overflow-hidden">
+    <%= month_calendar(events: @diaries, attribute: :date, class: "table table-fixed w-full") do |date, diaries| %>
+      <div class="neuro-calendar-cell py-2 sm:py-3 px-1 sm:px-2 min-h-[50px] sm:min-h-[60px] md:min-h-[80px] relative">
+        <div class="text-xs sm:text-sm text-base-content/60 mb-1"><%= date.day %></div>
 
-          <% if diaries.any? %>
-            <% diary = diaries.first %>
-            <% mood_level = diary.diary_answers.find_by(question: Question.find_by(identifier: :mood))&.answer&.level || 3 %>
-            <%= link_to diary_path(diary) do %>
-              <div class="w-full h-full flex items-center justify-center hover:scale-110 transition-transform">
-                <%= render "diaries/weed", mood_level: mood_level %>
-              </div>
-            <% end %>
-          <% else %>
-            <%= link_to new_diary_path(date: date) do %>
-              <div class="w-full h-full flex items-center justify-center hover:scale-110 transition-all duration-200">
-                <div class="mask mask-hexagon-2 size-3 sm:size-5 md:size-8 flex items-center justify-center"> 
-                  <div class="size-full bg-base-300">
-                  </div>
+        <% if diaries.any? %>
+          <% diary = diaries.first %>
+          <% mood_level = diary.diary_answers.find_by(question: Question.find_by(identifier: :mood))&.answer&.level || 3 %>
+          <%= link_to diary_path(diary) do %>
+            <div class="w-full h-full flex items-center justify-center hover:scale-110 transition-transform">
+              <%= render "diaries/weed", mood_level: mood_level %>
+            </div>
+          <% end %>
+        <% else %>
+          <%= link_to new_diary_path(date: date) do %>
+            <div class="w-full h-full flex items-center justify-center hover:scale-110 transition-all duration-200">
+              <div class="mask mask-hexagon-2 size-3 sm:size-5 md:size-8 flex items-center justify-center"> 
+                <div class="size-full bg-base-300">
                 </div>
               </div>
-            <% end %>
+            </div>
           <% end %>
-        </div>
-      <% end %>
-    </div>
+        <% end %>
+      </div>
+    <% end %>
   </div>
-</div>
+  </div>
