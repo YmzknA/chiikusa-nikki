@@ -7,6 +7,10 @@ export default class extends Controller {
   connect() {
     console.log("Chart period controller connected for:", this.chartTypeValue)
     this.updateMonthControlsVisibility()
+    
+    // レイアウト自動修正を無効化 - HTMLの初期設定のみに依存
+    // this.setupTurboFrameListeners()
+    // this.preserveResponsiveLayout()
   }
 
   updateChart(event) {
@@ -17,6 +21,11 @@ export default class extends Controller {
     const frame = document.getElementById(frameId)
     if (frame) {
       frame.src = url
+      
+      // レスポンシブクラス強制適用を無効化
+      // frame.addEventListener('turbo:frame-load', () => {
+      //   this.ensureResponsiveClasses()
+      // }, { once: true })
     }
     
     // 月選択コントロールの表示更新（日毎推移チャートの場合）
@@ -105,9 +114,28 @@ export default class extends Controller {
     const currentViewType = viewType || this.element.querySelector('select[name="view_type"]')?.value
     
     if (currentViewType === 'recent') {
-      this.monthControlsTarget.classList.add('hidden')
+      this.monthControlsTarget.className = 'flex items-center gap-2 w-full hidden'
     } else {
-      this.monthControlsTarget.classList.remove('hidden')
+      this.monthControlsTarget.className = 'flex items-center gap-2 w-full'
     }
+  }
+
+  ensureResponsiveClasses() {
+    // 完全に無効化 - HTMLクラスに干渉しない
+    return
+  }
+
+  setupTurboFrameListeners() {
+    // 完全に無効化 - Turbo Frameに干渉しない
+    return
+  }
+
+  preserveResponsiveLayout() {
+    // 完全に無効化 - HTMLクラスに干渉しない
+    return
+  }
+
+  disconnect() {
+    console.log('Chart period controller disconnected for:', this.chartTypeValue)
   }
 }
