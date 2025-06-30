@@ -1,16 +1,16 @@
 <%= turbo_frame_tag "distribution-chart" do %>
   <div class="neuro-card p-6">
-    <div class="flex items-center justify-between mb-6">
-      <h2 class="flex items-center gap-2 text-xl font-bold text-primary">
-        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
-        </svg>
-        各項目のレベル分布
-      </h2>
-      
-      <div data-controller="chart-period"
-           data-chart-period-chart-type-value="distribution">
-        <div class="flex items-center gap-2">
+    <div class="mb-6" data-controller="chart-period"
+         data-chart-period-chart-type-value="distribution">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between items-start gap-3">
+        <h2 class="flex items-center gap-2 text-xl font-bold text-primary">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+          </svg>
+          各項目のレベル分布
+        </h2>
+        
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4">
           <%= select_tag :distribution_months,
               options_for_select([
                 ['直近1ヶ月', 1],
@@ -18,9 +18,9 @@
                 ['過去3ヶ月', 3],
                 ['過去6ヶ月', 6],
                 ['過去1年', 12]
-              ], params[:distribution_months]&.to_i || 1),
+              ], local_assigns[:distribution_months]&.to_i || params[:distribution_months]&.to_i || 1),
               { 
-                class: "neuro-input px-3 py-2 text-sm",
+                class: "neuro-input px-2 md:px-3 py-1 md:py-2 text-xs md:text-sm w-full md:w-auto",
                 data: { action: "change->chart-period#updateChart" }
               } %>
         </div>

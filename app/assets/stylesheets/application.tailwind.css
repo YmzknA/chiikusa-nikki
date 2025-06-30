@@ -2,6 +2,13 @@
 @plugin "daisyui";
 @import "./water_effect.css";
 
+/* Ensure proper background for lemonade theme */
+html, body {
+  background-color: oklch(98.71% 0.02 123.72);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
 .m-plus-1p-regular {
   font-family: "M PLUS 1p", sans-serif;
   font-weight: 900;
@@ -160,6 +167,13 @@ label:has(input[type="radio"]:checked) {
 .simple-calendar {
   border: none;
   background: transparent;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.simple-calendar table {
+  width: 100%;
+  table-layout: fixed;
 }
 
 .simple-calendar .calendar-heading {
@@ -288,6 +302,84 @@ label:has(input[type="radio"]:checked) {
     8px 8px 16px rgba(105, 169, 106, 0.18),
     -8px -8px 16px rgba(255, 254, 213, 1),
     0 0 0 2px oklch(65% 0.22 134.6);
+}
+
+/* Responsive calendar styles */
+@media (max-width: 640px) {
+  .simple-calendar {
+    font-size: 0.875rem;
+  }
+  
+  .simple-calendar .calendar-title {
+    font-size: 1.25rem;
+  }
+  
+  .simple-calendar .calendar-heading nav {
+    padding: 0 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .simple-calendar .calendar-heading nav a {
+    padding: 0.5rem 1rem;
+    min-width: 100px;
+    font-size: 0.75rem;
+  }
+  
+  .simple-calendar th,
+  .simple-calendar td {
+    padding: 2px !important;
+    width: 14.285%; /* 100% / 7 days */
+    max-width: 14.285%;
+    overflow: hidden;
+  }
+  
+  /* Adjust calendar cell spacing for mobile */
+  .neuro-calendar-cell {
+    border-radius: 6px;
+    box-shadow: 
+      2px 2px 4px rgba(105, 169, 106, 0.06),
+      -2px -2px 4px rgba(255, 254, 213, 0.5);
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* Make the calendar more vertical-friendly */
+  .simple-calendar table {
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+  
+  /* Ensure proper spacing between rows on mobile */
+  .simple-calendar tbody tr {
+    margin-bottom: 0.25rem;
+  }
+  
+  /* Better aspect ratio for mobile calendar cells */
+  @media (max-height: 700px) {
+    .neuro-calendar-cell {
+      min-height: 45px !important;
+    }
+  }
+}
+
+/* Mobile bottom navigation styles */
+@media (max-width: 640px) {
+  .neuro-card.fixed {
+    box-shadow: 
+      0 -10px 20px rgba(105, 169, 106, 0.2),
+      0 -5px 10px rgba(255, 254, 213, 0.9);
+  }
+  
+  /* Ensure mobile navigation stays within viewport */
+  .fixed.bottom-0 {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  
+  /* Add safe area insets for devices with notches/home indicators */
+  .fixed.bottom-0 {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
 
 

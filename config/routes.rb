@@ -8,6 +8,9 @@ Rails.application.routes.draw do
 
   root "home#index"
 
+  # PWA manifest
+  get "/manifest.json", to: "application#manifest", defaults: { format: :json }
+
   resources :diaries, only: [:new, :create, :index, :edit, :update, :show, :destroy] do
     member do
       post :upload_to_github

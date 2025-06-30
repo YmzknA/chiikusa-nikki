@@ -2,9 +2,13 @@ class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: :manifest
   before_action :restrict_devise_routes
-  before_action :check_username_setup
+  before_action :check_username_setup, except: :manifest
+
+  def manifest
+    render template: "pwa/manifest", content_type: "application/json"
+  end
 
   protected
 

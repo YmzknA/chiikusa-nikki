@@ -1,7 +1,7 @@
 <div id="watering-button" class="flex items-center gap-2" 
      data-controller="water-effect" 
      data-water-effect-url-value="<%= increment_seed_diaries_path %>">
-  <% if current_user.can_increment_seed_count? %>
+  <% if current_user&.can_increment_seed_count? %>
     <button type="button" 
             class="neuro-button p-2 water-button" 
             data-water-effect-target="button"

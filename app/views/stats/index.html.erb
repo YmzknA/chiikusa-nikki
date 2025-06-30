@@ -1,99 +1,31 @@
-<div class="min-h-screen lemonade-background p-4">
-  <div class="container mx-auto">
-    <!-- ヘッダー -->
-    <div class="neuro-card p-6 mb-6">
-      <div class="flex items-center justify-start">
-        <%= link_to diaries_path, class: "neuro-button p-3 mr-4 inline-flex items-center justify-center" do %>
-          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-          </svg>
-        <% end %>
-
-        <h1 class="text-3xl font-bold text-base-content">統計ダッシュボード 📊</h1>
-      </div>
-    </div>
-
+<div class="min-h-screen p-4">
     <!-- メインチャートグリッド -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
       
       <!-- 日毎推移チャート（大きめ） -->
-      <%= turbo_frame_tag "daily-trends-chart", 
-          class: "lg:col-span-2",
-          src: stats_path(view_type: @view_type, target_month: @target_month) do %>
-        <div class="neuro-card p-6">
-          <!-- チャートヘッダー -->
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="flex items-center gap-2 text-2xl font-bold text-primary">
-              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-              </svg>
-              日毎の推移
-            </h2>
-            
-            <!-- 表示切り替えコントロール -->
-            <div data-controller="chart-period"
-                 data-chart-period-chart-type-value="daily-trends">
-              <div class="flex items-center gap-4">
-                <%= select_tag :view_type, 
-                    options_for_select([
-                      ['直近30日', 'recent'],
-                      ['月ごと', 'monthly']
-                    ], @view_type),
-                    { 
-                      class: "neuro-input px-3 py-2 text-sm",
-                      data: { action: "change->chart-period#updateChart" }
-                    } %>
-                
-                <!-- 月選択コントロール -->
-                <div data-chart-period-target="monthControls" 
-                     class="flex items-center gap-2 <%= 'hidden' if @view_type == 'recent' %>">
-                  <%= month_field_tag :target_month, @target_month,
-                      { 
-                        class: "neuro-input px-3 py-2 text-sm",
-                        data: { action: "change->chart-period#updateChart" }
-                      } %>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- チャートコンテナ -->
-          <div class="neuro-input p-6 w-full">
-            <div data-controller="chart" 
-                 data-chart-type-value="<%= @daily_trends_chart[:type] %>"
-                 data-chart-data-value="<%= @daily_trends_chart[:data].to_json %>"
-                 data-chart-options-value="<%= @daily_trends_chart[:options].to_json %>">
-              <canvas class="w-full" style="height: 400px;"></canvas>
-            </div>
-          </div>
-          
-          <div class="mt-4">
-            <div class="neuro-badge p-4 text-sm text-base-content/70">
-              📈 <strong>対象期間:</strong> 直近30日間または選択した月<br>
-              記録した日のみを表示し、線でつないで推移を確認。継続記録でパターンを把握しましょう。
-            </div>
-          </div>
-        </div>
-      <% end %>
+      <%= render 'stats/charts/daily_trends', 
+          view_type: @view_type, 
+          target_month: @target_month, 
+          daily_trends_chart: @daily_trends_chart %>
 
       <!-- 学習強度ヒートマップ -->
-      <div class="neuro-card p-6">
-        <h2 class="flex items-center gap-2 text-xl font-bold text-primary mb-6">
-          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="neuro-card p-4 md:p-6">
+        <h2 class="flex items-center gap-2 text-lg md:text-xl font-bold text-primary mb-4 md:mb-6">
+          <svg class="h-4 w-4 md:h-5 md:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
           </svg>
           学習強度ヒートマップ
         </h2>
         
-        <div class="neuro-input p-4 w-full">
+        <div class="neuro-input p-3 md:p-4 w-full">
           <div data-controller="heatmap" 
                data-heatmap-data-value="<%= @learning_intensity_heatmap[:data].to_json %>"
                data-heatmap-options-value="<%= @learning_intensity_heatmap[:options].to_json %>">
           </div>
         </div>
         
-        <div class="mt-4">
-          <div class="neuro-badge p-3 text-sm text-base-content/70">
+        <div class="mt-3 md:mt-4">
+          <div class="neuro-badge p-3 text-xs md:text-sm text-base-content/70">
             📊 <strong>対象期間:</strong> 直近半年間（モバイルでは4ヶ月間）<br>
             学習強度をGitHub風ヒートマップで表示。濃い色ほど高強度です。各日をクリックで日記詳細に移動できます。
           </div>
@@ -102,113 +34,25 @@
 
 
       <!-- 曜日別パフォーマンスパターン -->
-      <%= turbo_frame_tag "weekday-pattern-chart",
-          src: stats_path(weekday_months: params[:weekday_months] || 1) do %>
-        <div class="neuro-card p-6">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="flex items-center gap-2 text-xl font-bold text-primary">
-              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-              </svg>
-              曜日別パターン
-            </h2>
-            
-            <div data-controller="chart-period"
-                 data-chart-period-chart-type-value="weekday-pattern">
-              <div class="flex items-center gap-2">
-                <%= select_tag :weekday_months,
-                    options_for_select([
-                      ['直近1ヶ月', 1],
-                      ['過去2ヶ月', 2],
-                      ['過去3ヶ月', 3],
-                      ['過去6ヶ月', 6],
-                      ['過去1年', 12]
-                    ], params[:weekday_months]&.to_i || 1),
-                    { 
-                      class: "neuro-input px-3 py-2 text-sm",
-                      data: { action: "change->chart-period#updateChart" }
-                    } %>
-              </div>
-            </div>
-          </div>
-          
-          <div class="neuro-input p-4 w-full">
-            <div data-controller="weekday-chart" 
-                 data-weekday-chart-type-value="<%= @weekday_pattern_chart[:type] %>"
-                 data-weekday-chart-data-value="<%= @weekday_pattern_chart[:data].to_json %>"
-                 data-weekday-chart-options-value="<%= @weekday_pattern_chart[:options].to_json %>">
-              <canvas class="w-full" style="height: 300px;"></canvas>
-            </div>
-          </div>
-          
-          <div class="mt-4">
-            <div class="neuro-badge p-3 text-sm text-base-content/70">
-              📅 <strong>対象期間:</strong> 選択した期間<br>
-              曜日ごとの平均パフォーマンスで生活リズムを把握
-            </div>
-          </div>
-        </div>
-      <% end %>
+      <%= render 'stats/charts/weekday_pattern', 
+          weekday_months: params[:weekday_months] || 1,
+          weekday_pattern_chart: @weekday_pattern_chart %>
 
       <!-- レベル分布チャート -->
-      <%= turbo_frame_tag "distribution-chart",
-          src: stats_path(distribution_months: params[:distribution_months] || 1) do %>
-        <div class="neuro-card p-6">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="flex items-center gap-2 text-xl font-bold text-primary">
-              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
-              </svg>
-              各項目のレベル分布
-            </h2>
-            
-            <div data-controller="chart-period"
-                 data-chart-period-chart-type-value="distribution">
-              <div class="flex items-center gap-2">
-                <%= select_tag :distribution_months,
-                    options_for_select([
-                      ['直近1ヶ月', 1],
-                      ['過去2ヶ月', 2],
-                      ['過去3ヶ月', 3],
-                      ['過去6ヶ月', 6],
-                      ['過去1年', 12]
-                    ], params[:distribution_months]&.to_i || 1),
-                    { 
-                      class: "neuro-input px-3 py-2 text-sm",
-                      data: { action: "change->chart-period#updateChart" }
-                    } %>
-              </div>
-            </div>
-          </div>
-          
-          <div class="neuro-input p-4 w-full">
-            <div data-controller="chart" 
-                 data-chart-type-value="<%= @distribution_chart[:type] %>"
-                 data-chart-data-value="<%= @distribution_chart[:data].to_json %>"
-                 data-chart-options-value="<%= @distribution_chart[:options].to_json %>">
-              <canvas class="w-full" style="height: 300px;"></canvas>
-            </div>
-          </div>
-          
-          <div class="mt-4">
-            <div class="neuro-badge p-3 text-sm text-base-content/70">
-              📊 <strong>対象期間:</strong> 選択した期間<br>
-              レベル1〜5の出現頻度を確認。どの状態が多いか把握できます。
-            </div>
-          </div>
-        </div>
-      <% end %>
+      <%= render 'stats/charts/distribution', 
+          distribution_months: params[:distribution_months] || 1,
+          distribution_chart: @distribution_chart %>
 
             <!-- 月別投稿数チャート -->
-      <div class="neuro-card p-6">
-        <h2 class="flex items-center gap-2 text-xl font-bold text-primary mb-6">
-          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="neuro-card p-4 md:p-6">
+        <h2 class="flex items-center gap-2 text-lg md:text-xl lg:text-2xl font-bold text-primary mb-4 md:mb-6">
+          <svg class="h-5 w-5 md:h-6 md:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
           </svg>
           月別投稿数
         </h2>
         
-        <div class="neuro-input p-4 w-full">
+        <div class="neuro-input p-3 md:p-4 w-full">
           <div data-controller="chart" 
                data-chart-type-value="<%= @monthly_posts_chart[:type] %>"
                data-chart-data-value="<%= @monthly_posts_chart[:data].to_json %>"
@@ -217,8 +61,8 @@
           </div>
         </div>
         
-        <div class="mt-4">
-          <div class="neuro-badge p-3 text-sm text-base-content/70">
+        <div class="mt-3 md:mt-4">
+          <div class="neuro-badge p-3 text-xs md:text-sm text-base-content/70">
             📅 <strong>対象期間:</strong> 直近12ヶ月間<br>
             月ごとの日記投稿頻度を確認
           </div>
@@ -228,27 +72,27 @@
     </div>
 
     <!-- フッターヒント -->
-    <div class="mt-8 mb-10 neuro-card p-6">
+    <div class="mt-6 md:mt-8 mb-6 md:mb-10 neuro-card p-4 md:p-6">
       <div class="text-center">
-        <h3 class="text-lg font-bold text-primary mb-4">🌱 統計活用のヒント</h3>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 text-sm text-base-content/70">
-          <div class="neuro-badge p-3">
+        <h3 class="text-base md:text-lg font-bold text-primary mb-3 md:mb-4">🌱 統計活用のヒント</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 md:gap-3 text-xs md:text-sm text-base-content/70">
+          <div class="neuro-badge p-2 md:p-3">
             <strong>📈 日毎推移</strong><br>
             直近30日間または月別で記録した日を線で繋いで変化を把握
           </div>
-          <div class="neuro-badge p-3">
+          <div class="neuro-badge p-2 md:p-3">
             <strong>📊 強度ヒートマップ</strong><br>
             半年間（モバイル4ヶ月）の学習強度をGitHub風マップで表示
           </div>
-          <div class="neuro-badge p-3">
+          <div class="neuro-badge p-2 md:p-3">
             <strong>📅 曜日パターン</strong><br>
             選択期間の曜日別平均値で生活リズムを分析（期間変更可能）
           </div>
-          <div class="neuro-badge p-3">
+          <div class="neuro-badge p-2 md:p-3">
             <strong>📅 レベル分布</strong><br>
             選択期間の各項目レベル1〜5の出現頻度を確認（期間変更可能）
           </div>
-          <div class="neuro-badge p-3">
+          <div class="neuro-badge p-2 md:p-3">
             <strong>📊 月別投稿</strong><br>
             直近12ヶ月の継続習慣の維持状況を月別で確認
           </div>

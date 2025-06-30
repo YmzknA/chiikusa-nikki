@@ -1,16 +1,16 @@
 <%= turbo_frame_tag "weekday-pattern-chart" do %>
   <div class="neuro-card p-6">
-    <div class="flex items-center justify-between mb-6">
-      <h2 class="flex items-center gap-2 text-xl font-bold text-primary">
-        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-        </svg>
-        曜日別パターン
-      </h2>
-      
-      <div data-controller="chart-period"
-           data-chart-period-chart-type-value="weekday-pattern">
-        <div class="flex items-center gap-2">
+    <div class="mb-6" data-controller="chart-period"
+         data-chart-period-chart-type-value="weekday-pattern">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between items-start gap-3">
+        <h2 class="flex items-center gap-2 text-xl font-bold text-primary">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          曜日別パターン
+        </h2>
+        
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4">
           <%= select_tag :weekday_months,
               options_for_select([
                 ['直近1ヶ月', 1],
@@ -18,9 +18,9 @@
                 ['過去3ヶ月', 3],
                 ['過去6ヶ月', 6],
                 ['過去1年', 12]
-              ], params[:weekday_months]&.to_i || 1),
+              ], local_assigns[:weekday_months]&.to_i || params[:weekday_months]&.to_i || 1),
               { 
-                class: "neuro-input px-3 py-2 text-sm",
+                class: "neuro-input px-2 md:px-3 py-1 md:py-2 text-xs md:text-sm w-full md:w-auto",
                 data: { action: "change->chart-period#updateChart" }
               } %>
         </div>

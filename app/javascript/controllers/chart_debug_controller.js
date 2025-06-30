@@ -26,6 +26,8 @@ export default class extends Controller {
     
     console.log("Canvas found:", canvas)
     
+    // レスポンシブクラスの干渉を避けるため、preserve処理を削除
+    
     // カスタムツールチップを設定
     const customOptions = {
       ...this.defaultOptions,
@@ -108,4 +110,7 @@ export default class extends Controller {
       maintainAspectRatio: false
     }
   }
+
+  // preserveContainerClasses メソッドを削除
+  // HTMLテンプレートで定義されたレスポンシブクラスに干渉しないようにする
 }
