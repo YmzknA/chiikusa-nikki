@@ -26,8 +26,6 @@ application.register("heatmap", HeatmapController)
 import CalendarController from "./calendar_controller"
 application.register("calendar", CalendarController)
 
-import BackNavigationController from "./back_navigation_controller"
-application.register("back-navigation", BackNavigationController)
 
 import ChartPeriodController from "./chart_period_controller"
 application.register("chart-period", ChartPeriodController)
