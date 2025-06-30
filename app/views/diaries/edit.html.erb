@@ -1,7 +1,7 @@
 <div class="min-h-screen p-4">
   <div class="container mx-auto max-w-2xl">
     <div class="neuro-card p-4 md:p-6">
-      <%= form_with(model: @diary, local: true, class: "space-y-4 md:space-y-6") do |form| %>
+      <%= loading_form_with(model: @diary, local: true, class: "space-y-4 md:space-y-6") do |form| %>
         <% if @diary.errors.any? %>
           <div class="neuro-error p-4 mb-4 rounded-2xl">
             <div class="flex items-start gap-3">
