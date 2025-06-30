@@ -9,7 +9,7 @@ class DiariesController < ApplicationController
       current_user.diaries.includes(:diary_answers, :til_candidates),
       @selected_month
     ).order(date: :desc)
-    @available_months = get_available_months
+    @available_months = available_months
   end
 
   def show
@@ -211,7 +211,7 @@ class DiariesController < ApplicationController
     diaries.where(date: Date.new(year, month, 1).beginning_of_month..Date.new(year, month, 1).end_of_month)
   end
 
-  def get_available_months
+  def available_months
     months = current_user.diaries.pluck(:date).map { |date| date.strftime("%Y-%m") }.uniq.sort.reverse
     [%w[全て表示 all]] + months.map { |month| [format_month_label(month), month] }
   end
