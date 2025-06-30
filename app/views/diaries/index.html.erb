@@ -16,7 +16,7 @@
 
   <!-- DaisyUI Tab Navigation -->
   <div class="flex justify-start items-center mb-4">
-    <div class="tabs tabs-boxed tabs-sm neuro-card">
+    <div class="tabs tabs-boxed tabs-sm neuro-card" role="tablist" aria-label="日記表示切り替え">
       <input 
         type="radio" 
         name="diary_view_tabs" 
@@ -24,8 +24,10 @@
         aria-label="📅 カレンダー"
         id="calendar-tab"
         checked="checked"
-        data-controller="diary-view"
         data-action="change->diary-view#showCalendarView"
+        role="tab"
+        aria-selected="true"
+        aria-controls="calendar-view"
       />
       
       <input 
@@ -34,17 +36,21 @@
         class="tab" 
         aria-label="📋 リスト"
         id="list-tab"
-        data-controller="diary-view"
+        data-diary-view-target="listTab"
         data-action="change->diary-view#showListView"
+        role="tab"
+        aria-selected="false"
+        aria-controls="list-view"
       />
     </div>
 
-    <div id="month-filter" class="hidden justify-center mx-auto md:mx-2">
-      <%= form_with url: diaries_path, method: :get, class: "flex items-center gap-2", local: true, data: { controller: "diary-view" } do |form| %>
+    <div id="month-filter" class="hidden justify-center mx-auto md:mx-2" data-diary-view-target="monthFilter">
+      <%= form_with url: diaries_path, method: :get, class: "flex items-center gap-2", local: true do |form| %>
         <%= form.select :month, options_for_select(@available_months, @selected_month), 
           { selected: @selected_month }, 
           { id: "month-select", class: "neuro-input px-3 py-2 text-sm rounded-lg border-none", 
-            data: { action: "change->diary-view#filterByMonth" } } %>
+            data: { action: "change->diary-view#filterByMonth" },
+            "aria-label": "月で絞り込み" } %>
           <% end %>
     </div>
 
@@ -52,7 +58,7 @@
 
 
   <!-- Calendar View -->
-  <div id="calendar-view" class="neuro-card p-3 sm:p-6 overflow-hidden">
+  <div id="calendar-view" class="neuro-card p-3 sm:p-6 overflow-hidden" data-diary-view-target="calendarView" role="tabpanel" aria-labelledby="calendar-tab">
     <%= month_calendar(events: @diaries, attribute: :date, class: "table table-fixed w-full") do |date, diaries| %>
       <div class="neuro-calendar-cell py-2 sm:py-3 px-1 sm:px-2 min-h-[50px] sm:min-h-[60px] md:min-h-[80px] relative">
         <div class="text-xs sm:text-sm text-base-content/60 mb-1"><%= date.day %></div>
@@ -80,7 +86,7 @@
   </div>
 
   <!-- List View -->
-  <div id="list-view" class="hidden">
+  <div id="list-view" class="hidden" data-diary-view-target="listView" role="tabpanel" aria-labelledby="list-tab">
     <div class="grid gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3">
       <% @diaries.each do |diary| %>
         <div class="neuro-card p-4 md:p-6">
