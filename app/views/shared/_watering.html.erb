@@ -12,8 +12,9 @@
     <button type="button" 
             class="neuro-button p-2 water-button" 
             data-water-effect-target="button"
-            data-action="click->water-effect#water">
-            <%= image_tag 'watering_can_empty.png', class: 'size-6 opacity-50' %>
+            data-action="click->water-effect#onlyWater">
+            <%= image_tag 'watering_can_empty.png', class: 'size-6 mx-auto' %>
+            <p class="text-xs">水やり済み</p>
     </button>
   <% end %>
 </div>

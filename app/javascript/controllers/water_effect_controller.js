@@ -24,6 +24,14 @@ export default class extends Controller {
     }, 300)
   }
 
+  async onlyWater(event) {
+    event.preventDefault()
+    console.log("Only water button clicked, triggering effect")
+    
+    // エフェクトを即座に実行
+    this.createWaterSplashEffect()
+  }
+
   // 水しぶきエフェクトの作成
   createWaterSplashEffect() {
     const button = this.buttonTarget
