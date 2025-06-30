@@ -29,6 +29,9 @@ export default class extends Controller {
         const enteredUsername = this.usernameInputTarget.value.trim()
         const expectedUsername = this.element.dataset.expectedUsername
         
+        console.log("Entered username:", enteredUsername)
+        console.log("Expected username:", expectedUsername)
+        
         if (!enteredUsername) {
             alert("ユーザー名を入力してください。")
             return
@@ -39,6 +42,8 @@ export default class extends Controller {
             this.usernameInputTarget.focus()
             return
         }
+        
+        console.log("Username validation passed, submitting form")
         
         // 隠しフィールドにユーザー名を設定
         this.confirmUsernameFieldTarget.value = enteredUsername

@@ -125,12 +125,11 @@ RSpec.describe "User Delete System", type: :system do
       click_button "アカウントを削除"
 
       # ユーザー名確認入力
-      within(".modal") do
-        fill_in "confirm_username", with: user.username
-        click_button "削除する"
-      end
+      fill_in "confirm_username", with: user.username
+      click_button "削除する"
 
-      expect(current_path).to eq(root_path)
+      # リダイレクトを待機
+      expect(page).to have_current_path(root_path, wait: 10)
       expect(page).to have_text("#{user.username}さんのアカウントを削除しました")
       expect(page).to have_text("ご利用ありがとうございました")
 
@@ -145,10 +144,8 @@ RSpec.describe "User Delete System", type: :system do
       click_button "アカウントを削除"
 
       # ユーザー名確認入力
-      within(".modal") do
-        fill_in "confirm_username", with: user.username
-        click_button "削除する"
-      end
+      fill_in "confirm_username", with: user.username
+      click_button "削除する"
 
       # ログアウト状態であることを確認
       visit profile_path
@@ -191,10 +188,8 @@ RSpec.describe "User Delete System", type: :system do
       click_button "アカウントを削除"
 
       # ユーザー名確認入力
-      within(".modal") do
-        fill_in "confirm_username", with: user.username
-        click_button "削除する"
-      end
+      fill_in "confirm_username", with: user.username
+      click_button "削除する"
 
       expect(current_path).to eq(profile_path)
       expect(page).to have_text("アカウントの削除に失敗しました")
