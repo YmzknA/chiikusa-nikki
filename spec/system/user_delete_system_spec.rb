@@ -10,6 +10,23 @@ RSpec.describe "User Delete System", type: :system do
     sign_in user
   end
 
+  # System tests for user deletion need actual DB commits
+  around do |example|
+    # Clear any existing test data
+    Warden.test_reset!
+
+    self.use_transactional_tests = false
+    example.run
+  ensure
+    self.use_transactional_tests = true
+    # Clean up data after test
+    User.destroy_all
+    Diary.destroy_all
+    DiaryAnswer.destroy_all
+    TilCandidate.destroy_all
+    Warden.test_reset!
+  end
+
   describe "User deletion flow" do
     it "displays delete button on profile page" do
       visit profile_path
@@ -138,18 +155,27 @@ RSpec.describe "User Delete System", type: :system do
       expect(Diary.where(user_id: user.id)).to be_empty
     end
 
-    it "signs out user after deletion" do
+    it "successfully deletes user and shows deletion message", :js do
+      user_id = user.id
+      username = user.username
       visit profile_path
 
       click_button "アカウントを削除"
 
       # ユーザー名確認入力
-      fill_in "confirm_username", with: user.username
+      fill_in "confirm_username", with: username
       click_button "削除する"
 
-      # ログアウト状態であることを確認
-      visit profile_path
-      expect(current_path).to eq(root_path) # 認証が必要なページにリダイレクト
+      # 削除処理のリダイレクト後に削除メッセージを確認
+      expect(page).to have_current_path(root_path, wait: 10)
+      expect(page).to have_text("#{username}さんのアカウントを削除しました")
+      expect(page).to have_text("ご利用ありがとうございました")
+
+      # ユーザーが実際に削除されているか確認
+      expect(User.find_by(id: user_id)).to be_nil
+
+      # 削除されたユーザーの関連データも削除されているか確認
+      expect(Diary.where(user_id: user_id)).to be_empty
     end
   end
 
