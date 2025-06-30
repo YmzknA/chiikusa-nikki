@@ -26,6 +26,7 @@
   </head>
 
   <body data-theme="lemonade" class="m-plus-1p-regular">
+    <%= render 'shared/flash' %>
     <% unless controller_name == 'home' && action_name == 'index' %>
       <%= render 'shared/sidebar_navigation' %>
     <% end %>
