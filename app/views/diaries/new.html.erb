@@ -1,27 +1,27 @@
-<div class="min-h-screen lemonade-background p-4">
+<div class="min-h-screen p-4">
   <div class="container mx-auto max-w-2xl">
-    <div class="neuro-card p-6 mb-6">
-      <div class="flex items-center">
-        <%= link_to diaries_path, class: "neuro-button p-3 mr-4 inline-flex items-center justify-center" do %>
-          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="neuro-card p-4 md:p-6 mb-6">
+      <div class="flex flex-wrap items-center gap-2">
+        <%= link_to diaries_path, class: "neuro-button p-2 md:p-3 mr-2 md:mr-4 inline-flex items-center justify-center" do %>
+          <svg class="h-5 w-5 md:h-6 md:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
           </svg>
         <% end %>
-        <h1 class="text-3xl font-bold text-base-content">新しい日記 ✍️</h1>
-        <div class="ml-auto flex items-center gap-2">
+        <h1 class="text-xl md:text-2xl lg:text-3xl font-bold text-base-content flex-1 min-w-0">新しい日記 ✍️</h1>
+        <div class="flex items-center gap-2">
           <%= render 'shared/seed_counter' %>
         </div>
       </div>
     </div>
 
-    <div class="neuro-card p-6">
-      <%= form_with(model: @diary, url: diaries_path, local: true, data: { turbo: false, turbo_frame: "_top" }, class: "space-y-6") do |form| %>
+    <div class="neuro-card p-4 md:p-6">
+      <%= form_with(model: @diary, url: diaries_path, local: true, data: { turbo: false, turbo_frame: "_top" }, class: "space-y-4 md:space-y-6") do |form| %>
         <% if @existing_diary %>
-          <div class="neuro-input p-4 mb-4 rounded-2xl bg-warning border border-warning/20">
-            <div class="flex items-start gap-3">
+          <div class="neuro-input p-3 md:p-4 mb-4 rounded-2xl bg-warning border border-warning/20">
+            <div class="flex items-start gap-2 md:gap-3">
               <div>
-                <h3 class="font-bold text-primary">⚠️ この日の日記は既に作成されています</h3>
-                <p class="mt-2 text-base-content/80">
+                <h3 class="font-bold text-primary text-sm md:text-base">⚠️ この日の日記は既に作成されています</h3>
+                <p class="mt-2 text-base-content/80 text-sm md:text-base">
                   <%= @date.strftime("%Y年%m月%d日") %>の日記は既に存在します。
                   <%= link_to "既存の日記を編集", edit_diary_path(@existing_diary), class: "text-neutral underline hover:text-warning/80" %>
                   するか、別の日付を選択してください。
@@ -32,13 +32,13 @@
         <% end %>
 
         <div class="form-control">
-          <%= form.label :date, "日付", class: "block text-base-content font-semibold mb-2 #{'text-error' if @diary.errors[:date].any?}" %>
+          <%= form.label :date, "日付", class: "block text-base-content font-semibold mb-2 text-sm md:text-base #{'text-error' if @diary.errors[:date].any?}" %>
           <%= form.date_field :date, value: (@diary.date || @date), 
-              class: "neuro-input py-3 px-4 w-full max-w-42 #{'border-error border-2 bg-error/5' if @diary.errors[:date].any?}", 
+              class: "neuro-input py-2 md:py-3 px-3 md:px-4 w-full max-w-48 text-sm md:text-base #{'border-error border-2 bg-error/5' if @diary.errors[:date].any?}", 
               required: true,
               data: { error: @diary.errors[:date].any? } %>
           <% if @diary.errors[:date].any? %>
-            <p class="text-error text-sm mt-1 font-medium">
+            <p class="text-error text-xs md:text-sm mt-1 font-medium">
               ⚠️ この日付を変更してください
             </p>
           <% end %>
@@ -46,16 +46,16 @@
 
         <% @questions.each do |question| %>
           <div class="form-control">
-            <div class="mb-3">
-              <span class="block text-base-content font-semibold mb-2"><%= question.label %></span>
+            <div class="mb-2 md:mb-3">
+              <span class="block text-base-content font-semibold mb-2 text-sm md:text-base"><%= question.label %></span>
             </div>
-            <div class="flex gap-3 flex-wrap">
+            <div class="flex gap-2 md:gap-3 flex-wrap">
               <% question.answers.each do |answer| %>
                 <% is_selected = @selected_answers&.dig(question.identifier.to_s) == answer.id.to_s %>
                 <label class="cursor-pointer">
                   <%= radio_button_tag "diary_answers[#{question.identifier}]", answer.id, 
                       is_selected, { class: "peer sr-only" } %>
-                  <div class="neuro-button py-3 px-4 text-2xl peer-checked:!bg-primary peer-checked:!text-primary-content peer-checked:!shadow-inner">
+                  <div class="neuro-button py-2 md:py-3 px-3 md:px-4 text-xl md:text-2xl peer-checked:!bg-primary peer-checked:!text-primary-content peer-checked:!shadow-inner">
                     <%= answer.emoji %>
                   </div>
                 </label>
@@ -65,30 +65,30 @@
         <% end %>
 
         <div class="form-control">
-          <%= form.label :notes, "今日やったこと・感じたこと", class: "block text-base-content font-semibold mb-2" %>
-          <%= form.text_area :notes, placeholder: "・今日やったことについて\n・つまずいた問題や解決方法\n・新しい発見や気づき\n   など", class: "neuro-input w-full h-32 py-4 px-4 resize-none", rows: 6 %>
+          <%= form.label :notes, "今日やったこと・感じたこと", class: "block text-base-content font-semibold mb-2 text-sm md:text-base" %>
+          <%= form.text_area :notes, placeholder: "・今日やったことについて\n・つまずいた問題や解決方法\n・新しい発見や気づき\n   など", class: "neuro-input w-full h-28 md:h-32 py-3 md:py-4 px-3 md:px-4 resize-none text-sm md:text-base", rows: 6 %>
         </div>
 
-        <div class="divider my-6 mx-auto"></div>
+        <div class="divider my-4 md:my-6 mx-auto"></div>
 
         <div class="form-control">
-          <label class="flex items-center gap-3 cursor-pointer neuro-badge py-3 px-4">
+          <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-badge py-2 md:py-3 px-3 md:px-4">
             <%= check_box_tag "use_ai_generation", "1", true, class: "checkbox checkbox-secondary bg-gray-100", id: "use_ai_generation_checkbox" %>
-            <span class="text-base-content font-semibold">AI生成を使用する（タネを1つ消費）</span>
+            <span class="text-base-content font-semibold text-sm md:text-base">AI生成を使用する（タネを1つ消費）</span>
           </label>
         </div>
 
         <div class="form-control">
-          <label class="flex items-center gap-3 cursor-pointer neuro-badge py-3 px-4 hover:scale-99 transition-transform">
+          <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-badge py-2 md:py-3 px-3 md:px-4 hover:scale-99 transition-transform">
             <%= form.check_box :is_public, class: "checkbox checkbox-secondary bg-gray-100 " %>
-            <span class="text-base-content font-semibold">この日記を公開する</span>
+            <span class="text-base-content font-semibold text-sm md:text-base">この日記を公開する</span>
           </label>
         </div>
 
-        <div class="divider w-xl my-6 mx-auto"></div>
+        <div class="divider w-xl my-4 md:my-6 mx-auto"></div>
 
-        <div class="form-control mt-8">
-          <%= form.submit "日記を作成 ✓", class: "neuro-button w-full py-4 px-6 font-bold text-lg hover:cursor-pointer", onclick: "return checkSeedCountBeforeAction(event, 'use_ai_generation_checkbox')" %>
+        <div class="form-control mt-6 md:mt-8">
+          <%= form.submit "日記を作成 ✓", class: "neuro-button w-full py-3 md:py-4 px-4 md:px-6 font-bold text-base md:text-lg hover:cursor-pointer", onclick: "return checkSeedCountBeforeAction(event, 'use_ai_generation_checkbox')" %>
         </div>
       <% end %>
     </div>

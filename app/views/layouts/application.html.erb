@@ -26,24 +26,6 @@
   </head>
 
   <body data-theme="lemonade" class="m-plus-1p-regular">
-    <%# Flash messages with neumorphism design %>
-    <% if notice %>
-      <div class="neuro-success fixed top-4 right-4 z-50 max-w-sm p-4 flex items-center gap-3 rounded-2xl">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-success flex-shrink-0" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-        <span class="text-success font-medium"><%= notice %></span>
-      </div>
-    <% end %>
-    
-    <% if alert %>
-      <div class="fixed top-4 right-4 z-50 max-w-md p-4 flex items-start gap-3 rounded-2xl border-2 border-error/30 bg-error/80">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-error flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>
-        <div class="flex-1">
-          <p class="text-error font-bold text-sm">⚠️ エラー</p>
-          <p class="text-error font-medium text-sm mt-1"><%= alert %></p>
-        </div>
-      </div>
-    <% end %>
-
     <main>
       <%= yield %>
     </main>
