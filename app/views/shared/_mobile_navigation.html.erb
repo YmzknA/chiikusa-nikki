@@ -1,6 +1,12 @@
 <!-- Mobile Bottom Navigation Bar -->
 <div class="sm:hidden fixed bottom-0 left-0 right-0 neuro-card rounded-t-3xl border-t border-base-300 z-50">
-  <div class="grid grid-cols-4 gap-1 px-2 py-2">
+  <div class="grid grid-cols-5 gap-1 px-2 py-2">
+    <%= link_to public_diaries_path, class: "flex flex-col items-center gap-0.5 p-1 rounded-lg hover:bg-base-200 transition-colors text-xs #{'text-primary font-semibold' if current_page?(public_diaries_path)}" do %>
+      <span class="material-symbols-outlined text-xl">
+        public
+      </span>
+      <span>公開</span>
+    <% end %>
     
     <%= link_to stats_path, class: "flex flex-col items-center gap-0.5 p-1 rounded-lg hover:bg-base-200 transition-colors text-xs #{'text-primary font-semibold' if current_page?(stats_path)}" do %>
       <span class="material-symbols-outlined text-xl">
@@ -8,19 +14,19 @@
       </span>
       <span>統計</span>
     <% end %>
-
-    <%= link_to diaries_path, class: "flex flex-col items-center gap-0.5 p-1 rounded-lg hover:bg-base-200 transition-colors text-xs #{'text-primary font-semibold' if controller_name == 'diaries' && action_name == 'index'}" do %>
-      <span class="material-symbols-outlined text-xl">
-        calendar_month
-      </span>
-      <span>一覧</span>
-    <% end %>
-
+    
     <%= link_to new_diary_path, class: "flex flex-col items-center gap-0.5 p-1 rounded-lg hover:bg-base-200 transition-colors text-xs #{'text-primary font-semibold' if controller_name == 'diaries' && action_name == 'new'}" do %>
       <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
       </svg>
       <span>作成</span>
+    <% end %>
+
+    <%= link_to diaries_path, class: "flex flex-col items-center gap-0.5 p-1 rounded-lg hover:bg-base-200 transition-colors text-xs #{'text-primary font-semibold' if controller_name == 'diaries' && action_name == 'index'}" do %>
+      <span class="material-symbols-outlined text-xl">
+        calendar_month
+      </span>
+      <span>日記</span>
     <% end %>
     
     <%= link_to profile_path, class: "flex flex-col items-center gap-0.5 p-1 rounded-lg hover:bg-base-200 transition-colors text-xs #{'text-primary font-semibold' if current_page?(profile_path)}" do %>
