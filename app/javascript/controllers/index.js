@@ -41,3 +41,6 @@ application.register("user-delete", UserDeleteController)
 
 import LoadingController from "./loading_controller"
 application.register("loading", LoadingController)
+
+import AiLoadingController from "./ai_loading_controller"
+application.register("ai-loading", AiLoadingController)
