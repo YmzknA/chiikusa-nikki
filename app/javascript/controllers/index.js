@@ -32,3 +32,9 @@ application.register("chart-period", ChartPeriodController)
 
 import DiaryViewController from "./diary_view_controller"
 application.register("diary-view", DiaryViewController)
+
+import TutorialController from "./tutorial_controller"
+application.register("tutorial", TutorialController)
+
+import UserDeleteController from "./user_delete_controller"
+application.register("user-delete", UserDeleteController)

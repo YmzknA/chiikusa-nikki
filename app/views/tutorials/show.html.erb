@@ -1,0 +1,162 @@
+<div class="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50">
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <!-- ヘッダー -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-green-800 mb-4 stick-regular">
+        🌱 ちいくさ日記の使い方 🌱
+      </h1>
+      <p class="text-gray-600 text-lg">
+      毎日１分、簡単日記で草生やし
+      </p>
+    </div>
+
+    <!-- チュートリアル内容 -->
+    <div data-controller="tutorial" class="space-y-8">
+      <!-- Step 1: 日記の作り方 -->
+      <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-green-500">
+        <div class="flex items-center mb-4">
+          <div class="w-10 h-10 bg-green-500 text-white rounded-full flex items-center justify-center font-bold mr-4">
+            1
+          </div>
+          <h2 class="text-2xl font-semibold text-gray-800">📝 日記の作り方</h2>
+        </div>
+        <div class="ml-14 space-y-4">
+          <p class="text-gray-700">
+            学習した内容を日記として記録しましょう。3つの評価（気分・モチベーション・進捗）と自由なメモで、
+            あなたの学習を振り返ることができます。
+          </p>
+          <div class="bg-green-50 p-4 rounded-lg">
+            <h3 class="font-semibold text-green-800 mb-2">📊 3つの評価</h3>
+            <ul class="space-y-2 text-gray-700">
+              <li>• <strong>気分</strong>：😞 〜 😄 （今日の学習の気分）</li>
+              <li>• <strong>モチベーション</strong>：☔ 〜 🌈 （やる気の度合い）</li>
+              <li>• <strong>進捗</strong>：💤 〜 🌳（学習の進み具合）</li>
+            </ul>
+          </div>
+          <div class="bg-blue-50 p-4 rounded-lg">
+            <h3 class="font-semibold text-blue-800 mb-2">📝 学習メモ</h3>
+            <p class="text-gray-700">
+              学んだことを箇条書きで記録しましょう。このメモからAIが自動でTIL（Today I Learned）を生成してくれます！
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: AI TIL生成 -->
+      <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-500">
+        <div class="flex items-center mb-4">
+          <div class="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold mr-4">
+            2
+          </div>
+          <h2 class="text-2xl font-semibold text-gray-800">🤖 AIでTILを自動生成</h2>
+        </div>
+        <div class="ml-14 space-y-4">
+          <p class="text-gray-700">
+            メモを箇条書きで入力すると、AIが3つのTIL候補を自動生成します。
+            あなたのメモの内容を整理して、わかりやすいTILに変換してくれます。
+          </p>
+          <div class="bg-yellow-50 p-4 rounded-lg">
+            <h3 class="font-semibold text-yellow-800 mb-2">🌱 タネシステム</h3>
+            <p class="text-gray-700 mb-2">
+              AI生成にはタネが必要です。タネの獲得方法：
+            </p>
+            <ul class="space-y-1 text-gray-700">
+              <li>• 毎日の水やりボタン（1日1回）</li>
+              <li>• X（Twitter）での共有（1日1回）</li>
+              <li>• 最大5個まで保持可能</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: GitHub連携 -->
+      <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-purple-500">
+        <div class="flex items-center mb-4">
+          <div class="w-10 h-10 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold mr-4">
+            3
+          </div>
+          <h2 class="text-2xl font-semibold text-gray-800">🌱 GitHub連携で草を生やそう</h2>
+        </div>
+        <div class="ml-14 space-y-4">
+          <p class="text-gray-700">
+            GitHubと連携することで、日記をGitHubリポジトリにアップロードできちゃいます。
+            継続的な学習でGitHubの草を生やして、学習の成果を可視化しましょう！
+          </p>
+          <div class="bg-purple-50 p-4 rounded-lg">
+            <h3 class="font-semibold text-purple-800 mb-2">🔗 設定手順</h3>
+            <ol class="space-y-1 text-gray-700 list-decimal list-inside">
+              <li>GitHubと連携する</li>
+              <li>プロフィール → GitHub設定画面へ</li>
+              <li>リポジトリ名を入力して作成</li>
+              <li>日記作成後、GitHubアップロードボタンをクリック</li>
+              <li>Markdown形式でアップロード</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: 統計・分析 -->
+      <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-orange-500">
+        <div class="flex items-center mb-4">
+          <div class="w-10 h-10 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold mr-4">
+            4
+          </div>
+          <h2 class="text-2xl font-semibold text-gray-800">📊 学習の振り返り</h2>
+        </div>
+        <div class="ml-14 space-y-4">
+          <p class="text-gray-700">
+            統計機能で傾向を分析しましょう。グラフで可視化された情報から、
+            パターンを把握して、自分を振り返ることが出来ます。
+          </p>
+          <div class="bg-orange-50 p-4 rounded-lg">
+            <h3 class="font-semibold text-orange-800 mb-2">📈 分析内容</h3>
+            <ul class="space-y-1 text-gray-700">
+              <li>• 直近30日間の気分・モチベーション・進捗の推移</li>
+              <li>• 日記の選択肢の合計値をGitHubのようなヒートマップ化</li>
+              <li>• 曜日別の選択肢パターン分析</li>
+              <li>• 選択肢のレベル別分布</li>
+              <li>• 月別の投稿数</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5: コミュニティ -->
+      <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-pink-500">
+        <div class="flex items-center mb-4">
+          <div class="w-10 h-10 bg-pink-500 text-white rounded-full flex items-center justify-center font-bold mr-4">
+            5
+          </div>
+          <h2 class="text-2xl font-semibold text-gray-800">👥 みんなの頑張りを見る</h2>
+        </div>
+        <div class="ml-14 space-y-4">
+          <p class="text-gray-700">
+            公開日記一覧では、他のユーザーの日記内容を見ることができます。
+            みんなの振り返りを見てモチベーションを高めたり、新しいヒントを得ましょう。
+          </p>
+          <div class="bg-pink-50 p-4 rounded-lg">
+            <h3 class="font-semibold text-pink-800 mb-2">🌟 コミュニティ機能</h3>
+            <ul class="space-y-1 text-gray-700">
+              <li>• 他のユーザーの日記を閲覧</li>
+              <li>• 様々な日記からインスピレーションを得る</li>
+              <li>• コミュニティの一員として成長</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- まとめ -->
+      <div class="bg-primary/70 text-white rounded-lg p-6 text-center">
+        <h2 class="text-2xl font-bold mb-4">🌱 さあ、ちいさな草を生やし始めよう！</h2>
+        <p class="text-lg mb-6">
+        毎日１分の簡単日記で、一日を振り返りましょう！
+        小さな草でも、継続することで大きな草原になります！
+        </p>
+        <div class="flex justify-center space-x-4">
+          <%= link_to "日記を書く", new_diary_path, 
+            class: "bg-white text-primary px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

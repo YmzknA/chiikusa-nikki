@@ -30,9 +30,13 @@ Rails.application.routes.draw do
   # ユーザー名設定関連
   get "/setup_username", to: "users#setup_username"
   patch "/setup_username", to: "users#update_username"
+  delete "/users", to: "users#destroy"
 
   # GitHub設定関連のルート
   get "/github_settings", to: "github_settings#show"
   patch "/github_settings", to: "github_settings#update"
   delete "/github_settings", to: "github_settings#destroy"
+
+  # チュートリアル
+  get "/tutorial", to: "tutorials#show"
 end
