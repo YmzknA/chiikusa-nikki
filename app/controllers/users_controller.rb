@@ -15,18 +15,29 @@ class UsersController < ApplicationController
   end
 
   def destroy
+    return handle_unauthorized_deletion unless valid_deletion_request?
+    return handle_invalid_confirmation unless valid_username_confirmation?
+
     user = current_user
     username = user.username
     
-    # ユーザーとその関連データを削除
-    if user.destroy
-      # セッションをクリア
-      sign_out(user)
-      redirect_to root_path, notice: "#{username}さんのアカウントを削除しました。ご利用ありがとうございました。"
-    else
-      Rails.logger.error "User deletion failed: #{user.errors.full_messages.join(', ')}"
-      redirect_to profile_path, alert: "アカウントの削除に失敗しました。時間をおいて再度お試しください。"
+    Rails.logger.info "User deletion initiated: #{username} (ID: #{user.id})"
+
+    ActiveRecord::Base.transaction do
+      validate_related_data_integrity(user)
+
+      if user.destroy
+        sign_out(user)
+        Rails.logger.info "User deletion completed: #{username}"
+        redirect_to root_path, notice: "#{username}さんのアカウントを削除しました。ご利用ありがとうございました。"
+      else
+        Rails.logger.error "User deletion failed: #{user.errors.full_messages.join(', ')}"
+        redirect_to profile_path, alert: "アカウントの削除に失敗しました。時間をおいて再度お試しください。"
+      end
     end
+  rescue ActiveRecord::RecordNotDestroyed, ActiveRecord::InvalidForeignKey => e
+    Rails.logger.error "User deletion failed due to data integrity: #{e.message}"
+    redirect_to profile_path, alert: "関連データの削除に失敗しました。時間をおいて再度お試しください。"
   rescue StandardError => e
     Rails.logger.error "User deletion failed: #{e.message}"
     redirect_to profile_path, alert: "アカウントの削除に失敗しました。時間をおいて再度お試しください。"
@@ -42,5 +53,34 @@ class UsersController < ApplicationController
     return unless current_user.username_configured?
 
     redirect_to diaries_path
+  end
+
+  def valid_deletion_request?
+    current_user.present? && request.delete?
+  end
+
+  def valid_username_confirmation?
+    params[:confirm_username].present? && params[:confirm_username] == current_user.username
+  end
+
+  def handle_unauthorized_deletion
+    Rails.logger.warn "Unauthorized deletion attempt for user #{current_user&.id}"
+    redirect_to profile_path, alert: "不正な削除リクエストです。"
+  end
+
+  def handle_invalid_confirmation
+    Rails.logger.warn "Invalid username confirmation for user #{current_user.id}"
+    redirect_to profile_path, alert: "ユーザー名の確認が正しくありません。"
+  end
+
+  def validate_related_data_integrity(user)
+    return if user.diaries.empty?
+
+    # 削除前の関連データの整合性チェック
+    user.diaries.includes(:diary_answers, :til_candidates).each do |diary|
+      next if diary.diary_answers.all?(&:valid?) && diary.til_candidates.all?(&:valid?)
+
+      raise ActiveRecord::RecordInvalid, "Related data integrity check failed"
+    end
   end
 end

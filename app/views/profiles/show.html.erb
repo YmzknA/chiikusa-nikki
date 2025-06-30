@@ -203,7 +203,9 @@
             ログアウト
           <% end %>
           
-          <div class="border-t border-base-content/10 pt-3 md:pt-4" data-controller="user-delete">
+          <div class="border-t border-base-content/10 pt-3 md:pt-4" 
+               data-controller="user-delete"
+               data-expected-username="<%= current_user.username %>">
             <button type="button" 
                     data-action="click->user-delete#openModal"
                     class="neuro-error w-full py-2 md:py-3 px-3 md:px-4 font-medium flex items-center justify-center gap-2 text-sm md:text-base">
@@ -245,6 +247,16 @@
                     </ul>
                   </div>
                   
+                  <div class="form-control">
+                    <label class="label">
+                      <span class="label-text font-semibold text-error">確認のため、ユーザー名「<span class="font-bold"><%= current_user.username %></span>」を入力してください</span>
+                    </label>
+                    <input type="text" 
+                           data-user-delete-target="usernameInput"
+                           placeholder="<%= current_user.username %>"
+                           class="input input-bordered input-error w-full" />
+                  </div>
+                  
                   <p class="text-sm text-base-content/70">
                     本当にアカウントを削除してもよろしいですか？<br>
                     今まで積み重ねた学習の記録がすべて失われます。
@@ -270,7 +282,7 @@
             <%= form_with url: users_path, method: :delete, 
                 data: { user_delete_target: "form" },
                 class: "hidden" do |form| %>
-              <!-- フォームの内容は空でOK -->
+              <%= form.hidden_field :confirm_username, data: { user_delete_target: "confirmUsernameField" } %>
             <% end %>
           </div>
         </div>

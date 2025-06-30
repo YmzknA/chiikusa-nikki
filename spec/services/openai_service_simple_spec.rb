@@ -42,7 +42,7 @@ RSpec.describe OpenaiService, type: :service do
           parameters: hash_including(
             model: "gpt-4.1-nano-2025-04-14",
             max_tokens: 150,
-            temperature: 1.5
+            temperature: 1.3
           )
         )
       end

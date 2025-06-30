@@ -1,10 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-    static targets = ["modal", "form"]
+    static targets = ["modal", "form", "usernameInput", "confirmUsernameField"]
+    static values = { expectedUsername: String }
 
     connect() {
         console.log("User delete controller connected")
+        this.expectedUsernameValue = this.element.dataset.expectedUsername || ""
     }
 
     // モーダルを開く
@@ -23,6 +25,24 @@ export default class extends Controller {
     // 削除を実行
     confirmDelete() {
         console.log("Confirming user deletion")
+        
+        const enteredUsername = this.usernameInputTarget.value.trim()
+        const expectedUsername = this.element.dataset.expectedUsername
+        
+        if (!enteredUsername) {
+            alert("ユーザー名を入力してください。")
+            return
+        }
+        
+        if (enteredUsername !== expectedUsername) {
+            alert("ユーザー名が正しくありません。")
+            this.usernameInputTarget.focus()
+            return
+        }
+        
+        // 隠しフィールドにユーザー名を設定
+        this.confirmUsernameFieldTarget.value = enteredUsername
+        
         this.formTarget.submit()
     }
 

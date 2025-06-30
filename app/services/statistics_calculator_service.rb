@@ -19,7 +19,7 @@ class StatisticsCalculatorService
 
   def calculate_level_distribution(diaries, identifier)
     levels = diaries.map { |diary| extract_answer_level(diary, identifier) }.compact
-    (1..5).map { |level| levels.count(level) }
+    (1..MAX_LEVEL).map { |level| levels.count(level) }
   end
 
   def calculate_average_level(diaries, identifier)
@@ -35,7 +35,9 @@ class StatisticsCalculatorService
     progress = extract_answer_level(diary, :progress) || 0
 
     total_intensity = mood + motivation + progress
-    (total_intensity / 15.0 * 4).round(1)
+    max_total_score = MAX_LEVEL * ANSWER_CATEGORIES
+    intensity_scale = INTENSITY_SCALE_MAX
+    (total_intensity / max_total_score.to_f * intensity_scale).round(1)
   end
 
   def fetch_period_diaries(months_back)
@@ -134,6 +136,11 @@ class StatisticsCalculatorService
       }
     end
   end
+
+  # 公開定数
+  MAX_LEVEL = 5
+  ANSWER_CATEGORIES = 3
+  INTENSITY_SCALE_MAX = 4
 
   private
 

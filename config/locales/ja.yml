@@ -135,3 +135,29 @@ ja:
       header:
         one: "%{model}にエラーが発生しました"
         other: "%{model}に%{count}個のエラーが発生しました"
+
+  users:
+    delete:
+      success: "%{username}さんのアカウントを削除しました。ご利用ありがとうございました。"
+      failed: "アカウントの削除に失敗しました。時間をおいて再度お試しください。"
+      integrity_error: "関連データが存在するため削除できません。サポートにお問い合わせください。"
+      unauthorized: "不正な削除要求です。"
+
+  tutorials:
+    error:
+      step_not_found: "指定されたチュートリアルステップが見つかりません。"
+      username_required: "チュートリアルを開始するには、まずユーザー名を設定してください。"
+      general: "チュートリアルの読み込み中にエラーが発生しました。"
+    steps:
+      basic:
+        title: "基本的な日記作成"
+        content: "日記の作成方法を学びましょう"
+      rating:
+        title: "5段階評価システム"
+        content: "気分や進捗を評価しましょう"
+      ai_til:
+        title: "AI TIL生成"
+        content: "AIを使って学習記録を作成しましょう"
+      sharing:
+        title: "GitHub連携とX投稿"
+        content: "学習内容を共有しましょう"
