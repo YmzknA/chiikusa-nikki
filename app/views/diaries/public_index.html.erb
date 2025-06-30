@@ -18,8 +18,7 @@
           <div class="flex gap-1 md:gap-2 mb-3 md:mb-4 flex-wrap">
             <% diary.diary_answers.each do |diary_answer| %>
               <div class="neuro-badge py-1 px-2 text-xs font-medium flex items-center gap-1">
-                <span class="text-sm"><%= diary_answer.answer.emoji %></span>
-                <span class="whitespace-nowrap"><%= diary_answer.question.label %></span>
+                <span class="text-xl"><%= diary_answer.answer.emoji %></span>
               </div>
             <% end %>
           </div>
