@@ -70,10 +70,13 @@ RSpec.describe "User Delete System", type: :system do
 
       within(".modal") do
         fill_in "confirm_username", with: "wrong_username"
-        click_button "削除する"
+
+        # アラートを処理
+        accept_alert do
+          click_button "削除する"
+        end
       end
 
-      # JavaScriptアラートが表示される（実際のテストではアラートハンドリングが必要）
       # モーダルが閉じずに残る
       expect(page).to have_text("⚠️ アカウント削除の確認")
     end
@@ -84,11 +87,13 @@ RSpec.describe "User Delete System", type: :system do
       click_button "アカウントを削除"
 
       within(".modal") do
-        # 空のまま削除ボタンをクリック
-        click_button "削除する"
+        # アラートを処理
+        accept_alert do
+          # 空のまま削除ボタンをクリック
+          click_button "削除する"
+        end
       end
 
-      # JavaScriptアラートが表示される
       # モーダルが閉じずに残る
       expect(page).to have_text("⚠️ アカウント削除の確認")
     end
