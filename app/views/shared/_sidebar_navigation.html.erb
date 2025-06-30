@@ -1,0 +1,60 @@
+<!-- PC Sidebar Navigation -->
+<div class="hidden sm:block fixed left-0 top-0 h-full w-64 neuro-card border-r border-base-300 z-40">
+  <div class="flex flex-col h-full">
+    <!-- Header -->
+    <%= link_to root_path, class: "p-6 border-b border-base-300 flex items-center gap-2" do %>
+      <img src="<%= asset_path('logo.png') %>" alt="Logo" class="size-8">
+      <h1 class="text-2xl font-bold stick-regular">ちいくさ日記</h1>
+    <% end %>
+    
+    <!-- Navigation Links -->
+    <nav class="flex-1 p-4">
+      <div class="space-y-2">
+        <%= link_to stats_path, class: "flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary/10 transition-colors #{'bg-primary/10 text-primary font-semibold' if current_page?(stats_path)}" do %>
+          <span class="material-symbols-outlined">
+            bar_chart
+          </span>
+          <span>統計</span>
+        <% end %>
+
+        <%= link_to diaries_path, class: "flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary/10 transition-colors #{'bg-primary/10 text-primary font-semibold' if controller_name == 'diaries' && action_name == 'index'}" do %>
+          <span class="material-symbols-outlined">
+            calendar_month
+          </span>
+          <span>日記一覧</span>
+        <% end %>
+
+        <%= link_to new_diary_path, class: "flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary/10 transition-colors #{'bg-primary/10 text-primary font-semibold' if controller_name == 'diaries' && action_name == 'new'}" do %>
+          <svg class="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          <span>新規作成</span>
+        <% end %>
+        
+        <%= link_to profile_path, class: "flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary/10 transition-colors #{'bg-primary/10 text-primary font-semibold' if current_page?(profile_path)}" do %>
+          <svg class="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+          </svg>
+          <span>プロフィール</span>
+        <% end %>
+      </div>
+    </nav>
+    
+    <!-- Footer with User Info -->
+    <div class="p-4 border-t border-base-300">
+      <% if current_user %>
+        <div class="flex items-center gap-3">
+          <div class="size-10 rounded-full bg-base-300 flex items-center justify-center">
+            <svg class="size-6 text-base-content" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium truncate"><%= current_user.username %></p>
+            <p class="text-xs text-base-content/70">タネ: <%= current_user.seed_count %>/5</p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

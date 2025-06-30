@@ -26,8 +26,14 @@
   </head>
 
   <body data-theme="lemonade" class="m-plus-1p-regular">
-    <main>
+    <% unless controller_name == 'home' && action_name == 'index' %>
+      <%= render 'shared/sidebar_navigation' %>
+    <% end %>
+    <main class="pb-20 sm:pb-0 <%= 'sm:pl-64' unless controller_name == 'home' && action_name == 'index' %>">
       <%= yield %>
     </main>
+    <% unless controller_name == 'home' && action_name == 'index' %>
+      <%= render 'shared/mobile_navigation' %>
+    <% end %>
   </body>
 </html>
