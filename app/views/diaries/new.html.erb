@@ -82,7 +82,7 @@
         <div class="divider my-4 md:my-6 mx-auto"></div>
 
         <div class="form-control mt-6 md:mt-8">
-          <%= form.submit "日記を作成 ✓", class: "neuro-button w-full py-3 md:py-4 px-4 md:px-6 font-bold text-base md:text-lg hover:cursor-pointer", onclick: "return checkSeedCountBeforeAction(event, 'use_ai_generation_checkbox')" %>
+          <%= form.submit "日記を作成 ✓", class: "neuro-button w-full py-3 md:py-4 px-4 md:px-6 font-bold text-base md:text-lg hover:cursor-pointer", onclick: "console.log('🚀 Submit button clicked'); const result = checkSeedCountBeforeAction(event, 'use_ai_generation_checkbox'); if(result) { const hasNotes = document.querySelector('#diary_notes')?.value.trim(); const checkbox = document.getElementById('use_ai_generation_checkbox'); const needsAi = checkbox && checkbox.checked && hasNotes; if(!needsAi && window.loadingController) { console.log('🎯 Manually calling normal loading'); window.loadingController.showDelayed(); } } return result;" %>
         </div>
       <% end %>
     </div>

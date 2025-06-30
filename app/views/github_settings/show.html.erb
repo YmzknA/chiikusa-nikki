@@ -97,7 +97,7 @@
             </p>
           </div>
 
-          <%= form_with url: github_settings_path, method: :patch, local: true, class: "space-y-4" do |form| %>
+          <%= loading_form_with url: github_settings_path, method: :patch, local: true, class: "space-y-4" do |form| %>
             <div>
               <%= form.text_field :github_repo_name, 
                   placeholder: "例: til, my-learning-notes", 
@@ -226,7 +226,7 @@
         <button type="button" onclick="closeDisconnectModal()" class="btn btn-ghost">
           キャンセル
         </button>
-        <%= form_with url: github_settings_path, method: :delete, local: true, class: "inline" do |form| %>
+        <%= loading_form_with url: github_settings_path, method: :delete, local: true, class: "inline" do |form| %>
           <%= form.submit "連携を解除する", class: "btn btn-error" %>
         <% end %>
       </div>
