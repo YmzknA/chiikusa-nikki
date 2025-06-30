@@ -3,6 +3,7 @@
   <head>
     <title><%= content_for(:title) || "ちいくさ日記" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -26,6 +27,7 @@
   </head>
 
   <body data-theme="lemonade" class="m-plus-1p-regular">
+    <%= render 'shared/loading' %>
     <%= render 'shared/flash' %>
     <% unless hide_navigation? %>
       <%= render 'shared/sidebar_navigation' %>
