@@ -200,10 +200,10 @@ RSpec.describe "Authentication Integration", type: :request do
       expect(response).to have_http_status(:success)
     end
 
-    it "updates username and redirects to diaries" do
+    it "updates username and redirects to tutorial" do
       patch setup_username_path, params: { user: { username: "newusername" } }
 
-      expect(response).to redirect_to(diaries_path)
+      expect(response).to redirect_to(tutorial_path)
       expect(user.reload.username).to eq("newusername")
       expect(flash[:notice]).to include("ユーザー名を設定しました")
     end

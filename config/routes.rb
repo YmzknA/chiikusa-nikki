@@ -1,7 +1,10 @@
 Rails.application.routes.draw do
+  # Custom user deletion route (must come before devise_for)
+  delete "/users", to: "users#destroy"
+
   devise_for :users, controllers: {
     omniauth_callbacks: "users/omniauth_callbacks"
-  }
+  }, skip: [:registrations]
 
   # OmniAuth failure handling
   match "/users/auth/failure", to: "users/omniauth_callbacks#failure", via: [:get, :post]
@@ -35,4 +38,7 @@ Rails.application.routes.draw do
   get "/github_settings", to: "github_settings#show"
   patch "/github_settings", to: "github_settings#update"
   delete "/github_settings", to: "github_settings#destroy"
+
+  # チュートリアル
+  get "/tutorial", to: "tutorials#show"
 end

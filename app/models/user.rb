@@ -5,6 +5,13 @@ class User < ApplicationRecord
 
   has_many :diaries, dependent: :destroy
 
+  # 定数定義
+  DEFAULT_USERNAME = "ユーザー名🌱".freeze
+  MAX_SEED_COUNT = 5
+  MIN_USERNAME_LENGTH = 1
+  MAX_USERNAME_LENGTH = 50
+  MIN_PASSWORD_LENGTH = 6
+
   # OAuth認証に必要な検証（少なくとも一つのプロバイダーIDが必要）
   validate :at_least_one_provider_id
   validate :providers_consistency
@@ -15,11 +22,11 @@ class User < ApplicationRecord
   validates :email, presence: true, format: { with: /\A[^@\s]+@[^@\s]+\z/ }
 
   # ユーザー名検証
-  validates :username, presence: true, length: { minimum: 1, maximum: 50 },
+  validates :username, presence: true, length: { minimum: MIN_USERNAME_LENGTH, maximum: MAX_USERNAME_LENGTH },
                        unless: :username_setup_pending?
 
   # パスワード検証（OAuth認証のみの場合は不要な場合もある）
-  validates :password, length: { minimum: 6 }, allow_blank: true
+  validates :password, length: { minimum: MIN_PASSWORD_LENGTH }, allow_blank: true
 
   # Encrypt access tokens for security
   encrypts :encrypted_access_token, deterministic: false
@@ -27,9 +34,6 @@ class User < ApplicationRecord
 
   # プロバイダー管理のためのシリアライズ
   serialize :providers, type: Array, coder: JSON
-
-  # 定数定義
-  DEFAULT_USERNAME = "ユーザー名🌱".freeze
 
   def self.from_omniauth(auth, current_user = nil)
     provider = auth.provider
@@ -281,7 +285,7 @@ class User < ApplicationRecord
   # rubocop:disable Naming/PredicateMethod
   def add_seed_from_watering!
     return false if last_seed_incremented_at&.today?
-    return false if seed_count >= 5
+    return false if seed_count >= MAX_SEED_COUNT
 
     increment!(:seed_count)
     update!(last_seed_incremented_at: Time.current)
@@ -290,7 +294,7 @@ class User < ApplicationRecord
 
   def add_seed_from_sharing!
     return false if last_shared_at&.today?
-    return false if seed_count >= 5
+    return false if seed_count >= MAX_SEED_COUNT
 
     increment!(:seed_count)
     update!(last_shared_at: Time.current)
@@ -299,11 +303,11 @@ class User < ApplicationRecord
   # rubocop:enable Naming/PredicateMethod
 
   def can_increment_seed_count?
-    !last_seed_incremented_at&.today? && seed_count < 5
+    !last_seed_incremented_at&.today? && seed_count < MAX_SEED_COUNT
   end
 
   def can_increment_seed_count_by_share?
-    !last_shared_at&.today? && seed_count < 5
+    !last_shared_at&.today? && seed_count < MAX_SEED_COUNT
   end
 
   def username_configured?

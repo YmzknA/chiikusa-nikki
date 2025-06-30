@@ -10,35 +10,52 @@ Capybara.configure do |config|
 end
 
 # Chrome Optionsの設定（Docker環境対応）
-chrome_options = Selenium::WebDriver::Chrome::Options.new
+def create_chrome_options
+  chrome_options = Selenium::WebDriver::Chrome::Options.new
 
-# 基本オプション
-chrome_options.add_argument("--headless=new")  # 新しいヘッドレスモード
-chrome_options.add_argument("--no-sandbox")    # Docker環境では必須
-chrome_options.add_argument("--disable-dev-shm-usage") # メモリ不足対策
-chrome_options.add_argument("--disable-gpu") # GPU無効化
-chrome_options.add_argument("--disable-web-security")
-chrome_options.add_argument("--allow-running-insecure-content")
-chrome_options.add_argument("--disable-extensions")
-chrome_options.add_argument("--disable-plugins")
-chrome_options.add_argument("--disable-images")
-chrome_options.add_argument("--disable-background-timer-throttling")
-chrome_options.add_argument("--disable-backgrounding-occluded-windows")
-chrome_options.add_argument("--disable-renderer-backgrounding")
+  # 基本オプション
+  chrome_options.add_argument("--headless=new")  # 新しいヘッドレスモード
+  chrome_options.add_argument("--no-sandbox")    # Docker環境では必須
+  chrome_options.add_argument("--disable-dev-shm-usage") # メモリ不足対策
+  chrome_options.add_argument("--disable-gpu") # GPU無効化
+  chrome_options.add_argument("--disable-web-security")
+  chrome_options.add_argument("--allow-running-insecure-content")
+  chrome_options.add_argument("--disable-extensions")
+  chrome_options.add_argument("--disable-plugins")
+  chrome_options.add_argument("--disable-images")
+  chrome_options.add_argument("--disable-background-timer-throttling")
+  chrome_options.add_argument("--disable-backgrounding-occluded-windows")
+  chrome_options.add_argument("--disable-renderer-backgrounding")
 
-# ウィンドウサイズ設定
-chrome_options.add_argument("--window-size=1400,1400")
+  # セッション競合回避のためのユニークなユーザーデータディレクトリ
+  user_data_dir = "/tmp/chrome_#{Time.now.to_f}_#{rand(10_000)}"
+  chrome_options.add_argument("--user-data-dir=#{user_data_dir}")
 
-# Chrome binary設定（Docker環境）
-chrome_binary = ENV["CHROME_BINARY"] || "/usr/bin/google-chrome"
-chrome_options.binary = chrome_binary if File.exist?(chrome_binary)
+  # ウィンドウサイズ設定
+  chrome_options.add_argument("--window-size=1400,1400")
+
+  # Chrome binary設定（Docker環境）
+  chrome_binary = ENV["CHROME_BINARY"] || "/usr/bin/google-chrome"
+  chrome_options.binary = chrome_binary if File.exist?(chrome_binary)
+
+  chrome_options
+end
 
 # カスタムドライバーの登録
 Capybara.register_driver :selenium_chrome_headless do |app|
   Capybara::Selenium::Driver.new(
     app,
     browser: :chrome,
-    options: chrome_options
+    options: create_chrome_options
+  )
+end
+
+# 従来のheadless_chromeとの互換性のため
+Capybara.register_driver :headless_chrome do |app|
+  Capybara::Selenium::Driver.new(
+    app,
+    browser: :chrome,
+    options: create_chrome_options
   )
 end
 
