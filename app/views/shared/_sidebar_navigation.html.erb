@@ -47,6 +47,13 @@
           <span>プロフィール</span>
         <% end %>
 
+        <%= link_to tutorial_path, class: "flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary/10 transition-colors #{'bg-primary/10 text-primary font-semibold' if current_page?(tutorial_path)}" do %>
+          <span class="material-symbols-outlined">
+            help
+          </span>
+          <span>使い方</span>
+        <% end %>
+
         <div class="divider my-2"></div>
 
         <%= link_to new_diary_path, class: "flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary/10 transition-colors #{'bg-primary/10 text-primary font-semibold' if controller_name == 'diaries' && action_name == 'new'}" do %>
