@@ -5,7 +5,10 @@ class DiariesController < ApplicationController
 
   def index
     @selected_month = params[:month].present? ? params[:month] : "all"
-    @diaries = filter_diaries_by_month(current_user.diaries, @selected_month).order(date: :desc)
+    @diaries = filter_diaries_by_month(
+      current_user.diaries.includes(:diary_answers, :til_candidates),
+      @selected_month
+    ).order(date: :desc)
     @available_months = get_available_months
   end
 
@@ -203,14 +206,14 @@ class DiariesController < ApplicationController
 
   def filter_diaries_by_month(diaries, selected_month)
     return diaries if selected_month == "all"
-    
+
     year, month = selected_month.split("-").map(&:to_i)
     diaries.where(date: Date.new(year, month, 1).beginning_of_month..Date.new(year, month, 1).end_of_month)
   end
 
   def get_available_months
     months = current_user.diaries.pluck(:date).map { |date| date.strftime("%Y-%m") }.uniq.sort.reverse
-    [["全て表示", "all"]] + months.map { |month| [format_month_label(month), month] }
+    [%w[全て表示 all]] + months.map { |month| [format_month_label(month), month] }
   end
 
   def format_month_label(month_string)
