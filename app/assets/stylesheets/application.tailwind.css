@@ -361,6 +361,15 @@ label:has(input[type="radio"]:checked) {
   }
 }
 
+/* Mobile bottom navigation styles */
+@media (max-width: 640px) {
+  .neuro-card.fixed {
+    box-shadow: 
+      0 -10px 20px rgba(105, 169, 106, 0.2),
+      0 -5px 10px rgba(255, 254, 213, 0.9);
+  }
+}
+
 
 
 @plugin "daisyui/theme" {
