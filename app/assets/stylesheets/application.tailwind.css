@@ -6,6 +6,7 @@
 html, body {
   background-color: oklch(98.71% 0.02 123.72);
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .m-plus-1p-regular {
@@ -367,6 +368,17 @@ label:has(input[type="radio"]:checked) {
     box-shadow: 
       0 -10px 20px rgba(105, 169, 106, 0.2),
       0 -5px 10px rgba(255, 254, 213, 0.9);
+  }
+  
+  /* Ensure mobile navigation stays within viewport */
+  .fixed.bottom-0 {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  
+  /* Add safe area insets for devices with notches/home indicators */
+  .fixed.bottom-0 {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
 
