@@ -22,11 +22,11 @@ answers = {
     { level: 5, label: "とても気分が良い", emoji: "😁" }
   ],
   motivation: [
-    { level: 1, label: "やる気が全くない", emoji: "🧊" },
-    { level: 2, label: "やる気が低い", emoji: "❄️" },
-    { level: 3, label: "普通", emoji: "💧" },
-    { level: 4, label: "やる気がある", emoji: "🌡️" },
-    { level: 5, label: "とてもやる気がある", emoji: "🔥" }
+    { level: 1, label: "やる気が全くない", emoji: "🌧" },
+    { level: 2, label: "やる気が低い", emoji: "☁" },
+    { level: 3, label: "普通", emoji: "⛅" },
+    { level: 4, label: "やる気がある", emoji: "🌞" },
+    { level: 5, label: "とてもやる気がある", emoji: "🌈" }
   ],
   progress: [
     { level: 1, label: "全く進まなかった", emoji: "🪹" },

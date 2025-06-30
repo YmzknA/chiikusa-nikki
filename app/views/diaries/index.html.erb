@@ -9,14 +9,14 @@
     <%= link_to root_path do %>
       <%= image_tag "logo.png", alt: "Neuro Logo", class: "h-10 w-auto" %>
     <% end %>
-    <div class="h-10 flex items-end ml-3">
+    <div class="h-10 flex items-center ml-3">
       <%= render 'shared/watering' %>
     </div>
   </div>
 
   <!-- DaisyUI Tab Navigation -->
   <div class="flex justify-start items-center mb-4">
-    <div class="tabs tabs-boxed tabs-sm neuro-card" role="tablist" aria-label="日記表示切り替え">
+    <div class="tabs tabs-boxed tabs-sm" role="tablist" aria-label="日記表示切り替え">
       <input 
         type="radio" 
         name="diary_view_tabs" 

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class StatisticsCalculatorService
-  HEATMAP_DAYS = 180
+  HEATMAP_DAYS = 120
   CALENDAR_WEEKS = 6
   CALENDAR_DAYS = (CALENDAR_WEEKS * 7) - 1
 

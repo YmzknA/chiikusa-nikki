@@ -23,7 +23,7 @@ export default class extends Controller {
     // 画面幅をチェックして表示期間を調整
     const isMobile = window.innerWidth < 768
     const displayData = isMobile ? this.getMobileData(weekdayData, weeksCount) : { weekdayData, weeksCount }
-    const displayTitle = isMobile ? "学習強度ヒートマップ（直近4ヶ月）" : "学習強度ヒートマップ（直近半年）"
+    const displayTitle = "学習強度ヒートマップ（直近4ヶ月）"
     
     console.log("Rendering heatmap:", { isMobile, weeks: displayData.weeksCount })
     

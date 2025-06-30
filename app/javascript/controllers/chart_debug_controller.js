@@ -26,12 +26,28 @@ export default class extends Controller {
     
     console.log("Canvas found:", canvas)
     
+    // データのコピーを作成（元データを変更しないため）
+    this.chartData = JSON.parse(JSON.stringify(this.dataValue))
+    
     // レスポンシブクラスの干渉を避けるため、preserve処理を削除
     
     // カスタムツールチップを設定
     const customOptions = {
       ...this.defaultOptions,
       ...this.optionsValue
+    }
+
+    // スマホの場合、日毎推移チャートのデータポイントを非表示にする
+    const isMobile = window.innerWidth < 768
+    if (isMobile && this.typeValue === 'line' && customOptions.plugins && customOptions.plugins.title && 
+        (customOptions.plugins.title.text.includes('推移') || customOptions.plugins.title.text.includes('直近') || customOptions.plugins.title.text.includes('月の'))) {
+      // datasetsのpointRadiusを0に設定
+      if (this.chartData.datasets) {
+        this.chartData.datasets.forEach(dataset => {
+          dataset.pointRadius = 0
+          dataset.pointHoverRadius = 8 // ホバー時は表示
+        })
+      }
     }
 
     // 日毎推移チャートの場合、クリックイベントとホバーカーソルを追加
@@ -87,7 +103,7 @@ export default class extends Controller {
     try {
       this.chart = new Chart(canvas.getContext('2d'), {
         type: this.typeValue || 'line',
-        data: this.dataValue || { labels: [], datasets: [] },
+        data: this.chartData || { labels: [], datasets: [] },
         options: customOptions
       })
       console.log("Chart created successfully:", this.chart)

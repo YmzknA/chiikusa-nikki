@@ -62,14 +62,19 @@
     <div class="p-4 border-t border-base-300">
       <% if current_user %>
         <div class="flex items-center gap-3">
+        <%= link_to profile_path, class: "flex items-center hover:bg-secondary/10 transition-colors rounded-full" do %>
           <div class="size-10 rounded-full bg-base-300 flex items-center justify-center">
             <svg class="size-6 text-base-content" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
             </svg>
           </div>
+        <% end %>
           <div class="flex-1 min-w-0">
             <p class="text-sm font-medium truncate"><%= current_user.username %></p>
-            <p class="text-xs text-base-content/70">タネ: <%= current_user.seed_count %>/5</p>
+            <p class="text-xs text-base-content/70 flex">
+            タネ
+            <%= image_tag "logo.png", alt: "Neuro Logo", class: "h-4 mr-1" %>:
+            <%= current_user.seed_count %>/5</p>
           </div>
         </div>
       <% end %>
