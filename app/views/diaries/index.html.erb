@@ -1,4 +1,4 @@
-<div class="min-h-screen p-2 sm:p-4">
+<div class="min-h-screen p-2 sm:p-4" data-controller="diary-view">
   <!-- Flash Messages Area -->
   <div id="flash-messages">
     <%= render 'shared/flash', flash: flash %>
@@ -12,12 +12,47 @@
     <div class="h-10 flex items-end ml-3">
       <%= render 'shared/watering' %>
     </div>
-    <div class="flex items-center gap-4">
-      <%# ここに自分の日記一覧をリスト化して表示する %>
-    </div>
   </div>
 
-  <div class="neuro-card p-3 sm:p-6 overflow-hidden">
+  <!-- DaisyUI Tab Navigation -->
+  <div class="flex justify-start items-center mb-4">
+    <div class="tabs tabs-boxed tabs-sm neuro-card">
+      <input 
+        type="radio" 
+        name="diary_view_tabs" 
+        class="tab" 
+        aria-label="📅 カレンダー"
+        id="calendar-tab"
+        checked="checked"
+        data-controller="diary-view"
+        data-action="change->diary-view#showCalendarView"
+      />
+      
+      <input 
+        type="radio" 
+        name="diary_view_tabs" 
+        class="tab" 
+        aria-label="📋 リスト"
+        id="list-tab"
+        data-controller="diary-view"
+        data-action="change->diary-view#showListView"
+      />
+    </div>
+
+    <div id="month-filter" class="hidden justify-center mx-auto md:mx-2">
+      <%= form_with url: diaries_path, method: :get, class: "flex items-center gap-2", local: true, data: { controller: "diary-view" } do |form| %>
+        <%= form.select :month, options_for_select(@available_months, @selected_month), 
+          { selected: @selected_month }, 
+          { id: "month-select", class: "neuro-input px-3 py-2 text-sm rounded-lg border-none", 
+            data: { action: "change->diary-view#filterByMonth" } } %>
+          <% end %>
+    </div>
+
+  </div>
+
+
+  <!-- Calendar View -->
+  <div id="calendar-view" class="neuro-card p-3 sm:p-6 overflow-hidden">
     <%= month_calendar(events: @diaries, attribute: :date, class: "table table-fixed w-full") do |date, diaries| %>
       <div class="neuro-calendar-cell py-2 sm:py-3 px-1 sm:px-2 min-h-[50px] sm:min-h-[60px] md:min-h-[80px] relative">
         <div class="text-xs sm:text-sm text-base-content/60 mb-1"><%= date.day %></div>
@@ -39,6 +74,51 @@
               </div>
             </div>
           <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- List View -->
+  <div id="list-view" class="hidden">
+    <div class="grid gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <% @diaries.each do |diary| %>
+        <div class="neuro-card p-4 md:p-6">
+          <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-3">
+            <span class="text-base md:text-lg font-semibold text-primary"><%= diary.date.strftime("%Y/%m/%d") %></span>
+          </div>
+          
+          <% if diary.til_text.present? %>
+            <h3 class="text-base md:text-lg font-bold text-primary mb-2">Today I Learned</h3>
+            <p class="text-sm md:text-base leading-relaxed text-base-content mb-3 md:mb-4"><%= truncate(diary.til_text, length: 150) %></p>
+          <% elsif diary.notes.present? %>
+            <h3 class="text-base md:text-lg font-bold text-secondary mb-2">今日のメモ</h3>
+            <div class="text-sm md:text-base leading-relaxed text-base-content mb-3 md:mb-4 whitespace-pre-line"><%= truncate(diary.notes, length: 150) %></div>
+          <% end %>
+
+          <div class="flex gap-1 md:gap-2 mb-3 md:mb-4 flex-wrap">
+            <% diary.diary_answers.each do |diary_answer| %>
+              <div class="neuro-badge py-1 px-2 text-xs font-medium flex items-center gap-1">
+                <span class="text-xl"><%= diary_answer.answer.emoji %></span>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="flex justify-end">
+            <%= link_to diary_path(diary), class: "neuro-button py-2 px-3 md:px-4 text-xs md:text-sm font-medium" do %>
+              詳細を見る
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <% if @diaries.empty? %>
+      <div class="neuro-card p-6 md:p-8 text-center">
+        <h2 class="text-lg md:text-xl font-bold text-base-content mb-2">日記がありません</h2>
+        <p class="text-sm md:text-base text-base-content/60">まだ日記を書いていません。最初の日記を書いてみましょう。</p>
+        <%= link_to new_diary_path, class: "neuro-button py-2 px-4 text-sm font-medium mt-4 inline-block" do %>
+          日記を書く
         <% end %>
       </div>
     <% end %>
