@@ -7,15 +7,6 @@
   <div class="container mx-auto max-w-2xl">
     <div class="neuro-card p-4 md:p-6 mb-6">
       <div class="flex flex-wrap items-center gap-2">
-        <div data-controller="back-navigation" 
-             data-back-navigation-fallback-url-value="<%= user_signed_in? ? diaries_path : public_diaries_path %>">
-          <button data-action="click->back-navigation#goBack" 
-                  class="neuro-button p-2 md:p-3 mr-2 md:mr-4 inline-flex items-center justify-center">
-            <svg class="h-5 w-5 md:h-6 md:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-            </svg>
-          </button>
-        </div>
         <div class="flex-1 min-w-0">
           <h1 class="text-lg md:text-2xl lg:text-3xl font-bold text-base-content leading-tight">
             <%= @diary&.date&.strftime("%Y年%m月%d日") || "日記" %>の日記 📖
@@ -206,12 +197,6 @@
         <% end %>
       </div>
 
-      <%= link_to user_signed_in? ? diaries_path : public_diaries_path, class: "neuro-button w-full sm:w-auto py-2 md:py-3 px-4 md:px-6 mx-auto font-medium flex items-center justify-center gap-2 text-sm md:text-base" do %>
-        <span class="material-symbols-outlined text-lg md:text-xl">
-          arrow_back
-        </span>
-        日記一覧に戻る
-      <% end %>
     </div>
   </div>
 </div>
