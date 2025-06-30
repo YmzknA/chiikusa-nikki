@@ -2,6 +2,12 @@
 @plugin "daisyui";
 @import "./water_effect.css";
 
+/* Ensure proper background for lemonade theme */
+html, body {
+  background-color: oklch(98.71% 0.02 123.72);
+  min-height: 100vh;
+}
+
 .m-plus-1p-regular {
   font-family: "M PLUS 1p", sans-serif;
   font-weight: 900;
