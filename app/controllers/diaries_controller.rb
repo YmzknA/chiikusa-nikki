@@ -4,7 +4,12 @@ class DiariesController < ApplicationController
   before_action :set_diary, only: [:edit, :update, :destroy, :upload_to_github]
 
   def index
-    @diaries = current_user.diaries.order(date: :desc)
+    @selected_month = params[:month].present? ? params[:month] : "all"
+    @diaries = filter_diaries_by_month(
+      current_user.diaries.includes(:diary_answers, :til_candidates),
+      @selected_month
+    ).order(date: :desc)
+    @available_months = available_months
   end
 
   def show
@@ -197,5 +202,22 @@ class DiariesController < ApplicationController
 
     Rails.logger.info "Repository #{current_user.github_repo_name} not found for user #{current_user.id}"
     flash.now[:alert] = "設定されたGitHubリポジトリが見つかりません。GitHub設定を確認してください。"
+  end
+
+  def filter_diaries_by_month(diaries, selected_month)
+    return diaries if selected_month == "all"
+
+    year, month = selected_month.split("-").map(&:to_i)
+    diaries.where(date: Date.new(year, month, 1).beginning_of_month..Date.new(year, month, 1).end_of_month)
+  end
+
+  def available_months
+    months = current_user.diaries.pluck(:date).map { |date| date.strftime("%Y-%m") }.uniq.sort.reverse
+    [%w[全て表示 all]] + months.map { |month| [format_month_label(month), month] }
+  end
+
+  def format_month_label(month_string)
+    year, month = month_string.split("-")
+    "#{year}年#{month.to_i}月"
   end
 end

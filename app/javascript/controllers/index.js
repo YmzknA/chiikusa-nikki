@@ -29,3 +29,6 @@ application.register("calendar", CalendarController)
 
 import ChartPeriodController from "./chart_period_controller"
 application.register("chart-period", ChartPeriodController)
+
+import DiaryViewController from "./diary_view_controller"
+application.register("diary-view", DiaryViewController)
