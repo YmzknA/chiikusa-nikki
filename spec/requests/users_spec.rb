@@ -120,10 +120,12 @@ RSpec.describe "Users", type: :request do
       end
 
       it "logs deletion process" do
-        expect(Rails.logger).to receive(:info).with("User deletion initiated: test_user (ID: #{user.id})")
-        expect(Rails.logger).to receive(:info).with("User deletion completed: test_user")
-
+        allow(Rails.logger).to receive(:info)
+        
         delete users_path, params: { confirm_username: "test_user" }
+        
+        expect(Rails.logger).to have_received(:info).with("User deletion initiated: test_user (ID: #{user.id})")
+        expect(Rails.logger).to have_received(:info).with("User deletion completed: test_user")
       end
     end
 
@@ -159,9 +161,11 @@ RSpec.describe "Users", type: :request do
       end
 
       it "logs invalid confirmation attempts" do
-        expect(Rails.logger).to receive(:warn).with("Invalid username confirmation for user #{user.id}")
+        allow(Rails.logger).to receive(:warn)
 
         delete users_path, params: { confirm_username: "wrong_user" }
+        
+        expect(Rails.logger).to have_received(:warn).with("Invalid username confirmation for user #{user.id}")
       end
     end
 
@@ -180,9 +184,11 @@ RSpec.describe "Users", type: :request do
       end
 
       it "logs deletion failure" do
-        expect(Rails.logger).to receive(:error).with("User deletion failed: Test error")
+        allow(Rails.logger).to receive(:error)
 
         delete users_path, params: { confirm_username: "test_user" }
+        
+        expect(Rails.logger).to have_received(:error).with("User deletion failed: Test error")
       end
     end
 
@@ -215,11 +221,11 @@ RSpec.describe "Users", type: :request do
         error_message = "General error"
         error = StandardError.new(error_message)
         allow_any_instance_of(User).to receive(:destroy).and_raise(error)
-
-        expect(Rails.logger).to receive(:error).with("User deletion failed: #{error_message}")
+        allow(Rails.logger).to receive(:error)
 
         delete users_path, params: { confirm_username: "test_user" }
 
+        expect(Rails.logger).to have_received(:error).with("User deletion failed: #{error_message}")
         expect(response).to redirect_to(profile_path)
         follow_redirect!
         expect(response.body).to include("アカウントの削除に失敗しました")

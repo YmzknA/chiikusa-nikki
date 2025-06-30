@@ -20,7 +20,7 @@ class UsersController < ApplicationController
 
     user = current_user
     username = user.username
-    
+
     Rails.logger.info "User deletion initiated: #{username} (ID: #{user.id})"
 
     ActiveRecord::Base.transaction do
