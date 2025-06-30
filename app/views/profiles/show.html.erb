@@ -252,6 +252,8 @@
                       <span class="label-text font-semibold text-error">確認のため、ユーザー名「<span class="font-bold"><%= current_user.username %></span>」を入力してください</span>
                     </label>
                     <input type="text" 
+                           id="confirm_username"
+                           name="confirm_username" 
                            data-user-delete-target="usernameInput"
                            placeholder="<%= current_user.username %>"
                            class="input input-bordered input-error w-full" />

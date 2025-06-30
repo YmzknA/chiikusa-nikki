@@ -121,9 +121,9 @@ RSpec.describe "Users", type: :request do
 
       it "logs deletion process" do
         allow(Rails.logger).to receive(:info)
-        
+
         delete users_path, params: { confirm_username: "test_user" }
-        
+
         expect(Rails.logger).to have_received(:info).with("User deletion initiated: test_user (ID: #{user.id})")
         expect(Rails.logger).to have_received(:info).with("User deletion completed: test_user")
       end
@@ -164,7 +164,7 @@ RSpec.describe "Users", type: :request do
         allow(Rails.logger).to receive(:warn)
 
         delete users_path, params: { confirm_username: "wrong_user" }
-        
+
         expect(Rails.logger).to have_received(:warn).with("Invalid username confirmation for user #{user.id}")
       end
     end
@@ -187,7 +187,7 @@ RSpec.describe "Users", type: :request do
         allow(Rails.logger).to receive(:error)
 
         delete users_path, params: { confirm_username: "test_user" }
-        
+
         expect(Rails.logger).to have_received(:error).with("User deletion failed: Test error")
       end
     end

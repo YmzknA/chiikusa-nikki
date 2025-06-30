@@ -52,6 +52,47 @@ RSpec.describe "User Delete System", type: :system do
       end
     end
 
+    it "requires username confirmation" do
+      visit profile_path
+
+      click_button "アカウントを削除"
+
+      within(".modal") do
+        expect(page).to have_text("確認のため、ユーザー名「#{user.username}」を入力してください")
+        expect(page).to have_field("confirm_username", placeholder: user.username)
+      end
+    end
+
+    it "prevents deletion with wrong username" do
+      visit profile_path
+
+      click_button "アカウントを削除"
+
+      within(".modal") do
+        fill_in "confirm_username", with: "wrong_username"
+        click_button "削除する"
+      end
+
+      # JavaScriptアラートが表示される（実際のテストではアラートハンドリングが必要）
+      # モーダルが閉じずに残る
+      expect(page).to have_text("⚠️ アカウント削除の確認")
+    end
+
+    it "prevents deletion with empty username" do
+      visit profile_path
+
+      click_button "アカウントを削除"
+
+      within(".modal") do
+        # 空のまま削除ボタンをクリック
+        click_button "削除する"
+      end
+
+      # JavaScriptアラートが表示される
+      # モーダルが閉じずに残る
+      expect(page).to have_text("⚠️ アカウント削除の確認")
+    end
+
     it "can cancel deletion" do
       visit profile_path
 
@@ -77,7 +118,12 @@ RSpec.describe "User Delete System", type: :system do
       visit profile_path
 
       click_button "アカウントを削除"
-      click_button "削除する"
+      
+      # ユーザー名確認入力
+      within(".modal") do
+        fill_in "confirm_username", with: user.username
+        click_button "削除する"
+      end
 
       expect(current_path).to eq(root_path)
       expect(page).to have_text("#{user.username}さんのアカウントを削除しました")
@@ -92,7 +138,12 @@ RSpec.describe "User Delete System", type: :system do
       visit profile_path
 
       click_button "アカウントを削除"
-      click_button "削除する"
+      
+      # ユーザー名確認入力
+      within(".modal") do
+        fill_in "confirm_username", with: user.username
+        click_button "削除する"
+      end
 
       # ログアウト状態であることを確認
       visit profile_path
@@ -133,7 +184,12 @@ RSpec.describe "User Delete System", type: :system do
       visit profile_path
 
       click_button "アカウントを削除"
-      click_button "削除する"
+      
+      # ユーザー名確認入力
+      within(".modal") do
+        fill_in "confirm_username", with: user.username
+        click_button "削除する"
+      end
 
       expect(current_path).to eq(profile_path)
       expect(page).to have_text("アカウントの削除に失敗しました")
