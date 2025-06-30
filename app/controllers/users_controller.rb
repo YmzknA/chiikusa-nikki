@@ -27,7 +27,8 @@ class UsersController < ApplicationController
       validate_related_data_integrity(user)
 
       if user.destroy
-        sign_out(user)
+        sign_out # セッションをクリア
+        reset_session # セッションを完全にリセット
         Rails.logger.info "User deletion completed: #{username}"
         redirect_to root_path, notice: "#{username}さんのアカウントを削除しました。ご利用ありがとうございました。"
       else
