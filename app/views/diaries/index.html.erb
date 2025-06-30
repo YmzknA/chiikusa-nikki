@@ -5,7 +5,8 @@
   </div>
 
   <div class="container mx-auto">
-    <div class="neuro-card p-4 sm:p-6 mb-4 sm:mb-6">
+    <!-- Desktop Header -->
+    <div class="hidden sm:block neuro-card p-4 sm:p-6 mb-4 sm:mb-6">
       <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
         <div class="flex items-center gap-3 sm:gap-6">
         <%= link_to root_path, class: "ml-0 sm:ml-2" do %>
@@ -38,6 +39,16 @@
             <span class="hidden min-[400px]:inline">日記</span>
           <% end %>
         </div>
+      </div>
+    </div>
+    
+    <!-- Mobile Header with Logo -->
+    <div class="sm:hidden neuro-card p-4 mb-4 flex justify-center items-center">
+      <%= link_to root_path do %>
+        <%= image_tag "logo.png", alt: "Neuro Logo", class: "h-10 w-auto" %>
+      <% end %>
+      <div class="h-10 flex items-end ml-3">
+        <%= render 'shared/watering' %>
       </div>
     </div>
 
