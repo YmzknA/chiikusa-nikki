@@ -289,7 +289,7 @@ RSpec.describe "Complete Diary Workflow Integration", type: :request do
       post diaries_path, params: diary_params
 
       expect(response).to render_template(:new)
-      expect(response.body).to include("既に作成されています")
+      expect(response.body).to include("の日記は既に作成されています")
     end
 
     it "validates required diary fields" do
