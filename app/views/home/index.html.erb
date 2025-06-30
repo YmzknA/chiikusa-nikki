@@ -28,15 +28,15 @@
       </h2>
 
       <!-- Button -->
-      <%= link_to new_diary_path, class: "neuro-button w-full font-medium py-3 md:py-4 px-4 md:px-6 transition-all duration-200 inline-block text-center text-base md:text-lg" do %>
+      <%= loading_link_to new_diary_path, class: "neuro-button w-full font-medium py-3 md:py-4 px-4 md:px-6 transition-all duration-200 inline-block text-center text-base md:text-lg" do %>
         草を生やす
       <% end %>
 
       <div class="mt-4 md:mt-6 flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4">
-        <%= link_to diaries_path, class: "text-base-content/60 hover:text-base-content text-sm md:text-base font-medium" do %>
+        <%= loading_link_to diaries_path, class: "text-base-content/60 hover:text-base-content text-sm md:text-base font-medium" do %>
           過去の記録
         <% end %>
-        <%= button_to destroy_user_session_path, method: :delete,
+        <%= loading_button_to destroy_user_session_path, method: :delete,
             data: { turbo_confirm: "本当にログアウトしますか？" },
             class: "text-base-content/60 hover:text-base-content hover:cursor-pointer text-sm md:text-base font-medium" do %>
               ログアウト

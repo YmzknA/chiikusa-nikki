@@ -1,0 +1,27 @@
+<!-- AI生成専用ローディング -->
+<div data-controller="ai-loading">
+  <div data-ai-loading-target="spinner" class="hidden fixed inset-0 z-50 items-center justify-center bg-base-100/90 backdrop-blur-md">
+    <div class="flex flex-col items-center gap-6 bg-base-100 rounded-3xl p-8 shadow-2xl border border-base-300">
+      <!-- AI生成アニメーション -->
+      <div class="relative">
+        <div class="w-16 h-16 border-4 border-primary/30 rounded-full animate-spin">
+          <div class="absolute top-0 left-0 w-4 h-4 bg-primary rounded-full animate-pulse"></div>
+        </div>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <span class="text-2xl animate-bounce">🌱</span>
+        </div>
+      </div>
+      
+      <!-- メッセージ -->
+      <div class="text-center">
+        <h3 class="text-lg font-bold text-primary mb-2">AIで生成中です...</h3>
+        <p class="text-sm text-base-content/70">少々お待ちください</p>
+      </div>
+      
+      <!-- プログレスバー風エフェクト -->
+      <div class="w-48 h-2 bg-base-200 rounded-full overflow-hidden">
+        <div class="h-full bg-gradient-to-r from-primary to-secondary rounded-full animate-pulse" style="width: 60%; animation-duration: 2s;"></div>
+      </div>
+    </div>
+  </div>
+</div>

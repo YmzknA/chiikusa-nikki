@@ -1,6 +1,6 @@
 <div class="min-h-screen p-4">
     <div class="neuro-card p-4 md:p-6">
-      <%= form_with(model: @diary, url: diaries_path, local: true, data: { turbo: false, turbo_frame: "_top" }, class: "space-y-4 md:space-y-6") do |form| %>
+      <%= loading_form_with(model: @diary, url: diaries_path, local: true, data: { turbo: false, turbo_frame: "_top" }, class: "space-y-4 md:space-y-6") do |form| %>
         <% if @existing_diary %>
           <div class="neuro-input p-3 md:p-4 mb-4 rounded-2xl bg-warning border border-warning/20">
             <div class="flex items-start gap-2 md:gap-3">
@@ -8,7 +8,7 @@
                 <h3 class="font-bold text-primary text-sm md:text-base">⚠️ この日の日記は既に作成されています</h3>
                 <p class="mt-2 text-base-content/80 text-sm md:text-base">
                   <%= @date.strftime("%Y年%m月%d日") %>の日記は既に存在します。
-                  <%= link_to "既存の日記を編集", edit_diary_path(@existing_diary), class: "text-neutral underline hover:text-warning/80" %>
+                  <%= loading_link_to "既存の日記を編集", edit_diary_path(@existing_diary), class: "text-neutral underline hover:text-warning/80" %>
                   するか、別の日付を選択してください。
                 </p>
               </div>
@@ -82,7 +82,7 @@
         <div class="divider my-4 md:my-6 mx-auto"></div>
 
         <div class="form-control mt-6 md:mt-8">
-          <%= form.submit "日記を作成 ✓", class: "neuro-button w-full py-3 md:py-4 px-4 md:px-6 font-bold text-base md:text-lg hover:cursor-pointer", onclick: "return checkSeedCountBeforeAction(event, 'use_ai_generation_checkbox')" %>
+          <%= form.submit "日記を作成 ✓", class: "neuro-button w-full py-3 md:py-4 px-4 md:px-6 font-bold text-base md:text-lg hover:cursor-pointer", onclick: "console.log('🚀 Submit button clicked'); const result = checkSeedCountBeforeAction(event, 'use_ai_generation_checkbox'); if(result) { const hasNotes = document.querySelector('#diary_notes')?.value.trim(); const checkbox = document.getElementById('use_ai_generation_checkbox'); const needsAi = checkbox && checkbox.checked && hasNotes; if(!needsAi && window.loadingController) { console.log('🎯 Manually calling normal loading'); window.loadingController.showDelayed(); } } return result;" %>
         </div>
       <% end %>
     </div>

@@ -7,7 +7,7 @@
     </div>
 
     <div class="neuro-card p-6">
-      <%= form_with model: current_user, url: profile_path, method: :patch, local: true, class: "space-y-6" do |form| %>
+      <%= loading_form_with model: current_user, url: profile_path, method: :patch, local: true, class: "space-y-6" do |form| %>
         <% if current_user.errors.any? %>
           <div class="alert alert-error">
             <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">

@@ -3,25 +3,49 @@
 
 <script>
   function checkSeedCountBeforeAction(event, checkboxId = null) {
+    console.log('🌱 checkSeedCountBeforeAction called', { event, checkboxId });
     const seedCount = <%= current_user.seed_count %>;
     const notesTextarea = document.querySelector('#diary_notes');
     const hasNotes = notesTextarea && notesTextarea.value.trim().length > 0;
     
-    // チェックボックスが指定されている場合（編集時）
+    console.log('🌱 Seed count:', seedCount, 'Has notes:', hasNotes);
+    
+    // AI生成が必要かどうかを判定
+    let needsAiGeneration = false;
+    
+    // チェックボックスが指定されている場合（編集時または新規作成時）
     if (checkboxId) {
       const checkbox = document.getElementById(checkboxId);
-      if (!checkbox.checked || !hasNotes) {
-        return true; // AI生成を使わない場合は続行
-      }
+      console.log('🌱 Checkbox checked:', checkbox?.checked);
+      needsAiGeneration = checkbox.checked && hasNotes;
+    } else if (hasNotes) {
+      // チェックボックスがない場合でメモがある場合はAI生成が必要
+      needsAiGeneration = true;
     }
     
     // タネ不足チェック
-    if (hasNotes && seedCount <= 0) {
+    if (needsAiGeneration && seedCount <= 0) {
+      console.log('🌱 Seed shortage detected, preventing form submission');
       event.preventDefault();
       showSeedShortageModal();
       return false;
     }
     
+    // AI生成が必要な場合は専用ローディングを表示
+    if (needsAiGeneration) {
+      console.log('🤖 AI generation needed, showing AI loading');
+      if (window.aiLoadingController) {
+        // 通常のローディングを隠してAIローディングを表示
+        if (window.loadingController) {
+          window.loadingController.hide();
+        }
+        window.aiLoadingController.showDelayed();
+      }
+    } else {
+      console.log('🌱 AI generation not needed, will show normal loading');
+    }
+    
+    console.log('🌱 All checks passed, continuing with form submission');
     return true;
   }
 </script>
