@@ -22,6 +22,11 @@ require "rspec/rails"
 #
 Rails.root.glob("spec/support/**/*.rb").sort_by(&:to_s).each { |f| require f }
 
+# Include FactoryBot methods
+RSpec.configure do |config|
+  config.include FactoryBot::Syntax::Methods
+end
+
 # Checks for pending migrations and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove these lines.
 begin
@@ -62,6 +67,13 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+
+  # Include Devise test helpers
+  config.include Devise::Test::IntegrationHelpers, type: :request
+  config.include Devise::Test::ControllerHelpers, type: :controller
+
+  # Include Warden test helpers for system tests
+  config.include Warden::Test::Helpers, type: :system
 end
 
 Shoulda::Matchers.configure do |config|

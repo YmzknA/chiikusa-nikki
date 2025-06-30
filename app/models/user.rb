@@ -53,8 +53,12 @@ class User < ApplicationRecord
     # 新規ユーザーの場合のみパスワード設定
     user.password = Devise.friendly_token[0, 20] if user.new_record?
 
-    user.save!
-    Rails.logger.info "OAuth user created/updated: #{user.username} (#{user.email}) - Provider: #{provider}"
+    if user.save
+      Rails.logger.info "OAuth user created/updated: #{user.username} (#{user.email}) - Provider: #{provider}"
+    else
+      Rails.logger.error "Failed to save OAuth user: #{user.errors.full_messages.join(', ')}"
+      Rails.logger.error "User attributes: #{user.attributes.inspect}"
+    end
     user
   end
 
@@ -66,8 +70,11 @@ class User < ApplicationRecord
     assign_provider_attributes(user, auth)
     update_user_providers(user, provider)
 
-    user.save!
-    Rails.logger.info "Provider #{provider} added to existing user #{user.id}: #{user.username}"
+    if user.save
+      Rails.logger.info "Provider #{provider} added to existing user #{user.id}: #{user.username}"
+    else
+      Rails.logger.error "Failed to save provider to user #{user.id}: #{user.errors.full_messages.join(', ')}"
+    end
     user
   end
 
@@ -98,6 +105,7 @@ class User < ApplicationRecord
       user.assign_attributes(
         github_id: uid,
         username: user.username.presence || DEFAULT_USERNAME,
+        github_username: auth.info.nickname,
         encrypted_access_token: auth.credentials.token
       )
     when "google_oauth2"
@@ -131,7 +139,7 @@ class User < ApplicationRecord
       end
     end
 
-    def build_oauth_attributes(auth, _user)
+    def build_oauth_attributes(auth, user)
       provider = auth.provider
       uid = auth.uid
       email = auth.info.email
@@ -142,16 +150,19 @@ class User < ApplicationRecord
       when "github"
         attributes.merge!(
           github_id: uid,
-          username: DEFAULT_USERNAME,
+          github_username: auth.info.nickname,
           encrypted_access_token: auth.credentials.token
         )
+        # Only set default username for new users
+        attributes[:username] = DEFAULT_USERNAME if user.new_record?
       when "google_oauth2"
         attributes.merge!(
           google_id: uid,
           google_email: email,
-          username: DEFAULT_USERNAME,
           encrypted_google_access_token: auth.credentials.token
         )
+        # Only set default username for new users
+        attributes[:username] = DEFAULT_USERNAME if user.new_record?
       end
 
       attributes
@@ -267,6 +278,7 @@ class User < ApplicationRecord
   end
 
   # These methods return boolean status, but are action methods, not predicates
+  # rubocop:disable Naming/PredicateMethod
   def add_seed_from_watering!
     return false if last_seed_incremented_at&.today?
     return false if seed_count >= 5
@@ -281,9 +293,10 @@ class User < ApplicationRecord
     return false if seed_count >= 5
 
     increment!(:seed_count)
-    update!(last_seed_incremented_at: Time.current)
+    update!(last_shared_at: Time.current)
     true
   end
+  # rubocop:enable Naming/PredicateMethod
 
   def can_increment_seed_count?
     !last_seed_incremented_at&.today? && seed_count < 5

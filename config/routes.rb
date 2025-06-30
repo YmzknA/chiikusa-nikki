@@ -3,6 +3,9 @@ Rails.application.routes.draw do
     omniauth_callbacks: "users/omniauth_callbacks"
   }
 
+  # OmniAuth failure handling
+  match "/users/auth/failure", to: "users/omniauth_callbacks#failure", via: [:get, :post]
+
   root "home#index"
 
   resources :diaries, only: [:new, :create, :index, :edit, :update, :show, :destroy] do

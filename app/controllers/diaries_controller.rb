@@ -18,7 +18,7 @@ class DiariesController < ApplicationController
   def new
     @diary = Diary.new
     @questions = Question.all
-    @date = params[:date] || Date.current
+    @date = params[:date].present? ? Date.parse(params[:date]) : Date.current
     @existing_diary = current_user.diaries.find_by(date: @date)
   end
 

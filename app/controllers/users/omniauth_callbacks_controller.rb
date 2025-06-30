@@ -17,10 +17,16 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def handle_oauth(provider_name)
     auth = request.env["omniauth.auth"]
 
+    Rails.logger.debug "OmniAuth callback - Provider: #{provider_name}"
+    Rails.logger.debug "Auth present: #{auth.present?}"
+    Rails.logger.debug "Auth data: #{auth&.to_hash}"
+
     return handle_invalid_auth(auth) unless valid_oauth_request?(auth)
 
     handle_valid_oauth(auth, provider_name)
   rescue StandardError => e
+    Rails.logger.error "OAuth error: #{e.message}"
+    Rails.logger.error "Backtrace: #{e.backtrace.first(5)}"
     handle_oauth_error(e, auth)
   end
 
@@ -76,9 +82,23 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     else
       log_oauth_attempt(auth.provider, auth.info.email, false)
       error_msg = @user.errors.full_messages.join(", ")
-      session["devise.#{params[:provider]}_data"] = auth.except(:extra)
+      # Use auth.provider instead of params[:provider] for security
+      safe_provider = sanitize_provider_name(auth.provider)
+      session["devise.#{safe_provider}_data"] = auth.except(:extra)
       flash[:alert] = "#{provider_name}での認証に失敗しました。#{error_msg}"
       redirect_to root_path
+    end
+  end
+
+  def sanitize_provider_name(provider)
+    # Only allow known OAuth providers
+    case provider
+    when "github"
+      "github"
+    when "google_oauth2"
+      "google_oauth2"
+    else
+      "unknown"
     end
   end
 end
