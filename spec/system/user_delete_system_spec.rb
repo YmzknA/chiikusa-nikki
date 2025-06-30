@@ -118,7 +118,7 @@ RSpec.describe "User Delete System", type: :system do
       visit profile_path
 
       click_button "アカウントを削除"
-      
+
       # ユーザー名確認入力
       within(".modal") do
         fill_in "confirm_username", with: user.username
@@ -138,7 +138,7 @@ RSpec.describe "User Delete System", type: :system do
       visit profile_path
 
       click_button "アカウントを削除"
-      
+
       # ユーザー名確認入力
       within(".modal") do
         fill_in "confirm_username", with: user.username
@@ -184,7 +184,7 @@ RSpec.describe "User Delete System", type: :system do
       visit profile_path
 
       click_button "アカウントを削除"
-      
+
       # ユーザー名確認入力
       within(".modal") do
         fill_in "confirm_username", with: user.username
