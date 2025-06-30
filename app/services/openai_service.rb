@@ -38,7 +38,7 @@ class OpenaiService
             },
             { role: "user", content: "以下の今日のメモに基づいてTILを生成してください:\n#{notes}" }
           ],
-          temperature: 1.5,
+          temperature: 1.3,
           max_tokens: 150
         }
       )
