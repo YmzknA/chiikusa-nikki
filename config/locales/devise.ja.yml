@@ -1,0 +1,63 @@
+ja:
+  devise:
+    confirmations:
+      confirmed: "メールアドレスが正常に確認されました。"
+      send_instructions: "メールアドレスの確認方法を数分以内にメールでご連絡します。"
+      send_paranoid_instructions: "メールアドレスが登録済みの場合、数分以内に確認方法をメールでご連絡します。"
+    failure:
+      already_authenticated: "すでにログインしています。"
+      inactive: "アカウントが有効化されていません。"
+      invalid: "メールアドレスまたはパスワードが違います。"
+      locked: "アカウントが凍結されています。"
+      last_attempt: "もう一度失敗するとアカウントが凍結されます。"
+      not_found_in_database: "メールアドレスまたはパスワードが違います。"
+      timeout: "セッションがタイムアウトしました。もう一度ログインしてください。"
+      unauthenticated: "続行するには、ログインまたは登録してください。"
+      unconfirmed: "続行する前にメールアドレスを確認してください。"
+    mailer:
+      confirmation_instructions:
+        subject: "メールアドレス確認メール"
+      reset_password_instructions:
+        subject: "パスワードの再設定について"
+      unlock_instructions:
+        subject: "アカウントの凍結解除について"
+      email_changed:
+        subject: "メールアドレス変更完了"
+      password_change:
+        subject: "パスワード変更完了"
+    omniauth_callbacks:
+      failure: "%{kind} アカウントによる認証に失敗しました。理由：（%{reason}）"
+      success: "%{kind} アカウントによる認証に成功しました。"
+    passwords:
+      no_token: "このページにはパスワード再設定メールのリンクからアクセスしてください。パスワード再設定メールのリンクからアクセスしている場合は、URLが完全かどうか確認してください。"
+      send_instructions: "パスワードの再設定について数分以内にメールでご連絡いたします。"
+      send_paranoid_instructions: "メールアドレスが登録済みの場合、パスワード再設定用のメールが数分以内に送信されます。"
+      updated: "パスワードが正常に変更されました。"
+      updated_not_active: "パスワードが正常に変更されました。"
+    registrations:
+      destroyed: "アカウントを削除しました。またのご利用をお待ちしております。"
+      signed_up: "アカウント登録が完了しました。"
+      signed_up_but_inactive: "ログインするためには、アカウントを有効化してください。"
+      signed_up_but_locked: "アカウントが凍結されているためログインできません。"
+      signed_up_but_unconfirmed: "本人確認用のメールを送信しました。メール内のリンクからアカウントを有効化させてください。"
+      update_needs_confirmation: "アカウント情報を変更しました。変更されたメールアドレスの本人確認のため、本人確認用メールより確認処理をおこなってください。"
+      updated: "アカウント情報を変更しました。"
+      updated_but_not_signed_in: "あなたのアカウントは正常に更新されましたが、パスワードが変更されたため、再度ログインしてください。"
+    sessions:
+      signed_in: "ログインしました。"
+      signed_out: "ログアウトしました。"
+      already_signed_out: "既にログアウト済みです。"
+    unlocks:
+      send_instructions: "アカウントの凍結解除方法を数分以内にメールでご連絡します。"
+      send_paranoid_instructions: "アカウントが見つかった場合、アカウントの凍結解除方法を数分以内にメールでご連絡します。"
+      unlocked: "アカウントを凍結解除しました。続行するにはログインしてください。"
+  errors:
+    messages:
+      already_confirmed: "は既に登録済みです。ログインしてください。"
+      confirmation_period_expired: "の期限が切れました。%{period} までに確認する必要があります。 新しくリクエストしてください。"
+      expired: "の有効期限が切れました。新しくリクエストしてください。"
+      not_found: "は見つかりませんでした。"
+      not_locked: "は凍結されていません。"
+      not_saved:
+        one: "エラーが発生したため %{resource} は保存されませんでした："
+        other: "%{count} 件のエラーが発生したため %{resource} は保存されませんでした："
