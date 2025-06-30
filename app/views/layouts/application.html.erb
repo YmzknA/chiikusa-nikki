@@ -27,13 +27,13 @@
 
   <body data-theme="lemonade" class="m-plus-1p-regular">
     <%= render 'shared/flash' %>
-    <% unless controller_name == 'home' && action_name == 'index' %>
+    <% unless hide_navigation? %>
       <%= render 'shared/sidebar_navigation' %>
     <% end %>
-    <main class="pb-20 sm:pb-0 <%= 'sm:pl-64' unless controller_name == 'home' && action_name == 'index' %>">
+    <main class="pb-20 sm:pb-0 <%= 'sm:pl-64' unless hide_navigation? %>">
       <%= yield %>
     </main>
-    <% unless controller_name == 'home' && action_name == 'index' %>
+    <% unless hide_navigation? %>
       <%= render 'shared/mobile_navigation' %>
     <% end %>
   </body>
