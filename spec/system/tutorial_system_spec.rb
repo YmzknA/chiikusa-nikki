@@ -39,7 +39,7 @@ RSpec.describe "Tutorial System", type: :system do
         expect(page).to have_text("日記の作り方")
         expect(page).to have_text("AIでTILを自動生成")
         expect(page).to have_text("GitHub連携で草を生やそう")
-        expect(page).to have_text("学習の振り返り")
+        expect(page).to have_text("振り返り")
         expect(page).to have_text("みんなの頑張りを見る")
       end
     end
@@ -85,7 +85,7 @@ RSpec.describe "Tutorial System", type: :system do
         expect(page).to have_text("日記の作り方")
         expect(page).to have_text("AIでTILを自動生成")
         expect(page).to have_text("GitHub連携で草を生やそう")
-        expect(page).to have_text("学習の振り返り")
+        expect(page).to have_text("振り返り")
         expect(page).to have_text("みんなの頑張りを見る")
       end
 
