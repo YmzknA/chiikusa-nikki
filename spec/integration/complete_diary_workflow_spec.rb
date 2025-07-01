@@ -60,7 +60,7 @@ RSpec.describe "Complete Diary Workflow Integration", type: :request do
 
       post diaries_path, params: diary_params
 
-      expect(response).to redirect_to(edit_diary_path(Diary.last))
+      expect(response).to redirect_to(select_til_diary_path(Diary.last))
       expect(flash[:notice]).to include("続いて生成されたTIL")
 
       created_diary = Diary.last

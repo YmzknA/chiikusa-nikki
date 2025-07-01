@@ -1,0 +1,9 @@
+<div class="neuro-card p-4 hover:bg-secondary/5 transition-colors">
+  <label class="flex items-start cursor-pointer">
+    <%= radio_button_tag :selected_til_index, -1, false, class: "mt-1 mr-3 radio radio-secondary" %>
+    <div class="flex-1">
+      <span class="font-semibold text-secondary">元のメモをそのまま使用</span>
+      <p class="mt-2 text-base-content whitespace-pre-wrap"><%= diary.notes %></p>
+    </div>
+  </label>
+</div>

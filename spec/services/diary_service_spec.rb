@@ -125,10 +125,10 @@ RSpec.describe DiaryService, type: :service do
       end
 
       context "when user has seeds" do
-        it "generates TIL candidates and redirects to edit" do
+        it "generates TIL candidates and redirects to select_til" do
           result = service.handle_til_generation_and_redirect(skip_ai_generation: false)
 
-          expect(result[:redirect_to]).to eq([:edit, diary])
+          expect(result[:redirect_to]).to eq([:select_til, diary])
           expect(result[:notice]).to include("続いて生成されたTIL")
           expect(user.reload.seed_count).to eq(2) # decreased by 1
           expect(diary.til_candidates.count).to eq(3)

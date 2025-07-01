@@ -194,7 +194,7 @@ RSpec.describe "Diaries", type: :request do
           regenerate_ai: "1"
         }
 
-        expect(response).to redirect_to(diary_path(diary))
+        expect(response).to redirect_to(select_til_diary_path(diary))
       end
     end
 
@@ -366,6 +366,77 @@ RSpec.describe "Diaries", type: :request do
       expect(response).to have_http_status(:bad_request)
       json_response = JSON.parse(response.body)
       expect(json_response["error"]).to include("Invalid date format")
+    end
+  end
+
+  describe "GET /diaries/:id/select_til" do
+    let(:diary_with_candidates) { create(:diary, :with_til_candidates, user: user) }
+
+    it "shows TIL selection page when candidates exist" do
+      get select_til_diary_path(diary_with_candidates)
+
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("TILを選択してください")
+    end
+
+    it "redirects when no TIL candidates exist" do
+      diary_without_candidates = create(:diary, user: user)
+      get select_til_diary_path(diary_without_candidates)
+
+      expect(response).to redirect_to(diary_path(diary_without_candidates))
+      expect(flash[:alert]).to include("TIL候補が存在しません")
+    end
+
+    it "requires authentication" do
+      sign_out user
+      get select_til_diary_path(diary_with_candidates)
+      expect(response).to redirect_to(root_path)
+    end
+  end
+
+  describe "PATCH /diaries/:id/update_til_selection" do
+    let(:diary_with_candidates) { create(:diary, :with_til_candidates, user: user) }
+
+    it "selects TIL candidate successfully" do
+      patch update_til_selection_diary_path(diary_with_candidates),
+            params: { selected_til_index: 1 }
+
+      diary_with_candidates.reload
+      expect(diary_with_candidates.selected_til_index).to eq(1)
+      expect(response).to redirect_to(diary_path(diary_with_candidates))
+      expect(flash[:notice]).to include("TILを選択しました")
+    end
+
+    it "selects original notes when index is -1" do
+      patch update_til_selection_diary_path(diary_with_candidates),
+            params: { selected_til_index: -1 }
+
+      diary_with_candidates.reload
+      expect(diary_with_candidates.selected_til_index).to be_nil
+      expect(diary_with_candidates.til_text).to be_nil
+      expect(response).to redirect_to(diary_path(diary_with_candidates))
+    end
+
+    it "handles invalid index" do
+      patch update_til_selection_diary_path(diary_with_candidates),
+            params: { selected_til_index: 999 }
+
+      expect(response).to redirect_to(select_til_diary_path(diary_with_candidates))
+      expect(flash[:alert]).to include("不正なTIL選択")
+    end
+
+    it "requires selected_til_index parameter" do
+      patch update_til_selection_diary_path(diary_with_candidates)
+
+      expect(response).to redirect_to(select_til_diary_path(diary_with_candidates))
+      expect(flash[:alert]).to include("TILを選択してください")
+    end
+
+    it "requires authentication" do
+      sign_out user
+      patch update_til_selection_diary_path(diary_with_candidates),
+            params: { selected_til_index: 1 }
+      expect(response).to redirect_to(root_path)
     end
   end
 

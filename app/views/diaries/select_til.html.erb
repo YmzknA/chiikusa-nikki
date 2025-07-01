@@ -1,0 +1,51 @@
+<div class="min-h-screen p-4">
+  <div class="container mx-auto max-w-3xl">
+    <div class="neuro-card p-4 md:p-6 mb-6">
+      <h1 class="text-lg md:text-2xl lg:text-3xl font-bold text-base-content leading-tight">
+        TILを選択してください 💡
+      </h1>
+    </div>
+
+    <div class="neuro-card p-4 md:p-6">
+      <%= form_with url: update_til_selection_diary_path(@diary), method: :patch, local: true do |form| %>
+        <div class="space-y-4">
+          <% @diary.til_candidates.order(:index).each_with_index do |candidate, index| %>
+            <%= render "til_candidate_option", candidate: candidate, index: index %>
+          <% end %>
+
+          <%= render "original_notes_option", diary: @diary %>
+        </div>
+
+        <div class="mt-6 flex justify-center">
+          <%= form.submit "選択したTILで保存", class: "neuro-button py-3 px-6 font-medium" %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="neuro-card p-4 md:p-6 mt-6">
+      <h2 class="text-xl md:text-2xl font-bold text-accent mb-4">今日の記録 📝</h2>
+      
+      <div class="mb-4">
+        <p class="text-sm text-base-content/70 mb-2">日付: <%= @diary.date.strftime("%Y年%m月%d日") %></p>
+      </div>
+
+      <% if @diary.diary_answers.any? %>
+        <div class="grid grid-cols-3 gap-4 mb-4">
+          <% @diary.diary_answers.each do |answer| %>
+            <div class="neuro-badge py-2 px-3 text-sm font-medium flex items-center gap-2 justify-center">
+              <span class="text-2xl"><%= answer.answer.emoji %></span>
+              <span class="text-xs"><%= answer.question.label %></span>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <div class="mt-4">
+        <h3 class="text-sm font-semibold text-secondary mb-2">メモ:</h3>
+        <div class="neuro-card p-3 bg-base-200">
+          <p class="text-base-content whitespace-pre-wrap text-sm"><%= @diary.notes %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

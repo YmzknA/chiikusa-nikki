@@ -17,6 +17,8 @@ Rails.application.routes.draw do
   resources :diaries, only: [:new, :create, :index, :edit, :update, :show, :destroy] do
     member do
       post :upload_to_github
+      get :select_til
+      patch :update_til_selection
     end
     collection do
       post :increment_seed

@@ -4,9 +4,11 @@ class DiariesController < ApplicationController
   include GithubIntegration
   include DiaryErrorHandling
 
+  ORIGINAL_NOTES_INDEX = -1
+
   before_action :authenticate_user!, except: [:show, :public_index]
   before_action :set_diary_for_show, only: [:show]
-  before_action :set_diary, only: [:edit, :update, :destroy, :upload_to_github]
+  before_action :set_diary, only: [:edit, :update, :destroy, :upload_to_github, :select_til, :update_til_selection]
 
   def index
     @selected_month = params[:month].present? ? params[:month] : "all"
@@ -63,8 +65,13 @@ class DiariesController < ApplicationController
   def update
     if @diary.update(diary_update_params)
       diary_service.update_diary_answers(diary_answer_params)
-      diary_service.regenerate_til_candidates_if_needed if params[:regenerate_ai] == "1"
-      redirect_to diary_path(@diary), notice: "日記を更新しました"
+      if params[:regenerate_ai] == "1"
+        result = diary_service.regenerate_til_candidates_if_needed
+        redirect_to result ? select_til_diary_path(@diary) : diary_path(@diary),
+                    notice: result ? "TILを再生成しました。新しいTILを選択してください。" : "日記を更新しました"
+      else
+        redirect_to diary_path(@diary), notice: "日記を更新しました"
+      end
     else
       handle_update_error
     end
@@ -91,7 +98,58 @@ class DiariesController < ApplicationController
     render json: { error: "Invalid date format" }, status: 400
   end
 
+  def select_til
+    @questions = Question.all
+    return if @diary.til_candidates.any?
+
+    redirect_to diary_path(@diary), alert: "TIL候補が存在しません。"
+  end
+
+  def update_til_selection
+    return redirect_with_alert("TILを選択してください。") unless til_selection_params[:selected_til_index].present?
+
+    selected_index = til_selection_params[:selected_til_index].to_i
+
+    return unless process_til_selection?(selected_index)
+
+    ActiveRecord::Base.transaction do
+      @diary.save!
+      redirect_to diary_path(@diary), notice: "TILを選択しました。"
+    end
+  rescue ActiveRecord::RecordInvalid
+    redirect_with_alert("TILの選択に失敗しました。もう一度お試しください。")
+  end
+
   private
+
+  def process_til_selection?(selected_index)
+    if selected_index == ORIGINAL_NOTES_INDEX
+      @diary.selected_til_index = nil
+      @diary.til_text = nil
+      true
+    elsif selected_index >= 0
+      process_til_candidate_selection?(selected_index)
+    else
+      redirect_with_alert("不正な選択値です。")
+      false
+    end
+  end
+
+  def process_til_candidate_selection?(selected_index)
+    candidate = @diary.til_candidates.find_by(index: selected_index)
+    unless candidate
+      redirect_with_alert("不正なTIL選択です。もう一度選択してください。")
+      return false
+    end
+
+    @diary.selected_til_index = selected_index
+    @diary.til_text = candidate.content
+    true
+  end
+
+  def redirect_with_alert(message)
+    redirect_to select_til_diary_path(@diary), alert: message
+  end
 
   # AuthorizationHelperのresource_owner?をヘルパーメソッドとして使用
   helper_method :resource_owner?
@@ -108,7 +166,7 @@ class DiariesController < ApplicationController
   end
 
   def set_diary
-    @diary = current_user.diaries.find(params[:id])
+    @diary = current_user.diaries.includes(:til_candidates, diary_answers: :answer).find(params[:id])
   rescue ActiveRecord::RecordNotFound
     redirect_to diaries_path, alert: "指定された日記は見つかりません。"
   end
@@ -143,5 +201,9 @@ class DiariesController < ApplicationController
   def diary_answer_params
     question_identifiers = Question.pluck(:identifier).map(&:to_sym)
     params[:diary_answers].present? ? params.permit(diary_answers: question_identifiers)[:diary_answers] || {} : {}
+  end
+
+  def til_selection_params
+    params.permit(:selected_til_index)
   end
 end
