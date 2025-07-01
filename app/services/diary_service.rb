@@ -34,13 +34,15 @@ class DiaryService
   def generate_til_candidates_and_redirect
     return { redirect_to: @diary, notice: "日記を作成しました（タネが不足しているためTILは生成されませんでした）" } if @user.seed_count <= 0
 
-    @user.decrement!(:seed_count)
+    ActiveRecord::Base.transaction do
+      openai_service = OpenaiService.new
+      til_candidates = openai_service.generate_tils(@diary.notes)
 
-    openai_service = OpenaiService.new
-    til_candidates = openai_service.generate_tils(@diary.notes)
+      til_candidates.each_with_index do |content, index|
+        @diary.til_candidates.create!(content: content, index: index)
+      end
 
-    til_candidates.each_with_index do |content, index|
-      @diary.til_candidates.create(content: content, index: index)
+      @user.decrement!(:seed_count)
     end
 
     { redirect_to: [:edit, @diary], notice: "日記を作成しました。続いて生成されたTIL を選択してください。" }
@@ -57,15 +59,17 @@ class DiaryService
       return
     end
 
-    @user.decrement!(:seed_count)
+    ActiveRecord::Base.transaction do
+      # Clear existing candidates and generate new ones
+      @diary.til_candidates.destroy_all
+      openai_service = OpenaiService.new
+      til_candidates = openai_service.generate_tils(@diary.notes)
 
-    # Clear existing candidates and generate new ones
-    @diary.til_candidates.destroy_all
-    openai_service = OpenaiService.new
-    til_candidates = openai_service.generate_tils(@diary.notes)
+      til_candidates.each_with_index do |content, index|
+        @diary.til_candidates.create!(content: content, index: index)
+      end
 
-    til_candidates.each_with_index do |content, index|
-      @diary.til_candidates.create(content: content, index: index)
+      @user.decrement!(:seed_count)
     end
   rescue StandardError => e
     Rails.logger.error("Error regenerating TIL candidates: #{e.message}")
