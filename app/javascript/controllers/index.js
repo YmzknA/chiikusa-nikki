@@ -44,3 +44,6 @@ application.register("loading", LoadingController)
 
 import AiLoadingController from "./ai_loading_controller"
 application.register("ai-loading", AiLoadingController)
+
+import ModalController from "./modal_controller"
+application.register("modal", ModalController)
