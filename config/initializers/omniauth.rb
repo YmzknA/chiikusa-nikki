@@ -4,7 +4,7 @@
 Rails.application.config.middleware.use OmniAuth::Builder do
   # Enable CSRF protection
   configure do |config|
-    config.full_host = Rails.env.production? ? "https://chiikusa-nikki.fly.dev" : "http://localhost:3000"
+    config.full_host = Rails.env.production? ? "https://chiikusa-diary.fly.dev" : "http://localhost:3000"
     config.allowed_request_methods = [:post, :get]
     config.silence_get_warning = true
   end
