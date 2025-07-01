@@ -3,7 +3,7 @@
 # 環境変数の検証と警告
 if Rails.env.production?
   # 本番環境では必須の環境変数をチェック
-  required_vars = %w[DATABASE_URL]
+  required_vars = %w[DATABASE_HOST DATABASE_USERNAME DATABASE_PASSWORD]
   missing_vars = required_vars.select { |var| ENV[var].blank? }
 
   if missing_vars.any?
