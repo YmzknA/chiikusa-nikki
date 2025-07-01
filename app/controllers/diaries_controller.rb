@@ -14,6 +14,11 @@ class DiariesController < ApplicationController
 
   def show
     check_github_repository_status if user_signed_in?
+
+    return unless @diary.present? || @diary.is_public
+
+    @share_content = "🌱#{@diary.date.strftime('%Y年%m月%d日')}のちいくさ日記🌱%0A%0A" \
+                     "%23ちいくさ日記%0A%23毎日1分簡単日記%0A&url=#{diary_url(@diary)}"
   end
 
   def public_index
@@ -115,6 +120,12 @@ class DiariesController < ApplicationController
   end
 
   private
+
+  # 日記の所有者かどうかを判定
+  def diary_owner?
+    user_signed_in? && @diary&.user_id == current_user.id
+  end
+  helper_method :diary_owner?
 
   def render_seed_turbo_stream(seed_service)
     if seed_service.success
