@@ -65,6 +65,17 @@
         <% end %>
       </div>
     <% end %>
+
+    <!-- フッターリンク -->
+    <div class="mt-6 pt-4 border-t border-base-300/50 flex flex-col items-center gap-4">
+      <div class="flex justify-center gap-4 text-xs text-base-content/50">
+        <%= link_to "プライバシーポリシー", privacy_policy_path, class: "link link-hover" %>
+        <%= link_to "利用規約", terms_of_service_path, class: "link link-hover" %>
+      </div>
+      <div class="text-xs text-base-content/40">
+        © 2025 ちいくさ日記. All rights reserved.
+      </div>
+    </div>
   </div>
 </div>
 
