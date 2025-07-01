@@ -1,10 +1,10 @@
-# fly.toml app configuration file generated for chiikusa-nikki on 2025-07-01T10:19:17Z
+# fly.toml app configuration file generated for chiikusa-diary on 2025-07-01T10:54:59Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'chiikusa-nikki'
-primary_region = 'nrt'
+app = 'chiikusa-diary'
+primary_region = 'sin'
 console_command = '/rails/bin/rails console'
 
 [build]
@@ -21,4 +21,4 @@ console_command = '/rails/bin/rails console'
   memory = '1gb'
   cpu_kind = 'shared'
   cpus = 1
-  memory_mb = 256
+  memory_mb = 512
