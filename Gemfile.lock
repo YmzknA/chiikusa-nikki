@@ -164,6 +164,8 @@ GEM
       net-smtp
     marcel (1.0.4)
     matrix (0.4.3)
+    meta-tags (2.22.1)
+      actionpack (>= 6.0.0, < 8.1)
     mini_mime (1.1.5)
     minitest (5.25.5)
     msgpack (1.8.0)
@@ -422,6 +424,7 @@ DEPENDENCIES
   faraday-retry
   jbuilder
   jsbundling-rails
+  meta-tags
   octokit (~> 10.0)
   omniauth (~> 2.1)
   omniauth-github
