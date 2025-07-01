@@ -14,7 +14,7 @@
         <span class="font-medium text-sm md:text-base text-base-content">
           <%= @diary.user.username %>
         </span>
-        <% if diary_owner? %>
+        <% if resource_owner?(@diary) %>
           <span class="badge badge-primary badge-sm">
             あなた
           </span>

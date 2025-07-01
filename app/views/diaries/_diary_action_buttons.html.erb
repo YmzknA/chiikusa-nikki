@@ -20,7 +20,7 @@
     </div>
 
     <div>
-      <% if diary_owner? %>
+      <% if resource_owner?(@diary) %>
         <%# Xシェア機能 - 公開日記かつ、所有者のみ表示 %>
         <% if @diary&.is_public? %>
           <%= render 'diaries/x_share_section' %>
@@ -33,7 +33,7 @@
   </div>
 
   <%# 編集・削除ボタン - 所有者のみ表示 %>
-  <% if diary_owner? %>
+  <% if resource_owner?(@diary) %>
     <%= render 'diaries/edit_delete_section' %>
   <% end %>
 </div>

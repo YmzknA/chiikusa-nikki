@@ -93,11 +93,8 @@ class DiariesController < ApplicationController
 
   private
 
-  # 日記の所有者かどうかを判定
-  def diary_owner?
-    user_signed_in? && @diary&.user_id == current_user.id
-  end
-  helper_method :diary_owner?
+  # AuthorizationHelperのresource_owner?をヘルパーメソッドとして使用
+  helper_method :resource_owner?
 
   # 日記にアクセス可能かどうかを判定
   def diary_accessible?
