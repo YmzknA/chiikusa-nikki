@@ -194,7 +194,7 @@ RSpec.describe "Diaries", type: :request do
           regenerate_ai: "1"
         }
 
-        expect(response).to redirect_to(diary_path(diary))
+        expect(response).to redirect_to(select_til_diary_path(diary))
       end
     end
 
