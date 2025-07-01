@@ -44,3 +44,12 @@ application.register("loading", LoadingController)
 
 import AiLoadingController from "./ai_loading_controller"
 application.register("ai-loading", AiLoadingController)
+
+import ModalController from "./modal_controller"
+application.register("modal", ModalController)
+
+import GithubUploadController from "./github_upload_controller"
+application.register("github-upload", GithubUploadController)
+
+import ThemeController from "./theme_controller"
+application.register("theme", ThemeController)

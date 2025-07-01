@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html data-theme="lemonade" style="color-scheme: light;">
   <head>
+    <meta name="color-scheme" content="light">
     <%= display_meta_tags(default_meta_tags) %>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="mobile-web-app-capable" content="yes">
@@ -32,7 +33,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
   </head>
 
-  <body data-theme="lemonade" class="m-plus-1p-regular">
+  <body class="m-plus-1p-regular" data-controller="theme">
     <%= render 'shared/loading' %>
     <%= render 'shared/ai_loading' %>
     <%= render 'shared/flash' %>

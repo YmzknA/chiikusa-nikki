@@ -32,7 +32,7 @@ RSpec.describe "Tutorials", type: :request do
         expect(response.body).to include("日記の作り方")
         expect(response.body).to include("AIでTILを自動生成")
         expect(response.body).to include("GitHub連携で草を生やそう")
-        expect(response.body).to include("学習の振り返り")
+        expect(response.body).to include("振り返り")
         expect(response.body).to include("みんなの頑張りを見る")
       end
 

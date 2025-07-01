@@ -1,12 +1,4 @@
-<%# mood_level: 1(😞) - 5(😁) %>
-<% mood_color = case mood_level
-                when 1 then "#d5392d" # Red for very sad
-                when 2 then "#d9c300" # Yellow for neutral
-                when 3 then "#bdba8c" # Lighter green for okay
-                when 4 then "#9dcf4b" # Green for happy
-                when 5 then "#12d040" # Bright green for very happy
-                else "#bdba8c" # Default color
-               end %>
+<%# Learning intensity-based color using heatmap logic %>
+<% weed_color = weed_color(diary) %>
 
-
-               <%= render "shared/leaf", color: mood_color %>
+<%= render "shared/leaf", color: weed_color %>

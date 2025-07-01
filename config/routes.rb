@@ -45,4 +45,7 @@ Rails.application.routes.draw do
   # 静的ページ
   get "/privacy_policy", to: "home#privacy_policy", constraints: { format: :html }
   get "/terms_of_service", to: "home#terms_of_service", constraints: { format: :html }
+
+  # CSP違反レポートエンドポイント
+  post "/csp-violation-report", to: "csp_reports#create"
 end
