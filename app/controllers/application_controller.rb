@@ -109,4 +109,17 @@ class ApplicationController < ActionController::Base
     Rails.logger.warn "User #{current_user.id} attempted to link Google but already connected"
     false
   end
+
+  # 個人開発向け基本認可制御（シンプル化）
+  def ensure_resource_owner(resource)
+    case resource
+    when User
+      return true if current_user.id == resource.id
+    else
+      return true if resource.respond_to?(:user_id) && current_user.id == resource.user_id
+    end
+    
+    redirect_to root_path, alert: "アクセス権限がありません。"
+    false
+  end
 end
