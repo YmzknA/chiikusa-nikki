@@ -28,7 +28,7 @@ class User < ApplicationRecord
   # パスワード検証（OAuth認証のみの場合は不要な場合もある）
   validates :password, length: { minimum: MIN_PASSWORD_LENGTH }, allow_blank: true
 
-  # Encrypt access tokens for security
+  # 個人開発向け基本暗号化
   encrypts :encrypted_access_token, deterministic: false
   encrypts :encrypted_google_access_token, deterministic: false
 
@@ -190,7 +190,7 @@ class User < ApplicationRecord
     github_repo_name.present?
   end
 
-  # Accessor method for encrypted access token
+  # シンプルなアクセストークン取得
   def access_token
     return nil if encrypted_access_token.blank?
 
@@ -198,7 +198,6 @@ class User < ApplicationRecord
       encrypted_access_token
     rescue ActiveRecord::Encryption::Errors::Decryption => e
       Rails.logger.warn "Failed to decrypt access token for user #{id}: #{e.message}"
-      # Clear invalid encrypted token
       update_column(:encrypted_access_token, nil)
       nil
     end
@@ -238,7 +237,7 @@ class User < ApplicationRecord
     save!
   end
 
-  # Google認証用のアクセストークン取得
+  # Google認証用アクセストークン取得
   def google_access_token
     return nil if encrypted_google_access_token.blank?
 
@@ -361,5 +360,6 @@ class User < ApplicationRecord
     (google_id.present? && !providers_array.include?("google_oauth2")) ||
       (google_id.blank? && providers_array.include?("google_oauth2"))
   end
+
 end
 # rubocop:enable Metrics/ClassLength
