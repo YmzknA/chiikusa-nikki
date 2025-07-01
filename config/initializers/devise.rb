@@ -278,8 +278,22 @@ Devise.setup do |config|
   # ==> OmniAuth
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
-    config.omniauth :github, Rails.application.credentials.dig(:github, :client_id), Rails.application.credentials.dig(:github, :client_secret), scope: 'user:email,public_repo,repo', prompt: 'consent', authorize_params: { prompt: 'consent' }
-    config.omniauth :google_oauth2, Rails.application.credentials.dig(:google, :client_id), Rails.application.credentials.dig(:google, :client_secret), scope: 'userinfo.email,userinfo.profile'
+  
+  # Configure OmniAuth with CSRF protection
+  config.omniauth :github, 
+    Rails.application.credentials.dig(:github, :client_id), 
+    Rails.application.credentials.dig(:github, :client_secret), 
+    scope: 'user:email,public_repo,repo', 
+    prompt: 'consent', 
+    authorize_params: { prompt: 'consent' },
+    provider_ignores_state: false
+
+  config.omniauth :google_oauth2, 
+    Rails.application.credentials.dig(:google, :client_id), 
+    Rails.application.credentials.dig(:google, :client_secret), 
+    scope: 'userinfo.email,userinfo.profile',
+    provider_ignores_state: false,
+    pkce: true
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class StatsController < ApplicationController
+  before_action :authenticate_user!
   before_action :setup_chart_builder
 
   def index

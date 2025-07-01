@@ -1,0 +1,6 @@
+<%# TIL選択ボタン（所有者のみ） %>
+<% if resource_owner?(@diary) && @diary&.til_candidates&.any? %>
+  <div class="flex justify-end mt-3 md:mt-4">
+    <%= loading_link_to "TILを選択する", edit_diary_path(@diary), class: "neuro-button py-2 md:py-3 px-4 md:px-6 font-medium text-sm md:text-base" %>
+  </div>
+<% end %>

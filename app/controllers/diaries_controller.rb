@@ -1,4 +1,9 @@
 class DiariesController < ApplicationController
+  include DiaryFiltering
+  include SeedManagement
+  include GithubIntegration
+  include DiaryErrorHandling
+
   before_action :authenticate_user!, except: [:show, :public_index]
   before_action :set_diary_for_show, only: [:show]
   before_action :set_diary, only: [:edit, :update, :destroy, :upload_to_github]
@@ -14,6 +19,15 @@ class DiariesController < ApplicationController
 
   def show
     check_github_repository_status if user_signed_in?
+
+    # 他ユーザーの非公開日記へのアクセスを禁止
+    unless diary_accessible?
+      redirect_to user_signed_in? ? diaries_path : root_path, alert: "この日記にはアクセスできません。"
+      return
+    end
+
+    @share_content = "🌱#{@diary.date.strftime('%Y年%m月%d日')}のちいくさ日記🌱%0A%0A" \
+                     "%23ちいくさ日記%0A%23毎日1分簡単日記%0A&url=#{diary_url(@diary)}"
   end
 
   def public_index
@@ -64,43 +78,6 @@ class DiariesController < ApplicationController
     end
   end
 
-  def upload_to_github
-    unless @diary.can_upload_to_github?
-      redirect_to diary_path(@diary), alert: "GitHubにアップロードできません。リポジトリ設定とTIL選択を確認してください。"
-      return
-    end
-
-    result = current_user.github_service.push_til(@diary)
-    redirect_path = result[:requires_reauth] ? "/users/auth/github" : diary_path(@diary)
-    flash_type = result[:success] ? :notice : :alert
-
-    redirect_to redirect_path, flash_type => result[:message]
-  end
-
-  def increment_seed
-    seed_service = SeedService.new(current_user).increment_daily_seed
-
-    respond_to do |format|
-      format.turbo_stream do
-        render_seed_turbo_stream(seed_service)
-      end
-      format.html { redirect_to diaries_path, notice: seed_service.html_message_for_increment }
-    end
-  end
-
-  def share_on_x
-    @diary = current_user.diaries.find(params[:diary_id]) if params[:diary_id]
-    seed_service = SeedService.new(current_user).increment_share_seed
-
-    respond_to do |format|
-      format.turbo_stream do
-        render_seed_turbo_stream(seed_service)
-      end
-      format.html { redirect_to diary_path(@diary), flash_type_for_seed(seed_service) => seed_service.message }
-      format.json { render json: json_response_for_seed(seed_service) }
-    end
-  end
-
   def search_by_date
     date = Date.parse(params[:date])
     diary = current_user.diaries.find_by(date: date)
@@ -116,32 +93,18 @@ class DiariesController < ApplicationController
 
   private
 
-  def render_seed_turbo_stream(seed_service)
-    if seed_service.success
-      render turbo_stream: [
-        turbo_stream.update("flash-messages", partial: "shared/flash", locals: {
-                              flash: { notice: seed_service.message }
-                            }),
-        turbo_stream.update("seed-count", current_user.seed_count),
-        turbo_stream.update("watering-button", partial: "shared/watering")
-      ]
-    else
-      render turbo_stream: turbo_stream.update("flash-messages", partial: "shared/flash", locals: {
-                                                 flash: { alert: seed_service.message }
-                                               })
-    end
-  end
+  # AuthorizationHelperのresource_owner?をヘルパーメソッドとして使用
+  helper_method :resource_owner?
 
-  def flash_type_for_seed(seed_service)
-    seed_service.success ? :notice : :alert
-  end
+  # 日記にアクセス可能かどうかを判定
+  def diary_accessible?
+    return false unless @diary.present?
 
-  def json_response_for_seed(seed_service)
-    if seed_service.success
-      { success: true, seed_count: current_user.seed_count }
-    else
-      { success: false, message: seed_service.message }
-    end
+    # 公開日記は誰でもアクセス可能
+    return true if @diary.is_public?
+
+    # 非公開日記は所有者のみアクセス可能
+    resource_owner?(@diary)
   end
 
   def set_diary
@@ -152,7 +115,8 @@ class DiariesController < ApplicationController
 
   def set_diary_for_show
     @diary = if user_signed_in?
-               current_user.diaries.find_by(id: params[:id]) || public_diary_scope.find(params[:id])
+               current_user.diaries.includes(:user, :diary_answers, :til_candidates)
+                           .find_by(id: params[:id]) || public_diary_scope.find(params[:id])
              else
                public_diary_scope.find(params[:id])
              end
@@ -179,45 +143,5 @@ class DiariesController < ApplicationController
   def diary_answer_params
     question_identifiers = Question.pluck(:identifier).map(&:to_sym)
     params[:diary_answers].present? ? params.permit(diary_answers: question_identifiers)[:diary_answers] || {} : {}
-  end
-
-  def handle_creation_error
-    handle_error_data(diary_service.handle_creation_error(Question.all, params, current_user), :new)
-  end
-
-  def handle_update_error
-    handle_error_data(diary_service.handle_update_error(Question.all), :edit)
-  end
-
-  def handle_error_data(error_data, view)
-    @questions, @selected_answers = error_data.values_at(:questions, :selected_answers)
-    @date = error_data[:date] if view == :new
-    @existing_diary_for_error = error_data[:existing_diary_for_error] if view == :new
-    flash.now[:alert] = error_data[:flash_message] if error_data[:flash_message]
-    render view
-  end
-
-  def check_github_repository_status
-    return unless current_user.github_repo_configured? && !current_user.verify_github_repository?
-
-    Rails.logger.info "Repository #{current_user.github_repo_name} not found for user #{current_user.id}"
-    flash.now[:alert] = "設定されたGitHubリポジトリが見つかりません。GitHub設定を確認してください。"
-  end
-
-  def filter_diaries_by_month(diaries, selected_month)
-    return diaries if selected_month == "all"
-
-    year, month = selected_month.split("-").map(&:to_i)
-    diaries.where(date: Date.new(year, month, 1).beginning_of_month..Date.new(year, month, 1).end_of_month)
-  end
-
-  def available_months
-    months = current_user.diaries.pluck(:date).map { |date| date.strftime("%Y-%m") }.uniq.sort.reverse
-    [%w[全て表示 all]] + months.map { |month| [format_month_label(month), month] }
-  end
-
-  def format_month_label(month_string)
-    year, month = month_string.split("-")
-    "#{year}年#{month.to_i}月"
   end
 end

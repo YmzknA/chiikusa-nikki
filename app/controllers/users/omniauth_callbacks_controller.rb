@@ -1,4 +1,6 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
+  include OauthValidation
+
   skip_before_action :authenticate_user!
 
   def github
@@ -17,9 +19,10 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def handle_oauth(provider_name)
     auth = request.env["omniauth.auth"]
 
-    Rails.logger.debug "OmniAuth callback - Provider: #{provider_name}"
-    Rails.logger.debug "Auth present: #{auth.present?}"
-    Rails.logger.debug "Auth data: #{auth&.to_hash}"
+    Rails.logger.info "OmniAuth callback - Provider: #{provider_name}"
+    Rails.logger.info "Auth present: #{auth.present?}"
+    # セキュリティ: 機密情報（トークン等）を含むauth.to_hashのログ出力を削除
+    log_safe_auth_data(auth) if auth.present?
 
     return handle_invalid_auth(auth) unless valid_oauth_request?(auth)
 
@@ -100,5 +103,45 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     else
       "unknown"
     end
+  end
+
+  # 安全なOAuthデータのログ出力（機密情報を除外）
+  def log_safe_auth_data(auth)
+    safe_data = build_safe_auth_data(auth)
+    Rails.logger.info "Safe auth data structure: #{safe_data}"
+  rescue StandardError => e
+    Rails.logger.warn "Failed to log safe auth data: #{e.message}"
+  end
+
+  def build_safe_auth_data(auth)
+    {
+      provider: auth.provider,
+      uid: presence_status(auth.uid),
+      info: build_safe_info_data(auth.info),
+      credentials: build_safe_credentials_data(auth.credentials)
+    }
+  end
+
+  def build_safe_info_data(info)
+    return {} unless info
+
+    {
+      email: presence_status(info.email),
+      name: presence_status(info.name),
+      nickname: presence_status(info.nickname)
+    }
+  end
+
+  def build_safe_credentials_data(credentials)
+    return {} unless credentials
+
+    {
+      token: presence_status(credentials.token),
+      expires_at: credentials.expires_at
+    }
+  end
+
+  def presence_status(value)
+    value&.present? ? "[PRESENT]" : "[MISSING]"
   end
 end

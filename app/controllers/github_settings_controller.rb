@@ -1,4 +1,6 @@
 class GithubSettingsController < ApplicationController
+  include AuthorizationHelper
+
   before_action :authenticate_user!
 
   def show

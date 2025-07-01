@@ -1,0 +1,25 @@
+<%# 日記の所有者情報表示 %>
+<% if @diary&.user.present? %>
+  <div class="border-b border-base-content/10 pb-3 mb-4 md:mb-6">
+    <div class="flex items-center gap-3">
+      <%# ユーザーアバター %>
+      <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/10 flex items-center justify-center">
+        <span class="text-sm md:text-lg font-bold text-primary">
+          <%= @diary.user.username.first.upcase %>
+        </span>
+      </div>
+      
+      <%# ユーザー情報 %>
+      <div class="flex items-center gap-2">
+        <span class="font-medium text-sm md:text-base text-base-content">
+          <%= @diary.user.username %>
+        </span>
+        <% if resource_owner?(@diary) %>
+          <span class="badge badge-primary badge-sm">
+            あなた
+          </span>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

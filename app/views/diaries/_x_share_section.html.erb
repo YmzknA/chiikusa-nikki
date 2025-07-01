@@ -1,0 +1,31 @@
+<%# Xシェア機能（公開日記のみ） %>
+<div class="gap-2 md:gap-4 mb-4 flex-col md:flex-row items-end justify-end md:items-center">
+  <div class="flex items-center justify-end gap-2 md:gap-3" 
+    data-controller="x-share"
+    data-x-share-diary-id-value="<%= @diary.id %>"
+    data-x-share-share-url-value="<%= share_on_x_diaries_path %>">
+    
+    <%# 種獲得説明（ログインユーザーのみ） %>
+    <% if user_signed_in? %>
+      <div class="text-xs md:text-sm text-base-content/70">
+        <div class="font-medium">Xシェアでタネを獲得</div>
+        <% unless current_user&.can_increment_seed_count_by_share? %>
+          <div class="text-xs text-gray-500">
+            本日獲得済み
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%# Xシェアボタン %>
+    <%= link_to "https://twitter.com/intent/tweet?text=#{@share_content}", 
+    target: "_blank", 
+    class: "neuro-button p-2 md:p-3 font-medium flex items-center justify-center rounded-full hover:scale-105 transition-transform",
+    data: user_signed_in? ? { action: "click->x-share#share" } : {},
+    title: "Xでシェア" do %>
+    <svg class="h-4 w-4 md:h-5 md:w-5" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+    </svg>
+  <% end %>
+  </div>
+</div>
