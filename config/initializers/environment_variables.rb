@@ -5,7 +5,7 @@
 unless ENV["SECRET_KEY_BASE_DUMMY"] == "1" || defined?(Rails::Command::AssetsCommand)
   if Rails.env.production?
     # 本番環境では DATABASE_URL をチェック
-    if Rails.application.credentials.dig(:DATABASE_URL).blank?
+    if Rails.application.credentials[:DATABASE_URL].blank?
       Rails.logger.error "Missing required credential: DATABASE_URL"
       raise "Missing required credential: DATABASE_URL"
     end
