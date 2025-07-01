@@ -1,4 +1,6 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
+  include OauthValidation
+
   skip_before_action :authenticate_user!
 
   def github
@@ -143,22 +145,4 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     value&.present? ? "[PRESENT]" : "[MISSING]"
   end
 
-  # OAuth認証の有効性を検証
-  def valid_oauth_request?(auth)
-    return false unless auth&.provider && auth.uid
-    return false unless auth&.info&.email.present?
-
-    # プロバイダーが許可されているかチェック
-    allowed_providers = %w[github google_oauth2]
-    allowed_providers.include?(auth.provider)
-  end
-
-  # OAuth認証試行のログ記録
-  def log_oauth_attempt(provider, email, success)
-    status = success ? "SUCCESS" : "FAILURE"
-    masked_email = email ? email.gsub(/(.{2}).*@/, '\1***@') : "[NO EMAIL]"
-    Rails.logger.info "OAuth #{status}: Provider=#{provider}, Email=#{masked_email}"
-  rescue StandardError => e
-    Rails.logger.warn "Failed to log OAuth attempt: #{e.message}"
-  end
 end
