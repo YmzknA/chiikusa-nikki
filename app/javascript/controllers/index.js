@@ -50,3 +50,6 @@ application.register("modal", ModalController)
 
 import GithubUploadController from "./github_upload_controller"
 application.register("github-upload", GithubUploadController)
+
+import ThemeController from "./theme_controller"
+application.register("theme", ThemeController)

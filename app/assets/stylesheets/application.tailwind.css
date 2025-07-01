@@ -1,5 +1,17 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+/* Force light mode globally */
+html[data-theme="lemonade"] {
+  color-scheme: light !important;
+}
+
+/* Prevent dark mode media queries from overriding */
+@media (prefers-color-scheme: dark) {
+  html[data-theme="lemonade"] {
+    color-scheme: light !important;
+  }
+}
 @import "./water_effect.css";
 
 /* Ensure proper background for lemonade theme */
