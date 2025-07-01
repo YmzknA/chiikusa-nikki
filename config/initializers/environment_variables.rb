@@ -4,13 +4,10 @@
 # アセットプリコンパイル時はデータベース不要のためスキップ
 unless ENV["SECRET_KEY_BASE_DUMMY"] == "1" || defined?(Rails::Command::AssetsCommand)
   if Rails.env.production?
-    # 本番環境では必須の環境変数をチェック
-    required_vars = %w[DATABASE_HOST DATABASE_USERNAME DATABASE_PASSWORD]
-    missing_vars = required_vars.select { |var| ENV[var].blank? }
-
-    if missing_vars.any?
-      Rails.logger.error "Missing required environment variables: #{missing_vars.join(', ')}"
-      raise "Missing required environment variables: #{missing_vars.join(', ')}"
+    # 本番環境では DATABASE_URL をチェック
+    if Rails.application.credentials.dig(:DATABASE_URL).blank?
+      Rails.logger.error "Missing required credential: DATABASE_URL"
+      raise "Missing required credential: DATABASE_URL"
     end
   elsif Rails.env.development?
     # 開発環境では警告のみ
