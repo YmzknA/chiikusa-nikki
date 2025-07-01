@@ -10,26 +10,10 @@
       <%= form_with url: update_til_selection_diary_path(@diary), method: :patch, local: true do |form| %>
         <div class="space-y-4">
           <% @diary.til_candidates.order(:index).each_with_index do |candidate, index| %>
-            <div class="neuro-card p-4 hover:bg-primary/5 transition-colors">
-              <label class="flex items-start cursor-pointer">
-                <%= radio_button_tag :selected_til_index, index, false, class: "mt-1 mr-3 radio radio-primary" %>
-                <div class="flex-1">
-                  <span class="font-semibold text-primary">候補 <%= index + 1 %></span>
-                  <p class="mt-2 text-base-content whitespace-pre-wrap"><%= candidate.content %></p>
-                </div>
-              </label>
-            </div>
+            <%= render "til_candidate_option", candidate: candidate, index: index %>
           <% end %>
 
-          <div class="neuro-card p-4 hover:bg-secondary/5 transition-colors">
-            <label class="flex items-start cursor-pointer">
-              <%= radio_button_tag :selected_til_index, -1, false, class: "mt-1 mr-3 radio radio-secondary" %>
-              <div class="flex-1">
-                <span class="font-semibold text-secondary">元のメモをそのまま使用</span>
-                <p class="mt-2 text-base-content whitespace-pre-wrap"><%= @diary.notes %></p>
-              </div>
-            </label>
-          </div>
+          <%= render "original_notes_option", diary: @diary %>
         </div>
 
         <div class="mt-6 flex justify-center">
