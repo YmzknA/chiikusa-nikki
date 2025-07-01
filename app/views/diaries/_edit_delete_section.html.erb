@@ -1,0 +1,18 @@
+<%# 編集・削除機能（所有者のみ） %>
+<div class="border-t border-base-content/10 pt-4 md:pt-6 mt-4 md:mt-6">
+  <%= loading_link_to edit_diary_path(@diary), class: "neuro-button-secondary w-full sm:w-auto py-2 md:py-3 px-4 md:px-6 mx-auto font-medium flex items-center justify-center gap-2 text-sm md:text-base" do %>
+    <span class="material-symbols-outlined text-lg md:text-xl">
+      edit_square
+    </span>
+    日記を編集する
+  <% end %>
+
+  <div class="divider my-4 md:my-6"></div>
+
+  <%= loading_button_to diary_path(@diary), method: :delete, data: { turbo_confirm: "本当にこの日記を削除しますか？" }, class: "neuro-error mt-6 md:mt-10 py-2 md:py-3 px-4 md:px-6 mx-auto font-medium w-full sm:w-auto flex items-center justify-center gap-2 hover:cursor-pointer text-sm md:text-base" do %>
+    <span class="material-symbols-outlined text-lg md:text-xl">
+      delete
+    </span>
+    日記を削除する
+  <% end %>
+</div>
