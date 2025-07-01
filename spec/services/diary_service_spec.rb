@@ -194,12 +194,31 @@ RSpec.describe DiaryService, type: :service do
         allow(Rails.logger).to receive(:info)
       end
 
-      it "handles error gracefully" do
+      it "handles error gracefully and does not decrement seed count" do
+        initial_seed_count = user.seed_count
         result = service.handle_til_generation_and_redirect(skip_ai_generation: false)
 
         expect(result[:redirect_to]).to eq(diary)
         expect(result[:notice]).to include("TIL生成でエラーが発生")
         expect(Rails.logger).to have_received(:info).with(/Error generating TIL candidates/)
+        expect(user.reload.seed_count).to eq(initial_seed_count) # seed count should not change
+      end
+    end
+
+    context "when TIL candidate creation fails" do
+      before do
+        diary.update!(notes: "Test notes")
+        allow(diary.til_candidates).to receive(:create!).and_raise(ActiveRecord::RecordInvalid)
+      end
+
+      it "rolls back transaction and does not decrement seed count" do
+        initial_seed_count = user.seed_count
+        result = service.handle_til_generation_and_redirect(skip_ai_generation: false)
+
+        expect(result[:redirect_to]).to eq(diary)
+        expect(result[:notice]).to include("TIL生成でエラーが発生")
+        expect(user.reload.seed_count).to eq(initial_seed_count) # seed count should not change
+        expect(diary.til_candidates.count).to eq(0) # no candidates should be created
       end
     end
   end
@@ -265,12 +284,35 @@ RSpec.describe DiaryService, type: :service do
         allow(Rails.logger).to receive(:error)
       end
 
-      it "handles error gracefully" do
+      it "handles error gracefully and does not decrement seed count" do
+        initial_seed_count = user.seed_count
+
         expect do
           service.regenerate_til_candidates_if_needed
         end.not_to raise_error
 
         expect(Rails.logger).to have_received(:error).with(/Error regenerating TIL candidates/)
+        expect(user.reload.seed_count).to eq(initial_seed_count) # seed count should not change
+      end
+    end
+
+    context "when TIL candidate creation fails during regeneration" do
+      before do
+        # Create existing candidates to ensure they get deleted
+        3.times { |i| diary.til_candidates.create!(content: "Old TIL #{i}", index: i) }
+        allow(diary.til_candidates).to receive(:create!).and_raise(ActiveRecord::RecordInvalid)
+      end
+
+      it "rolls back transaction and does not decrement seed count" do
+        initial_seed_count = user.seed_count
+
+        expect do
+          service.regenerate_til_candidates_if_needed
+        end.not_to raise_error
+
+        expect(user.reload.seed_count).to eq(initial_seed_count) # seed count should not change
+        # Check if old candidates are restored (transaction rollback)
+        expect(diary.til_candidates.reload.count).to eq(3)
       end
     end
   end

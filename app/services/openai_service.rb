@@ -34,7 +34,7 @@ class OpenaiService
         { role: "user", content: "以下の今日のメモに基づいて文章を生成してください:\n#{notes}" }
       ],
       temperature: 1,
-      max_tokens: 300
+      max_tokens: 200
     }
   end
 

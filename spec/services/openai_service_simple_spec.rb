@@ -41,7 +41,7 @@ RSpec.describe OpenaiService, type: :service do
         expect(mock_client).to have_received(:chat).exactly(3).times.with(
           parameters: hash_including(
             model: "gpt-4.1-nano-2025-04-14",
-            max_tokens: 300,
+            max_tokens: 200,
             temperature: 1
           )
         )
