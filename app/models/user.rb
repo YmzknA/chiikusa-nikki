@@ -360,6 +360,5 @@ class User < ApplicationRecord
     (google_id.present? && !providers_array.include?("google_oauth2")) ||
       (google_id.blank? && providers_array.include?("google_oauth2"))
   end
-
 end
 # rubocop:enable Metrics/ClassLength

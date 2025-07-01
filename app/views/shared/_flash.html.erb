@@ -1,34 +1,49 @@
-<% if flash.any? %>
-  <div id="flash-container" class="fixed top-4 right-4 z-50 space-y-2">
-    <% flash.each do |type, message| %>
-      <div class="alert <%= type == 'notice' ? 'alert-success' : 'alert-error' %> shadow-lg max-w-md">
-        <div class="flex items-center">
-          <% if type == 'notice' %>
-            <svg class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          <% else %>
-            <svg class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          <% end %>
-          <span class="ml-2"><%= message %></span>
-        </div>
-      </div>
-    <% end %>
+<div id="flash" class="animate-flash-fade fixed m-5 top-0 right-0 z-100">
+<% if flash[:notice] %>
+  <div role="alert" class="alert alert-success glasscard-success">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <%= flash[:notice] %>
+
+    <!-- フラッシュメッセージ閉じるボタン -->
+    <button class="btn btn-sm btn-circle btn-ghost" onclick="this.parentElement.remove()">
+      <span class="material-symbols-outlined">
+        close
+      </span>
+    </button>
   </div>
-  
-  <script>
-    // 3秒後にフラッシュメッセージを自動的に隠す
-    setTimeout(function() {
-      const flashContainer = document.getElementById('flash-container');
-      if (flashContainer) {
-        flashContainer.style.opacity = '0';
-        flashContainer.style.transition = 'opacity 0.5s ease-out';
-        setTimeout(function() {
-          flashContainer.remove();
-        }, 500);
-      }
-    }, 3000);
-  </script>
 <% end %>
+
+<% if flash[:alert] %>
+  <div role="alert" class="alert alert-warning glasscard-warning">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+    </svg>
+    <%= flash[:alert] %>
+
+    <!-- フラッシュメッセージ閉じるボタン -->
+    <button class="btn btn-sm btn-circle btn-ghost" onclick="this.parentElement.remove()">
+      <span class="material-symbols-outlined">
+        close
+      </span>
+    </button>
+  </div>
+<% end %>
+
+<% if flash[:error] %>
+  <div role="alert" class="alert alert-error glasscard-error">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <%= flash[:error] %>
+
+    <!-- フラッシュメッセージ閉じるボタン -->
+    <button class="btn btn-sm btn-circle btn-ghost" onclick="this.parentElement.remove()">
+      <span class="material-symbols-outlined">
+        close
+      </span>
+    </button>
+  </div>
+<% end %>
+</div>
