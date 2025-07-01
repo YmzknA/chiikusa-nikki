@@ -1,3 +1,19 @@
+<% content_for :title, "#{@diary.user.username}の日記" %>
+<% content_for :description, "#{@diary.date&.strftime('%Y年%m月%d日')}のちいくさ日記です。" %>
+<% set_meta_tags(
+  title: "#{@diary.user.username}の日記",
+  description: "#{@diary.date&.strftime('%Y年%m月%d日')}のちいくさ日記です。",
+  og: {
+    title: "#{@diary.user.username}の日記",
+    description: "#{@diary.date&.strftime('%Y年%m月%d日')}のちいくさ日記です。",
+    url: request.original_url
+  },
+  twitter: {
+    title: "#{@diary.user.username}の日記",
+    description: "#{@diary.date&.strftime('%Y年%m月%d日')}のちいくさ日記です。"
+  }
+) %>
+
 <div class="min-h-screen p-4">
   <!-- Flash Messages Area -->
   <div id="flash-messages">

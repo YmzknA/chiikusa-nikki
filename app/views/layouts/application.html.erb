@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "ちいくさ日記" %></title>
+    <%= display_meta_tags(default_meta_tags) %>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -15,15 +15,7 @@
     <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
 
-    <!-- OGP -->
-    <meta property="og:title" content="<%= content_for(:title) || "ちいくさ日記" %>">
-    <meta property="og:description" content="プログラミング学習初級者向けの日記アプリケーション。AIによるTIL生成機能とGitHub連携を持つ雑草キャラクターが特徴の学習記録ツール。">
-    <meta property="og:image" content="<%= image_url('ogp.png') %>">
-    <meta property="og:url" content="<%= request.original_url %>">
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="ちいくさ日記">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="<%= image_url('ogp.png') %>">
+    <!-- Meta tags and OGP are handled by meta-tags gem above -->
 
     <%= yield :head %>
 
