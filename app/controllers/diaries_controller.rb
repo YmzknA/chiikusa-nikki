@@ -6,7 +6,7 @@ class DiariesController < ApplicationController
 
   before_action :authenticate_user!, except: [:show, :public_index]
   before_action :set_diary_for_show, only: [:show]
-  before_action :set_diary, only: [:edit, :update, :destroy, :upload_to_github]
+  before_action :set_diary, only: [:edit, :update, :destroy, :upload_to_github, :select_til, :update_til_selection]
 
   def index
     @selected_month = params[:month].present? ? params[:month] : "all"
@@ -63,8 +63,13 @@ class DiariesController < ApplicationController
   def update
     if @diary.update(diary_update_params)
       diary_service.update_diary_answers(diary_answer_params)
-      diary_service.regenerate_til_candidates_if_needed if params[:regenerate_ai] == "1"
-      redirect_to diary_path(@diary), notice: "日記を更新しました"
+      if params[:regenerate_ai] == "1"
+        result = diary_service.regenerate_til_candidates_if_needed
+        redirect_to result ? select_til_diary_path(@diary) : diary_path(@diary),
+                    notice: result ? "TILを再生成しました。新しいTILを選択してください。" : "日記を更新しました"
+      else
+        redirect_to diary_path(@diary), notice: "日記を更新しました"
+      end
     else
       handle_update_error
     end
@@ -89,6 +94,38 @@ class DiariesController < ApplicationController
     end
   rescue Date::Error
     render json: { error: "Invalid date format" }, status: 400
+  end
+
+  def select_til
+    @questions = Question.all
+    return if @diary.til_candidates.any?
+
+    redirect_to diary_path(@diary), alert: "TIL候補が存在しません。"
+  end
+
+  def update_til_selection
+    if params[:selected_til_index].present?
+      selected_index = params[:selected_til_index].to_i
+
+      if selected_index == -1
+        # Use original notes
+        @diary.selected_til_index = nil
+        @diary.til_text = nil
+      else
+        # Use selected TIL candidate
+        @diary.selected_til_index = selected_index
+        candidate = @diary.til_candidates.find_by(index: selected_index)
+        @diary.til_text = candidate&.content
+      end
+
+      if @diary.save
+        redirect_to diary_path(@diary), notice: "TILを選択しました。"
+      else
+        redirect_to select_til_diary_path(@diary), alert: "TILの選択に失敗しました。"
+      end
+    else
+      redirect_to select_til_diary_path(@diary), alert: "TILを選択してください。"
+    end
   end
 
   private

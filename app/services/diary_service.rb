@@ -45,18 +45,18 @@ class DiaryService
       @user.decrement!(:seed_count)
     end
 
-    { redirect_to: [:edit, @diary], notice: "日記を作成しました。続いて生成されたTIL を選択してください。" }
+    { redirect_to: [:select_til, @diary], notice: "日記を作成しました。続いて生成されたTIL を選択してください。" }
   rescue StandardError => e
     Rails.logger.info("Error generating TIL candidates: #{e.message}")
     { redirect_to: @diary, notice: "日記を作成しました（TIL生成でエラーが発生しました）" }
   end
 
   def regenerate_til_candidates_if_needed
-    return if @diary.notes.blank?
+    return false if @diary.notes.blank?
 
     if @user.seed_count <= 0
       Rails.logger.info("Seed count is zero, skipping TIL regeneration.")
-      return
+      return false
     end
 
     ActiveRecord::Base.transaction do
@@ -71,8 +71,11 @@ class DiaryService
 
       @user.decrement!(:seed_count)
     end
+
+    true
   rescue StandardError => e
     Rails.logger.error("Error regenerating TIL candidates: #{e.message}")
+    false
   end
 
   def handle_creation_error(questions, params, current_user)
