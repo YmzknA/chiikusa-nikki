@@ -31,15 +31,17 @@ module OauthValidation
     status = success ? "SUCCESS" : "FAILURE"
     masked_email = mask_email(email)
     user_info = user_signed_in? ? "user_id=#{current_user.id}" : "anonymous"
-    
-    Rails.logger.info "OAuth #{status}: Provider=#{provider}, Email=#{masked_email}, #{user_info}, IP=#{request.remote_ip}"
+
+    Rails.logger.info(
+      "OAuth #{status}: Provider=#{provider}, Email=#{masked_email}, #{user_info}, IP=#{request.remote_ip}"
+    )
   rescue StandardError => e
     Rails.logger.warn "Failed to log OAuth attempt: #{e.message}"
   end
 
   def mask_email(email)
     return "[NO EMAIL]" unless email.present?
-    
+
     email.gsub(/(.{2}).*@/, '\1***@')
   end
 end
