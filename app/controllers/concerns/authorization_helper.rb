@@ -5,12 +5,6 @@ module AuthorizationHelper
 
   private
 
-  # ユーザー認証が必要なアクションの前に実行
-  def ensure_authenticated_user!
-    return if user_signed_in?
-
-    redirect_to root_path, alert: "ログインが必要です。"
-  end
 
   # 現在のユーザーがリソースの所有者かどうかを確認
   def ensure_resource_owner!(resource, redirect_path = root_path, message = "このリソースにアクセスする権限がありません。")
@@ -44,13 +38,4 @@ module AuthorizationHelper
     redirect_to redirect_path, alert: "GitHubリポジトリの設定が必要です。"
   end
 
-  # プロフィールへのアクセス権限を確認
-  def ensure_profile_access!
-    ensure_authenticated_user!
-  end
-
-  # GitHub設定へのアクセス権限を確認
-  def ensure_github_settings_access!
-    ensure_authenticated_user!
-  end
 end

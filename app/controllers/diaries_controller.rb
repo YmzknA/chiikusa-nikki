@@ -104,7 +104,7 @@ class DiariesController < ApplicationController
     return true if @diary.is_public?
 
     # 非公開日記は所有者のみアクセス可能
-    diary_owner?
+    resource_owner?(@diary)
   end
 
   def set_diary
