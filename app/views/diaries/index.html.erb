@@ -65,10 +65,9 @@
 
         <% if diaries.any? %>
           <% diary = diaries.first %>
-          <% mood_level = diary.diary_answers.find_by(question: Question.find_by(identifier: :mood))&.answer&.level || 3 %>
           <%= link_to diary_path(diary) do %>
             <div class="w-full h-full flex items-center justify-center hover:scale-110 transition-transform">
-              <%= render "diaries/weed", mood_level: mood_level %>
+              <%= render "diaries/weed", diary: diary %>
             </div>
           <% end %>
         <% else %>
