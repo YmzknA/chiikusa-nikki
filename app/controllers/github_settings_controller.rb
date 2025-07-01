@@ -1,5 +1,7 @@
 class GithubSettingsController < ApplicationController
-  before_action :authenticate_user!
+  include AuthorizationHelper
+
+  before_action :ensure_github_settings_access!
 
   def show
     @user = current_user

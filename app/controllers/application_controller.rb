@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::Base
+  include AuthorizationHelper
+
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
@@ -110,16 +112,23 @@ class ApplicationController < ActionController::Base
     false
   end
 
-  # 個人開発向け基本認可制御（シンプル化）
-  def ensure_resource_owner(resource)
-    case resource
-    when User
-      return true if current_user.id == resource.id
-    else
-      return true if resource.respond_to?(:user_id) && current_user.id == resource.user_id
-    end
-    
+  # 個人開発向け基本認可制御（安全な実装）
+  def ensure_resource_owner?(resource)
+    return true if resource_owned_by_current_user?(resource)
+
     redirect_to root_path, alert: "アクセス権限がありません。"
     false
+  end
+
+  # リソース所有権チェック（ヘルパーメソッド）
+  def resource_owned_by_current_user?(resource)
+    return false unless user_signed_in? && resource.present?
+
+    case resource
+    when User
+      current_user.id == resource.id
+    else
+      resource.respond_to?(:user_id) && current_user.id == resource.user_id
+    end
   end
 end

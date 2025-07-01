@@ -452,3 +452,14 @@ label:has(input[type="radio"]:checked) {
   --noise: 0;
 }
 
+@theme {
+  --animate-flash-fade: flashFade 7.0s forwards;
+
+  @keyframes flashFade {
+  0% { transform: translateX(180px); opacity: 0; }
+  20% { transform: translateX(0); opacity: 1; }
+  80% { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(180px); opacity: 0; }
+  }
+}
+

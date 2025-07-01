@@ -1,5 +1,7 @@
 class ProfilesController < ApplicationController
-  before_action :authenticate_user!
+  include AuthorizationHelper
+
+  before_action :ensure_profile_access!
 
   def show; end
 

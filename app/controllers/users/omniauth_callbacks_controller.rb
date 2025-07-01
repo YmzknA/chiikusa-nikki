@@ -105,21 +105,60 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   # 安全なOAuthデータのログ出力（機密情報を除外）
   def log_safe_auth_data(auth)
-    safe_data = {
-      provider: auth.provider,
-      uid: auth.uid&.present? ? "[PRESENT]" : "[MISSING]",
-      info: {
-        email: auth.info&.email&.present? ? "[PRESENT]" : "[MISSING]",
-        name: auth.info&.name&.present? ? "[PRESENT]" : "[MISSING]",
-        nickname: auth.info&.nickname&.present? ? "[PRESENT]" : "[MISSING]"
-      },
-      credentials: {
-        token: auth.credentials&.token&.present? ? "[PRESENT]" : "[MISSING]",
-        expires_at: auth.credentials&.expires_at
-      }
-    }
+    safe_data = build_safe_auth_data(auth)
     Rails.logger.info "Safe auth data structure: #{safe_data}"
   rescue StandardError => e
     Rails.logger.warn "Failed to log safe auth data: #{e.message}"
+  end
+
+  def build_safe_auth_data(auth)
+    {
+      provider: auth.provider,
+      uid: presence_status(auth.uid),
+      info: build_safe_info_data(auth.info),
+      credentials: build_safe_credentials_data(auth.credentials)
+    }
+  end
+
+  def build_safe_info_data(info)
+    return {} unless info
+
+    {
+      email: presence_status(info.email),
+      name: presence_status(info.name),
+      nickname: presence_status(info.nickname)
+    }
+  end
+
+  def build_safe_credentials_data(credentials)
+    return {} unless credentials
+
+    {
+      token: presence_status(credentials.token),
+      expires_at: credentials.expires_at
+    }
+  end
+
+  def presence_status(value)
+    value&.present? ? "[PRESENT]" : "[MISSING]"
+  end
+
+  # OAuth認証の有効性を検証
+  def valid_oauth_request?(auth)
+    return false unless auth&.provider && auth.uid
+    return false unless auth&.info&.email.present?
+
+    # プロバイダーが許可されているかチェック
+    allowed_providers = %w[github google_oauth2]
+    allowed_providers.include?(auth.provider)
+  end
+
+  # OAuth認証試行のログ記録
+  def log_oauth_attempt(provider, email, success)
+    status = success ? "SUCCESS" : "FAILURE"
+    masked_email = email ? email.gsub(/(.{2}).*@/, '\1***@') : "[NO EMAIL]"
+    Rails.logger.info "OAuth #{status}: Provider=#{provider}, Email=#{masked_email}"
+  rescue StandardError => e
+    Rails.logger.warn "Failed to log OAuth attempt: #{e.message}"
   end
 end
