@@ -8,12 +8,26 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png">
+    <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
+
+    <!-- OGP -->
+    <meta property="og:title" content="<%= content_for(:title) || "ちいくさ日記" %>">
+    <meta property="og:description" content="プログラミング学習初級者向けの日記アプリケーション。AIによるTIL生成機能とGitHub連携を持つ雑草キャラクターが特徴の学習記録ツール。">
+    <meta property="og:image" content="<%= image_url('ogp.png') %>">
+    <meta property="og:url" content="<%= request.original_url %>">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="ちいくさ日記">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="<%= image_url('ogp.png') %>">
+
     <%= yield :head %>
 
     <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
 
