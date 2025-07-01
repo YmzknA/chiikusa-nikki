@@ -47,3 +47,6 @@ application.register("ai-loading", AiLoadingController)
 
 import ModalController from "./modal_controller"
 application.register("modal", ModalController)
+
+import GithubUploadController from "./github_upload_controller"
+application.register("github-upload", GithubUploadController)
