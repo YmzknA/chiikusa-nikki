@@ -21,6 +21,7 @@ AllCops:
     - "config/environments/*.rb"
     - "Gemfile"
     - ".simplecov"
+    - "**/*.html.erb"
   NewCops: enable
 
 Gemspec/DevelopmentDependencies:
