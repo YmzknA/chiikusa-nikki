@@ -41,4 +41,8 @@ Rails.application.routes.draw do
 
   # チュートリアル
   get "/tutorial", to: "tutorials#show"
+
+  # 静的ページ
+  get "/privacy_policy", to: "home#privacy_policy"
+  get "/terms_of_service", to: "home#terms_of_service"
 end
