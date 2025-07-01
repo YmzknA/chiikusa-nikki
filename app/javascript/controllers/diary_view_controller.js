@@ -10,12 +10,11 @@ export default class extends Controller {
 
   initializeView() {
     try {
-      // Check if list tab should be selected based on URL parameters or localStorage
+      // Check if list tab should be selected based on URL parameters only
       const urlParams = new URLSearchParams(window.location.search)
       const hasMonthParam = urlParams.has('month')
-      const savedView = localStorage.getItem('diary-view')
       
-      if (hasMonthParam || savedView === 'list') {
+      if (hasMonthParam) {
         if (this.hasListTabTarget) {
           this.listTabTarget.checked = true
           this.showListView()
@@ -43,9 +42,6 @@ export default class extends Controller {
         this.monthFilterTarget.classList.add("hidden")
         this.monthFilterTarget.classList.remove("flex")
       }
-
-      // Store view preference
-      localStorage.setItem('diary-view', 'calendar')
     } catch (error) {
       console.error("Error switching to calendar view:", error)
     }
@@ -66,9 +62,6 @@ export default class extends Controller {
         this.monthFilterTarget.classList.remove("hidden")
         this.monthFilterTarget.classList.add("flex")
       }
-
-      // Store view preference
-      localStorage.setItem('diary-view', 'list')
     } catch (error) {
       console.error("Error switching to list view:", error)
     }
