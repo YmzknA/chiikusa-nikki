@@ -144,5 +144,4 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def presence_status(value)
     value&.present? ? "[PRESENT]" : "[MISSING]"
   end
-
 end

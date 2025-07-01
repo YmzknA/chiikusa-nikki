@@ -5,7 +5,6 @@ module AuthorizationHelper
 
   private
 
-
   # 現在のユーザーがリソースの所有者かどうかを確認
   def ensure_resource_owner!(resource, redirect_path = root_path, message = "このリソースにアクセスする権限がありません。")
     return if resource_owner?(resource)
@@ -37,5 +36,4 @@ module AuthorizationHelper
 
     redirect_to redirect_path, alert: "GitHubリポジトリの設定が必要です。"
   end
-
 end

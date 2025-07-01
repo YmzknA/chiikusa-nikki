@@ -52,5 +52,4 @@ class ApplicationController < ActionController::Base
   def username_setup_excluded_action?
     controller_name == "users" && action_name.in?(%w[setup_username update_username])
   end
-
 end
