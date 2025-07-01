@@ -11,19 +11,19 @@ module DiariesHelper
   def intensity_to_color(intensity)
     case intensity
     when 0
-      '#ebedf0' # GitHub風グレー
+      "#ebedf0" # GitHub風グレー
     when 0..1
-      '#9be9a8' # 薄緑
+      "#9be9a8" # 薄緑
     when 1..2
-      '#40c463' # 緑
+      "#40c463" # 緑
     when 2..3
-      '#30a14e' # 濃緑
+      "#30a14e" # 濃緑
     else
-      '#216e39' # 最高強度
+      "#216e39" # 最高強度
     end
   end
 
   def default_weed_color
-    '#bdba8c' # デフォルト色
+    "#bdba8c" # デフォルト色
   end
 end
