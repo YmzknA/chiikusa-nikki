@@ -43,6 +43,6 @@ Rails.application.routes.draw do
   get "/tutorial", to: "tutorials#show"
 
   # 静的ページ
-  get "/privacy_policy", to: "home#privacy_policy"
-  get "/terms_of_service", to: "home#terms_of_service"
+  get "/privacy_policy", to: "home#privacy_policy", constraints: { format: :html }
+  get "/terms_of_service", to: "home#terms_of_service", constraints: { format: :html }
 end
