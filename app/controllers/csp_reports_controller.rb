@@ -6,9 +6,9 @@ class CspReportsController < ApplicationController
 
   def create
     # CSP違反レポートをログに記録
-    if params['csp-report'].present?
-      violation = params['csp-report']
-      
+    if params["csp-report"].present?
+      violation = params["csp-report"]
+
       Rails.logger.warn "CSP Violation Detected:"
       Rails.logger.warn "  Document URI: #{violation['document-uri']}"
       Rails.logger.warn "  Blocked URI: #{violation['blocked-uri']}"
@@ -16,11 +16,11 @@ class CspReportsController < ApplicationController
       Rails.logger.warn "  Original Policy: #{violation['original-policy']}"
       Rails.logger.warn "  Source File: #{violation['source-file']}"
       Rails.logger.warn "  Line Number: #{violation['line-number']}"
-      
+
       # 本番環境では、監視サービスにも送信することを推奨
       # Sentry.capture_message("CSP Violation", extra: violation) if defined?(Sentry)
     end
-    
+
     head :no_content
   end
 end

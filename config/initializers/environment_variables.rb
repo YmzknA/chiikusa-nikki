@@ -2,7 +2,7 @@
 
 # 環境変数の検証と警告
 # アセットプリコンパイル時はデータベース不要のためスキップ
-unless ENV['SECRET_KEY_BASE_DUMMY'] == '1' || defined?(Rails::Command::AssetsCommand)
+unless ENV["SECRET_KEY_BASE_DUMMY"] == "1" || defined?(Rails::Command::AssetsCommand)
   if Rails.env.production?
     # 本番環境では必須の環境変数をチェック
     required_vars = %w[DATABASE_HOST DATABASE_USERNAME DATABASE_PASSWORD]
