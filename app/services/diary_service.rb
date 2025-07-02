@@ -82,10 +82,12 @@ class DiaryService
   def generate_til_candidates_and_redirect
     return { redirect_to: @diary, notice: "日記を作成しました（タネが不足しているためTILは生成されませんでした）" } if @user.seed_count <= 0
 
-    ActiveRecord::Base.transaction do
-      openai_service = OpenaiService.new
-      til_candidates = openai_service.generate_tils(@diary.notes)
+    # 外部API呼び出しをトランザクション外で実行
+    openai_service = OpenaiService.new
+    til_candidates = openai_service.generate_tils(@diary.notes)
 
+    # 外部API成功後、短時間でDB操作のみをトランザクション内で実行
+    ActiveRecord::Base.transaction do
       til_candidates.each_with_index do |content, index|
         @diary.til_candidates.create!(content: content, index: index)
       end
@@ -107,11 +109,14 @@ class DiaryService
       return false
     end
 
+    # 外部API呼び出しをトランザクション外で実行
+    openai_service = OpenaiService.new
+    til_candidates = openai_service.generate_tils(@diary.notes)
+
+    # 外部API成功後、短時間でDB操作のみをトランザクション内で実行
     ActiveRecord::Base.transaction do
       # Clear existing candidates and generate new ones
       @diary.til_candidates.destroy_all
-      openai_service = OpenaiService.new
-      til_candidates = openai_service.generate_tils(@diary.notes)
 
       til_candidates.each_with_index do |content, index|
         @diary.til_candidates.create!(content: content, index: index)
