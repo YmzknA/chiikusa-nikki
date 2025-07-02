@@ -18,6 +18,8 @@ html[data-theme="lemonade"] {
 html, body {
   background-color: oklch(98.71% 0.02 123.72);
   min-height: 100vh;
+  /* iOS Safari viewport fix */
+  min-height: 100dvh;
   overflow-x: hidden;
 }
 
@@ -194,9 +196,9 @@ label:has(input[type="radio"]:checked) {
 }
 
 .tabs-boxed .tab {
-  border-radius: 16px;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  /* iOS Safari fixes for tab overlapping */
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .tabs-boxed .tab:checked {
@@ -425,9 +427,19 @@ label:has(input[type="radio"]:checked) {
   .fixed.bottom-0 {
     padding-bottom: env(safe-area-inset-bottom);
   }
+  
+  /* iOS Safari specific fixes for tabs */
+  .tabs-boxed {
+    -webkit-overflow-scrolling: touch;
+  }
+  
 }
 
-
+/* iOS Safari viewport height fix utility */
+.min-h-screen-safe {
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for mobile browsers */
+}
 
 @plugin "daisyui/theme" {
   name: "lemonade";
