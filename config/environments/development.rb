@@ -23,7 +23,19 @@ Rails.application.configure do
     config.action_controller.perform_caching = true
     config.action_controller.enable_fragment_cache_logging = true
 
-    config.cache_store = :memory_store
+    # Redis cache store configuration (Upstash)
+    redis_url = Rails.application.credentials.dig(:upstash, :redis_url) || ENV.fetch('REDIS_URL', 'redis://localhost:6379/0')
+    
+    config.cache_store = :redis_cache_store, {
+      url: redis_url,
+      namespace: 'chiikusa_cache_dev',
+      expires_in: 1.hour,
+      reconnect_attempts: 1,
+      ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_PEER }, # Proper SSL verification
+      error_handler: -> (method:, returning:, exception:) {
+        Rails.logger.warn "Redis cache error: #{method} - #{exception.class}: #{exception.message}"
+      }
+    }
     config.public_file_server.headers = { "Cache-Control" => "public, max-age=#{2.days.to_i}" }
   else
     config.action_controller.perform_caching = false
