@@ -99,6 +99,7 @@ RSpec.describe DiaryService, type: :service do
         service.update_diary_answers(update_params)
       end.to change(DiaryAnswer, :count).by(0) # destroys 1, creates 1
 
+      diary.reload
       updated_answer = diary.diary_answers.last
       expect(updated_answer.answer).to eq(new_answer)
     end
