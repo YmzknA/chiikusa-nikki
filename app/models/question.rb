@@ -7,26 +7,33 @@ class Question < ApplicationRecord
 
   # キャッシュされたクエリメソッド
   def self.cached_all
-    Rails.cache.fetch("questions_all", expires_in: 1.hour) do
+    cached_data = Rails.cache.fetch("questions_all", expires_in: 1.hour) do
       Rails.logger.info("Cache MISS for questions_all")
       all.to_a
-    end.tap { Rails.logger.info("Cache HIT for questions_all") if Rails.cache.exist?("questions_all") }
+    end
+
+    Rails.logger.info("Cache HIT for questions_all") if Rails.cache.exist?("questions_all")
+    cached_data
   end
 
   def self.cached_by_identifier
-    Rails.cache.fetch("questions_by_identifier", expires_in: 1.hour) do
+    cached_data = Rails.cache.fetch("questions_by_identifier", expires_in: 1.hour) do
       Rails.logger.info("Cache MISS for questions_by_identifier")
       all.index_by(&:identifier)
-    end.tap do
-      Rails.logger.info("Cache HIT for questions_by_identifier") if Rails.cache.exist?("questions_by_identifier")
     end
+
+    Rails.logger.info("Cache HIT for questions_by_identifier") if Rails.cache.exist?("questions_by_identifier")
+    cached_data
   end
 
   def self.cached_identifiers
-    Rails.cache.fetch("question_identifiers", expires_in: 1.hour) do
+    cached_data = Rails.cache.fetch("question_identifiers", expires_in: 1.hour) do
       Rails.logger.info("Cache MISS for question_identifiers")
       pluck(:identifier).map(&:to_sym)
-    end.tap { Rails.logger.info("Cache HIT for question_identifiers") if Rails.cache.exist?("question_identifiers") }
+    end
+
+    Rails.logger.info("Cache HIT for question_identifiers") if Rails.cache.exist?("question_identifiers")
+    cached_data
   end
 
   # キャッシュを無効化するコールバック
