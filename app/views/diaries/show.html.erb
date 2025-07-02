@@ -14,14 +14,14 @@
   }
 ) %>
 
-<div class="min-h-screen p-4">
+<div class="min-h-screen p-4 animate-[fadeIn_0.5s_ease-out]">
   <!-- Flash Messages Area -->
   <div id="flash-messages">
     <%= render 'shared/flash', flash: flash %>
   </div>
 
   <div class="container mx-auto max-w-2xl">
-    <div class="neuro-card p-4 md:p-6 mb-6">
+    <div class="neuro-card p-4 md:p-6 mb-6 animate-[fadeInDown_0.6s_ease-out]">
       <div class="flex flex-wrap items-center gap-2">
         <div class="flex-1 min-w-0">
           <h1 class="text-lg md:text-2xl lg:text-3xl font-bold text-base-content leading-tight">
@@ -41,7 +41,7 @@
 
     <div class="space-y-4 md:space-y-6">
       <%# TIL or Notes Section %>
-      <div class="neuro-card p-4 md:p-6">
+      <div class="neuro-card p-4 md:p-6 animate-[scaleIn_0.4s_ease-out_0.2s_both]">
         <% if @diary&.til_text.present? %>
           <h2 class="flex items-center gap-2 text-xl md:text-2xl font-bold text-primary mb-3 md:mb-4">
             <svg class="h-5 w-5 md:h-6 md:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,7 +88,7 @@
       </div>
 
       <%# Mood & Stats Section %>
-      <div class="neuro-card p-4 md:p-6">
+      <div class="neuro-card p-4 md:p-6 animate-[slideInLeft_0.5s_ease-out_0.4s_both]">
         <h2 class="flex items-center gap-2 text-xl md:text-2xl font-bold text-accent mb-3 md:mb-4">
           <svg class="h-5 w-5 md:h-6 md:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
@@ -97,8 +97,8 @@
         </h2>
         <div class="gap-2 md:gap-4">
           <% if @diary&.diary_answers&.any? %>
-            <% @diary.diary_answers.each do |diary_answer| %>
-              <div class="neuro-badge py-2 md:py-3 px-3 md:px-4 text-xs md:text-sm font-medium flex items-center gap-1 md:gap-2">
+            <% @diary.diary_answers.each_with_index do |diary_answer, index| %>
+              <div class="neuro-badge py-2 md:py-3 px-3 md:px-4 text-xs md:text-sm font-medium flex items-center gap-1 md:gap-2 transition-all duration-200">
                 <span class="text-lg md:text-2xl"><%= diary_answer&.answer&.emoji %></span>
                 <span class="whitespace-nowrap"><%= diary_answer&.question&.label %></span>
               </div>

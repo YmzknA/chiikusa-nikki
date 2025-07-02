@@ -1,5 +1,5 @@
-<div class="min-h-screen p-4">
-    <div class="neuro-card p-4 md:p-6">
+<div class="min-h-screen p-4 animate-[fadeIn_0.5s_ease-out]">
+    <div class="neuro-card p-4 md:p-6 animate-[scaleIn_0.4s_ease-out_0.2s_both]">
       <%= loading_form_with(model: @diary, url: diaries_path, local: true, data: { turbo: false, turbo_frame: "_top" }, class: "space-y-4 md:space-y-6") do |form| %>
         <% if @existing_diary %>
           <div class="neuro-input p-3 md:p-4 mb-4 rounded-2xl bg-warning border border-warning/20">
@@ -29,8 +29,8 @@
           <% end %>
         </div>
 
-        <% @questions.each do |question| %>
-          <div class="form-control">
+        <% @questions.each_with_index do |question, index| %>
+          <div class="form-control animate-[fadeInUp_0.6s_ease-out_<%= ((index + 1) * 0.2).round(1) %>s_both]">
             <div class="mb-2 md:mb-3">
               <span class="block text-base-content font-semibold mb-2 text-sm md:text-base"><%= question.label %></span>
             </div>
@@ -40,7 +40,7 @@
                 <label class="cursor-pointer">
                   <%= radio_button_tag "diary_answers[#{question.identifier}]", answer.id, 
                       is_selected, { class: "peer sr-only" } %>
-                  <div class="neuro-button py-2 md:py-3 px-3 md:px-4 text-xl md:text-2xl peer-checked:!bg-primary peer-checked:!text-primary-content peer-checked:!shadow-inner">
+                  <div class="neuro-button py-2 md:py-3 px-3 md:px-4 text-xl md:text-2xl peer-checked:!bg-primary peer-checked:!text-primary-content peer-checked:!shadow-inner transition-all duration-200 hover:scale-110 hover:animate-[heartBeat_1.5s_ease-in-out_infinite]">
                     <%= answer.emoji %>
                   </div>
                 </label>
@@ -49,9 +49,9 @@
           </div>
         <% end %>
 
-        <div class="form-control">
+        <div class="form-control animate-[fadeInUp_0.6s_ease-out_0.7s_both]">
           <%= form.label :notes, "今日やったこと・感じたこと", class: "block text-base-content font-semibold mb-2 text-sm md:text-base" %>
-          <%= form.text_area :notes, placeholder: "・今日やったことについて\n・つまずいた問題や解決方法\n・新しい発見や気づき\n   など", class: "neuro-input w-full h-28 md:h-32 py-3 md:py-4 px-3 md:px-4 resize-none text-sm md:text-base", rows: 6 %>
+          <%= form.text_area :notes, placeholder: "・今日やったことについて\n・つまずいた問題や解決方法\n・新しい発見や気づき\n   など", class: "neuro-input w-full h-28 md:h-32 py-3 md:py-4 px-3 md:px-4 resize-none text-sm md:text-base transition-all duration-200 focus:scale-[1.02]", rows: 6 %>
         </div>
 
         <div class="divider my-4 md:my-6 mx-auto"></div>
@@ -66,7 +66,7 @@
             </div>
           </div>
 
-          <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-badge py-2 md:py-3 px-3 md:px-4">
+          <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-badge py-2 md:py-3 px-3 md:px-4 hover:scale-99 transition-transform">
             <%= check_box_tag "use_ai_generation", "1", true, class: "checkbox checkbox-secondary bg-gray-100", id: "use_ai_generation_checkbox" %>
             <span class="text-base-content font-semibold text-sm md:text-base">AI生成を使用する（タネを1つ消費）</span>
           </label>
@@ -81,8 +81,8 @@
 
         <div class="divider my-4 md:my-6 mx-auto"></div>
 
-        <div class="form-control mt-6 md:mt-8">
-          <%= form.submit "日記を作成 ✓", class: "neuro-button w-full py-3 md:py-4 px-4 md:px-6 font-bold text-base md:text-lg hover:cursor-pointer", onclick: "console.log('🚀 Submit button clicked'); const result = checkSeedCountBeforeAction(event, 'use_ai_generation_checkbox'); if(result) { const hasNotes = document.querySelector('#diary_notes')?.value.trim(); const checkbox = document.getElementById('use_ai_generation_checkbox'); const needsAi = checkbox && checkbox.checked && hasNotes; if(!needsAi && window.loadingController) { console.log('🎯 Manually calling normal loading'); window.loadingController.showDelayed(); } } return result;" %>
+        <div class="form-control mt-6 md:mt-8 animate-[fadeInUp_0.6s_ease-out_0.8s_both]">
+          <%= form.submit "日記を作成 ✓", class: "neuro-button w-full py-3 md:py-4 px-4 md:px-6 font-bold text-base md:text-lg hover:cursor-pointer transition-all duration-200 hover:scale-102", onclick: "console.log('🚀 Submit button clicked'); const result = checkSeedCountBeforeAction(event, 'use_ai_generation_checkbox'); if(result) { const hasNotes = document.querySelector('#diary_notes')?.value.trim(); const checkbox = document.getElementById('use_ai_generation_checkbox'); const needsAi = checkbox && checkbox.checked && hasNotes; if(!needsAi && window.loadingController) { console.log('🎯 Manually calling normal loading'); window.loadingController.showDelayed(); } } return result;" %>
         </div>
       <% end %>
     </div>

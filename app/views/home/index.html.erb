@@ -1,5 +1,5 @@
-<div class="stick-regular min-h-screen flex items-center justify-center p-4">
-  <div class="neuro-card p-6 md:p-8 max-w-sm md:max-w-md lg:max-w-lg w-full text-center relative">
+<div class="stick-regular min-h-screen flex items-center justify-center p-4 animate-[fadeIn_0.5s_ease-out]">
+  <div class="neuro-card p-6 md:p-8 max-w-sm md:max-w-md lg:max-w-lg w-full text-center relative animate-[scaleIn_0.4s_ease-out]">
 
     <%# what is chiikusa Modal %>
     <div class="flex items-center justify-end w-full">
@@ -18,7 +18,7 @@
 
 
     <!-- Job Title -->
-    <p class="text-base-content/70 mb-6 md:mb-8 text-base md:text-lg lg:text-xl">毎日1分<br>簡単日記で草生やし</p>
+    <p class="text-base-content/70 mb-6 md:mb-8 text-base md:text-lg lg:text-xl animate-[fadeInUp_0.6s_ease-out_0.2s_both]">毎日1分<br>簡単日記で草生やし</p>
 
     <% if user_signed_in? %>
       <%# Logged in state %>
@@ -32,13 +32,13 @@
         草を生やす
       <% end %>
 
-      <div class="mt-4 md:mt-6 flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4">
-        <%= loading_link_to diaries_path, class: "text-base-content/60 hover:text-base-content text-sm md:text-base font-medium" do %>
+      <div class="mt-4 md:mt-6 flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 animate-[fadeInUp_0.6s_ease-out_0.8s_both]">
+        <%= loading_link_to diaries_path, class: "text-base-content/60 hover:text-base-content text-sm md:text-base font-medium transition-all duration-200 hover:scale-105" do %>
           過去の記録
         <% end %>
         <%= loading_button_to destroy_user_session_path, method: :delete,
             data: { turbo_confirm: "本当にログアウトしますか？" },
-            class: "text-base-content/60 hover:text-base-content hover:cursor-pointer text-sm md:text-base font-medium" do %>
+            class: "text-base-content/60 hover:text-base-content hover:cursor-pointer text-sm md:text-base font-medium transition-all duration-200 hover:scale-105" do %>
               ログアウト
             <% end %>
       </div>
@@ -67,10 +67,10 @@
     <% end %>
 
     <!-- フッターリンク -->
-    <div class="mt-6 pt-4 border-t border-base-300/50 flex flex-col items-center gap-4">
+    <div class="mt-6 pt-4 border-t border-base-300/50 flex flex-col items-center gap-4 animate-[fadeIn_0.5s_ease-out_1.0s_both]">
       <div class="flex justify-center gap-4 text-xs text-base-content/50">
-        <%= link_to "プライバシーポリシー", privacy_policy_path, class: "link link-hover" %>
-        <%= link_to "利用規約", terms_of_service_path, class: "link link-hover" %>
+        <%= link_to "プライバシーポリシー", privacy_policy_path, class: "link link-hover transition-all duration-200 hover:scale-105" %>
+        <%= link_to "利用規約", terms_of_service_path, class: "link link-hover transition-all duration-200 hover:scale-105" %>
       </div>
       <div class="text-xs text-base-content/40">
         © 2025 ちいくさ日記. All rights reserved.
