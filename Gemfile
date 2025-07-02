@@ -55,7 +55,7 @@ group :development, :test do
   gem "rubocop-performance", require: false
   gem "rubocop-rspec", require: false
 
-  gem "rspec-rails", "~> 6.0"
+  gem "rspec-rails", "~> 8.0"
   gem "shoulda-matchers", "~> 5.3"
   gem "factory_bot_rails", "~> 6.0"
   gem "webmock", "~> 3.0"
