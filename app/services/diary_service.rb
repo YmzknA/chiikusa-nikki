@@ -7,19 +7,67 @@ class DiaryService
   def create_diary_answers(diary_answer_params)
     return unless diary_answer_params.present?
 
+    # キャッシュされたQuestionを取得
+    questions_by_identifier = Question.cached_by_identifier
+
+    # バルクインサート用の配列を準備（バリデーション付き）
+    diary_answers_data = []
     diary_answer_params.each do |question_identifier, answer_id|
-      question = Question.find_by(identifier: question_identifier)
-      @diary.diary_answers.create(question: question, answer_id: answer_id) if question && answer_id.present?
+      question = questions_by_identifier[question_identifier.to_s]
+      next unless question && answer_id.present?
+
+      # バリデーション：answer_idが該当questionの有効なanswer_idかチェック
+      valid_answer_ids = question.answers.pluck(:id)
+      if valid_answer_ids.include?(answer_id.to_i)
+        diary_answers_data << {
+          diary_id: @diary.id,
+          question_id: question.id,
+          answer_id: answer_id,
+          created_at: Time.current,
+          updated_at: Time.current
+        }
+      else
+        Rails.logger.warn "Invalid answer_id #{answer_id} for question #{question.identifier}"
+      end
     end
+
+    # バルクインサートで効率的に挿入
+    DiaryAnswer.insert_all(diary_answers_data) if diary_answers_data.any?
   end
 
   def update_diary_answers(diary_answer_params)
     return unless diary_answer_params.present?
 
-    @diary.diary_answers.destroy_all
-    diary_answer_params.each do |question_identifier, answer_id|
-      question = Question.find_by(identifier: question_identifier)
-      @diary.diary_answers.create(question: question, answer_id: answer_id) if question && answer_id.present?
+    # 効率的な削除と挿入を一回のトランザクションで実行
+    ActiveRecord::Base.transaction do
+      @diary.diary_answers.delete_all
+
+      # キャッシュされたQuestionを取得
+      questions_by_identifier = Question.cached_by_identifier
+
+      # バルクインサート用の配列を準備（バリデーション付き）
+      diary_answers_data = []
+      diary_answer_params.each do |question_identifier, answer_id|
+        question = questions_by_identifier[question_identifier.to_s]
+        next unless question && answer_id.present?
+
+        # バリデーション：answer_idが該当questionの有効なanswer_idかチェック
+        valid_answer_ids = question.answers.pluck(:id)
+        if valid_answer_ids.include?(answer_id.to_i)
+          diary_answers_data << {
+            diary_id: @diary.id,
+            question_id: question.id,
+            answer_id: answer_id,
+            created_at: Time.current,
+            updated_at: Time.current
+          }
+        else
+          Rails.logger.warn "Invalid answer_id #{answer_id} for question #{question.identifier}"
+        end
+      end
+
+      # バルクインサートで効率的に挿入
+      DiaryAnswer.insert_all(diary_answers_data) if diary_answers_data.any?
     end
   end
 
