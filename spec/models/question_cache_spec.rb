@@ -21,7 +21,7 @@ RSpec.describe Question, type: :model do
       it "キャッシュが空の場合はデータベースから取得し、キャッシュに保存する" do
         # Clear cache to ensure we're testing fresh cache behavior
         Rails.cache.clear
-        
+
         expect(Rails.cache).to receive(:fetch).with("questions_all", expires_in: Question::CACHE_EXPIRY).and_call_original
 
         result = Question.cached_all
@@ -35,7 +35,7 @@ RSpec.describe Question, type: :model do
 
         # キャッシュが存在することを確認
         expect(Rails.cache.read("questions_all")).not_to be_nil
-        
+
         # 2回目の呼び出しで同じオブジェクトが返されることを確認
         second_result = Question.cached_all
         expect(second_result.size).to eq(3)
@@ -57,7 +57,7 @@ RSpec.describe Question, type: :model do
 
         # キャッシュが存在することを確認
         expect(Rails.cache.read("questions_by_identifier")).not_to be_nil
-        
+
         # 2回目の呼び出しで同じオブジェクトが返されることを確認
         second_result = Question.cached_by_identifier
         expect(second_result.keys).to eq(first_result.keys)
@@ -77,9 +77,9 @@ RSpec.describe Question, type: :model do
       it "questionが更新されるとキャッシュがクリアされる" do
         # キャッシュを作成
         Question.cached_all
-        Question.cached_by_identifier  
+        Question.cached_by_identifier
         Question.cached_identifiers
-        
+
         # キャッシュが存在することを確認
         expect(Rails.cache.read("questions_all")).not_to be_nil
         expect(Rails.cache.read("questions_by_identifier")).not_to be_nil

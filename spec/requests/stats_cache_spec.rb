@@ -40,7 +40,7 @@ RSpec.describe StatsController, type: :request do
 
       it "パラメータが変わると異なるキャッシュキーが使用される" do
         user_hash = Digest::SHA256.hexdigest(user.id.to_s)[0, 8]
-        
+
         # デフォルトパラメータでのリクエスト
         get "/stats"
         first_cache_key = "stats_charts_#{user_hash}_recent_#{Date.current.strftime('%Y-%m')}_1_1"
@@ -60,7 +60,7 @@ RSpec.describe StatsController, type: :request do
     describe "キャッシュ無効化" do
       it "日記が更新されるとキャッシュがクリアされる" do
         user_hash = Digest::SHA256.hexdigest(user.id.to_s)[0, 8]
-        
+
         # キャッシュを作成
         get "/stats"
         cache_key = "stats_charts_#{user_hash}_recent_#{Date.current.strftime('%Y-%m')}_1_1"

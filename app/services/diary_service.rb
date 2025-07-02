@@ -144,10 +144,10 @@ class DiaryService
   # answer_idが該当questionの有効な値かチェック（キャッシュ汚染対策）
   def valid_answer_for_question?(question, answer_id)
     return false unless answer_id.to_s.match?(/\A\d+\z/) # 数値のみ許可
-    
+
     answer_id_int = answer_id.to_i
     return false if answer_id_int <= 0 # 負数や0を拒否
-    
+
     question.answers.pluck(:id).include?(answer_id_int)
   end
 

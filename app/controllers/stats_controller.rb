@@ -4,6 +4,15 @@ class StatsController < ApplicationController
   before_action :authenticate_user!
   before_action :setup_chart_builder
 
+  EMPTY_CHARTS_DATA = {
+    daily_trends_chart: { labels: [], datasets: [] },
+    monthly_posts_chart: { labels: [], datasets: [] },
+    learning_intensity_heatmap: { labels: [], datasets: [] },
+    habit_calendar_chart: { labels: [], datasets: [] },
+    weekday_pattern_chart: { labels: [], datasets: [] },
+    distribution_chart: { labels: [], datasets: [] }
+  }.freeze
+
   def index
     setup_chart_parameters
     build_all_charts
@@ -34,7 +43,7 @@ class StatsController < ApplicationController
     # user_idをハッシュ化して個人情報を難読化
     user_hash = Digest::SHA256.hexdigest(current_user.id.to_s)[0, 8]
     "stats_charts_#{user_hash}_#{@view_type}_#{@target_month}_" \
-    "#{@weekday_months}_#{@distribution_months}"
+      "#{@weekday_months}_#{@distribution_months}"
   end
 
   def fetch_charts_with_fallback(cache_key)
@@ -79,15 +88,6 @@ class StatsController < ApplicationController
     Rails.logger.debug("Chart builder error details: #{e.message}") unless Rails.env.production?
     empty_charts_data
   end
-
-  EMPTY_CHARTS_DATA = {
-    daily_trends_chart: { labels: [], datasets: [] },
-    monthly_posts_chart: { labels: [], datasets: [] },
-    learning_intensity_heatmap: { labels: [], datasets: [] },
-    habit_calendar_chart: { labels: [], datasets: [] },
-    weekday_pattern_chart: { labels: [], datasets: [] },
-    distribution_chart: { labels: [], datasets: [] }
-  }.freeze
 
   def empty_charts_data
     EMPTY_CHARTS_DATA

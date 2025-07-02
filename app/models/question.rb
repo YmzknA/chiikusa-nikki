@@ -29,20 +29,24 @@ class Question < ApplicationRecord
 
   # キャッシュ設定
   CACHE_EXPIRY = 1.hour
-  CACHE_KEYS = %i[all by_identifier identifiers].freeze
+  CACHE_KEYS = [:all, :by_identifier, :identifiers].freeze
 
   # キャッシュを無効化するコールバック
   after_commit :clear_questions_cache
 
-  private
+  class << self
+    private
 
-  def self.cache_key_for(type)
-    "questions_#{type}"
+    def cache_key_for(type)
+      "questions_#{type}"
+    end
   end
+
+  private
 
   def clear_questions_cache
     CACHE_KEYS.each do |key_type|
-      Rails.cache.delete(self.class.cache_key_for(key_type))
+      Rails.cache.delete("questions_#{key_type}")
     end
     Rails.logger.debug "Cleared questions cache" unless Rails.env.production?
   end
