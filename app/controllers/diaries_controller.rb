@@ -33,18 +33,21 @@ class DiariesController < ApplicationController
   end
 
   def public_index
-    @diaries = Diary.public_diaries.includes(:user, :diary_answers).order(date: :desc).limit(20)
+    @diaries = Diary.public_diaries
+                    .includes(user: [], diary_answers: [:answer])
+                    .order(date: :desc)
+                    .limit(20)
   end
 
   def new
     @diary = Diary.new
-    @questions = Question.all
+    @questions = Question.cached_all
     @date = params[:date].present? ? Date.parse(params[:date]) : Date.current
     @existing_diary = current_user.diaries.find_by(date: @date)
   end
 
   def edit
-    @questions = Question.all
+    @questions = Question.cached_all
     @selected_answers = @diary.diary_answers.includes(:question).each_with_object({}) do |diary_answer, hash|
       hash[diary_answer.question.identifier] = diary_answer.answer_id.to_s
     end
@@ -99,7 +102,7 @@ class DiariesController < ApplicationController
   end
 
   def select_til
-    @questions = Question.all
+    @questions = Question.cached_all
     return if @diary.til_candidates.any?
 
     redirect_to diary_path(@diary), alert: "TIL候補が存在しません。"
@@ -199,7 +202,7 @@ class DiariesController < ApplicationController
   end
 
   def diary_answer_params
-    question_identifiers = Question.pluck(:identifier).map(&:to_sym)
+    question_identifiers = Question.cached_identifiers
     params[:diary_answers].present? ? params.permit(diary_answers: question_identifiers)[:diary_answers] || {} : {}
   end
 
