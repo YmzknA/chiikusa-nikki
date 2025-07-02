@@ -17,7 +17,7 @@
 
           <div class="flex gap-1 md:gap-2 mb-3 md:mb-4 flex-wrap">
             <% diary.diary_answers.each_with_index do |diary_answer, badge_index| %>
-              <div class="neuro-badge py-1 px-2 text-xs font-medium flex items-center gap-1 hover:scale-110 transition-all duration-200" style="animation: bounceIn 0.6s ease-out <%= (badge_index * 0.1).round(1) %>s both;">
+              <div class="neuro-badge py-1 px-2 text-xs font-medium flex items-center gap-1 hover:scale-110 transition-all duration-200" style="animation: bounceIn 0.6s ease-out <%= ((index + badge_index + 1) * 0.1).round(1) %>s both;">
                 <span class="text-xl animate-[heartBeat_1.5s_ease-in-out_infinite]"><%= diary_answer.answer.emoji %></span>
               </div>
             <% end %>
