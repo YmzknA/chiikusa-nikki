@@ -185,31 +185,6 @@ label:has(input[type="radio"]:checked) {
     inset -6px -6px 12px rgba(140, 220, 150, 0.8);
 }
 
-/* DaisyUI Tab customization for neumorphism */
-.tabs-boxed {
-  background: oklch(91.8% 0.018 123.72); /* lemonade base-200 */
-  border-radius: 24px;
-  box-shadow: 
-    20px 20px 40px rgba(105, 169, 106, 0.3),
-    -20px -20px 40px rgba(255, 254, 213, 1);
-  padding: 0.5rem;
-}
-
-.tabs-boxed .tab {
-  /* iOS Safari fixes for tab overlapping */
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-.tabs-boxed .tab:checked {
-  background: oklch(58.92% 0.199 134.6); /* lemonade primary */
-  color: oklch(11.784% 0.039 134.6); /* lemonade primary-content */
-  box-shadow: 
-    inset 6px 6px 12px rgba(58, 120, 106, 0.4),
-    inset -6px -6px 12px rgba(140, 220, 150, 0.8);
-}
-
-
 /* Simple Calendar Navigation Styling */
 .simple-calendar {
   border: none;
@@ -427,12 +402,6 @@ label:has(input[type="radio"]:checked) {
   .fixed.bottom-0 {
     padding-bottom: env(safe-area-inset-bottom);
   }
-  
-  /* iOS Safari specific fixes for tabs */
-  .tabs-boxed {
-    -webkit-overflow-scrolling: touch;
-  }
-  
 }
 
 /* iOS Safari viewport height fix utility */

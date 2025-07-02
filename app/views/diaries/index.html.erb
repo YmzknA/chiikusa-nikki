@@ -16,31 +16,25 @@
 
   <!-- DaisyUI Tab Navigation -->
   <div class="flex justify-start items-center mb-4 animate-[slideInLeft_0.5s_ease-out_0.2s_both]">
-    <div class="tabs tabs-boxed tabs-sm flex flex-nowrap overflow-x-auto" role="tablist" aria-label="日記表示切り替え">
+    <div class="tabs tabs-box tabs-sm" aria-label="日記表示切り替え">
       <input 
         type="radio" 
         name="diary_view_tabs" 
-        class="tab whitespace-nowrap flex-none min-w-fit relative z-10 rounded-2xl font-medium transition-all duration-200 p-2 px-4" 
+        class="tab" 
         aria-label="📅 カレンダー"
         id="calendar-tab"
-        checked="checked"
+        checked
         data-action="change->diary-view#showCalendarView"
-        role="tab"
-        aria-selected="true"
-        aria-controls="calendar-view"
       />
       
       <input 
         type="radio" 
         name="diary_view_tabs" 
-        class="tab whitespace-nowrap flex-none min-w-fit relative z-10 rounded-2xl font-medium transition-all duration-200 p-2 px-4" 
+        class="tab" 
         aria-label="📋 リスト"
         id="list-tab"
         data-diary-view-target="listTab"
         data-action="change->diary-view#showListView"
-        role="tab"
-        aria-selected="false"
-        aria-controls="list-view"
       />
     </div>
 
