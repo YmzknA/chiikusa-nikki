@@ -7,66 +7,16 @@ class DiaryService
   def create_diary_answers(diary_answer_params)
     return unless diary_answer_params.present?
 
-    # キャッシュされたQuestionを取得
-    questions_by_identifier = Question.cached_by_identifier
-
-    # バルクインサート用の配列を準備（バリデーション付き）
-    diary_answers_data = []
-    diary_answer_params.each do |question_identifier, answer_id|
-      question = questions_by_identifier[question_identifier.to_s]
-      next unless question && answer_id.present?
-
-      # バリデーション：answer_idが該当questionの有効なanswer_idかチェック
-      valid_answer_ids = question.answers.pluck(:id)
-      if valid_answer_ids.include?(answer_id.to_i)
-        diary_answers_data << {
-          diary_id: @diary.id,
-          question_id: question.id,
-          answer_id: answer_id,
-          created_at: Time.current,
-          updated_at: Time.current
-        }
-      else
-        Rails.logger.warn "Invalid answer_id #{answer_id} for question #{question.identifier}"
-      end
-    end
-
-    # バルクインサートで効率的に挿入
+    diary_answers_data = build_validated_answers_data(diary_answer_params)
     DiaryAnswer.insert_all(diary_answers_data) if diary_answers_data.any?
   end
 
   def update_diary_answers(diary_answer_params)
     return unless diary_answer_params.present?
 
-    # 効率的な削除と挿入を一回のトランザクションで実行
     ActiveRecord::Base.transaction do
       @diary.diary_answers.delete_all
-
-      # キャッシュされたQuestionを取得
-      questions_by_identifier = Question.cached_by_identifier
-
-      # バルクインサート用の配列を準備（バリデーション付き）
-      diary_answers_data = []
-      diary_answer_params.each do |question_identifier, answer_id|
-        question = questions_by_identifier[question_identifier.to_s]
-        next unless question && answer_id.present?
-
-        # バリデーション：answer_idが該当questionの有効なanswer_idかチェック
-        valid_answer_ids = question.answers.pluck(:id)
-        if valid_answer_ids.include?(answer_id.to_i)
-          diary_answers_data << {
-            diary_id: @diary.id,
-            question_id: question.id,
-            answer_id: answer_id,
-            created_at: Time.current,
-            updated_at: Time.current
-          }
-        else
-          Rails.logger.warn "Invalid answer_id #{answer_id} for question #{question.identifier}"
-        end
-      end
-
-      # バルクインサートで効率的に挿入
+      diary_answers_data = build_validated_answers_data(diary_answer_params)
       DiaryAnswer.insert_all(diary_answers_data) if diary_answers_data.any?
     end
   end
@@ -97,7 +47,8 @@ class DiaryService
 
     { redirect_to: [:select_til, @diary], notice: "日記を作成しました。続いて生成されたTIL を選択してください。" }
   rescue StandardError => e
-    Rails.logger.info("Error generating TIL candidates: #{e.message}")
+    Rails.logger.error "TIL generation failed"
+    Rails.logger.debug "TIL generation error details: #{e.message}" unless Rails.env.production?
     { redirect_to: @diary, notice: "日記を作成しました（TIL生成でエラーが発生しました）" }
   end
 
@@ -105,7 +56,7 @@ class DiaryService
     return false if @diary.notes.blank?
 
     if @user.seed_count <= 0
-      Rails.logger.info("Seed count is zero, skipping TIL regeneration.")
+      Rails.logger.debug "TIL regeneration skipped: insufficient seeds" unless Rails.env.production?
       return false
     end
 
@@ -127,7 +78,8 @@ class DiaryService
 
     true
   rescue StandardError => e
-    Rails.logger.error("Error regenerating TIL candidates: #{e.message}")
+    Rails.logger.error "TIL regeneration failed"
+    Rails.logger.debug "TIL regeneration error details: #{e.message}" unless Rails.env.production?
     false
   end
 
@@ -166,5 +118,50 @@ class DiaryService
       questions: questions,
       selected_answers: selected_answers
     }
+  end
+
+  private
+
+  # バリデーション付きでanswer dataを構築（DRY原則とセキュリティ向上）
+  def build_validated_answers_data(diary_answer_params)
+    questions_by_identifier = Question.cached_by_identifier
+    diary_answers_data = []
+
+    diary_answer_params.each do |question_identifier, answer_id|
+      question = questions_by_identifier[question_identifier.to_s]
+      next unless question && answer_id.present?
+
+      if valid_answer_for_question?(question, answer_id)
+        diary_answers_data << build_answer_data(question.id, answer_id)
+      else
+        log_invalid_answer_attempt(question.identifier)
+      end
+    end
+
+    diary_answers_data
+  end
+
+  # answer_idが該当questionの有効な値かチェック（キャッシュ汚染対策）
+  def valid_answer_for_question?(question, answer_id)
+    return false unless answer_id.to_s.match?(/\A\d+\z/) # 数値のみ許可
+    
+    answer_id_int = answer_id.to_i
+    return false if answer_id_int <= 0 # 負数や0を拒否
+    
+    question.answers.pluck(:id).include?(answer_id_int)
+  end
+
+  def build_answer_data(question_id, answer_id)
+    {
+      diary_id: @diary.id,
+      question_id: question_id,
+      answer_id: answer_id,
+      created_at: Time.current,
+      updated_at: Time.current
+    }
+  end
+
+  def log_invalid_answer_attempt(question_identifier)
+    Rails.logger.warn "Invalid answer submission for question: #{question_identifier}" unless Rails.env.production?
   end
 end

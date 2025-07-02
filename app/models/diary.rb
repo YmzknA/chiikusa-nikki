@@ -28,6 +28,8 @@ class Diary < ApplicationRecord
   private
 
   def clear_stats_cache
-    Rails.cache.delete_matched("stats_charts_#{user_id}_*")
+    # ハッシュ化されたuser_idを使用してキャッシュクリア
+    user_hash = Digest::SHA256.hexdigest(user_id.to_s)[0, 8]
+    Rails.cache.delete_matched("stats_charts_#{user_hash}_*")
   end
 end

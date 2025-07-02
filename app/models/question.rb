@@ -5,45 +5,45 @@ class Question < ApplicationRecord
   validates :identifier, presence: true, uniqueness: true
   validates :label, presence: true
 
-  # キャッシュされたクエリメソッド
+  # 効率的なキャッシュクエリメソッド
   def self.cached_all
-    cached_data = Rails.cache.fetch("questions_all", expires_in: 1.hour) do
-      Rails.logger.info("Cache MISS for questions_all")
-      all.to_a
+    Rails.cache.fetch(cache_key_for(:all), expires_in: CACHE_EXPIRY) do
+      Rails.logger.debug "Loading all questions from database" unless Rails.env.production?
+      includes(:answers).to_a
     end
-
-    Rails.logger.info("Cache HIT for questions_all") if Rails.cache.exist?("questions_all")
-    cached_data
   end
 
   def self.cached_by_identifier
-    cached_data = Rails.cache.fetch("questions_by_identifier", expires_in: 1.hour) do
-      Rails.logger.info("Cache MISS for questions_by_identifier")
-      all.index_by(&:identifier)
+    Rails.cache.fetch(cache_key_for(:by_identifier), expires_in: CACHE_EXPIRY) do
+      Rails.logger.debug "Loading questions by identifier from database" unless Rails.env.production?
+      includes(:answers).index_by(&:identifier)
     end
-
-    Rails.logger.info("Cache HIT for questions_by_identifier") if Rails.cache.exist?("questions_by_identifier")
-    cached_data
   end
 
   def self.cached_identifiers
-    cached_data = Rails.cache.fetch("question_identifiers", expires_in: 1.hour) do
-      Rails.logger.info("Cache MISS for question_identifiers")
+    Rails.cache.fetch(cache_key_for(:identifiers), expires_in: CACHE_EXPIRY) do
+      Rails.logger.debug "Loading question identifiers from database" unless Rails.env.production?
       pluck(:identifier).map(&:to_sym)
     end
-
-    Rails.logger.info("Cache HIT for question_identifiers") if Rails.cache.exist?("question_identifiers")
-    cached_data
   end
+
+  # キャッシュ設定
+  CACHE_EXPIRY = 1.hour
+  CACHE_KEYS = %i[all by_identifier identifiers].freeze
 
   # キャッシュを無効化するコールバック
   after_commit :clear_questions_cache
 
   private
 
+  def self.cache_key_for(type)
+    "questions_#{type}"
+  end
+
   def clear_questions_cache
-    Rails.cache.delete("questions_all")
-    Rails.cache.delete("questions_by_identifier")
-    Rails.cache.delete("question_identifiers")
+    CACHE_KEYS.each do |key_type|
+      Rails.cache.delete(self.class.cache_key_for(key_type))
+    end
+    Rails.logger.debug "Cleared questions cache" unless Rails.env.production?
   end
 end
