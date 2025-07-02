@@ -1,7 +1,7 @@
-<div class="min-h-screen p-4">
+<div class="min-h-screen p-4 animate-[fadeIn_0.5s_ease-out]">
     <div class="grid gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      <% @diaries.each do |diary| %>
-        <div class="neuro-card p-4 md:p-6">
+      <% @diaries.each_with_index do |diary, index| %>
+        <div class="neuro-card p-4 md:p-6" style="animation: fadeInUp 0.6s ease-out <%= (index * 0.1).round(1) %>s both;">
           <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-3">
             <span class="text-base md:text-lg font-semibold text-primary"><%= diary.date.strftime("%Y/%m/%d") %></span>
             <span class="text-xs md:text-sm text-base-content/60">by <%= diary.user.username %></span>
@@ -16,15 +16,15 @@
           <% end %>
 
           <div class="flex gap-1 md:gap-2 mb-3 md:mb-4 flex-wrap">
-            <% diary.diary_answers.each do |diary_answer| %>
-              <div class="neuro-badge py-1 px-2 text-xs font-medium flex items-center gap-1">
-                <span class="text-xl"><%= diary_answer.answer.emoji %></span>
+            <% diary.diary_answers.each_with_index do |diary_answer, badge_index| %>
+              <div class="neuro-badge py-1 px-2 text-xs font-medium flex items-center gap-1 hover:scale-110 transition-all duration-200" style="animation: bounceIn 0.6s ease-out <%= (badge_index * 0.1).round(1) %>s both;">
+                <span class="text-xl animate-[heartBeat_1.5s_ease-in-out_infinite]"><%= diary_answer.answer.emoji %></span>
               </div>
             <% end %>
           </div>
 
           <div class="flex justify-end">
-            <%= link_to diary_path(diary), class: "neuro-button py-2 px-3 md:px-4 text-xs md:text-sm font-medium" do %>
+            <%= link_to diary_path(diary), class: "neuro-button py-2 px-3 md:px-4 text-xs md:text-sm font-medium transition-all duration-200 hover:scale-105" do %>
               詳細を見る
             <% end %>
           </div>
@@ -33,7 +33,7 @@
     </div>
 
     <% if @diaries.empty? %>
-      <div class="neuro-card p-6 md:p-8 text-center">
+      <div class="neuro-card p-6 md:p-8 text-center animate-[scaleIn_0.4s_ease-out]">
         <h2 class="text-lg md:text-xl font-bold text-base-content mb-2">公開されている日記がありません</h2>
         <p class="text-sm md:text-base text-base-content/60">まだ公開されている日記がありません。</p>
       </div>
