@@ -7,19 +7,17 @@ class DiaryService
   def create_diary_answers(diary_answer_params)
     return unless diary_answer_params.present?
 
-    diary_answer_params.each do |question_identifier, answer_id|
-      question = Question.find_by(identifier: question_identifier)
-      @diary.diary_answers.create(question: question, answer_id: answer_id) if question && answer_id.present?
-    end
+    diary_answers_data = build_validated_answers_data(diary_answer_params)
+    DiaryAnswer.insert_all(diary_answers_data) if diary_answers_data.any?
   end
 
   def update_diary_answers(diary_answer_params)
     return unless diary_answer_params.present?
 
-    @diary.diary_answers.destroy_all
-    diary_answer_params.each do |question_identifier, answer_id|
-      question = Question.find_by(identifier: question_identifier)
-      @diary.diary_answers.create(question: question, answer_id: answer_id) if question && answer_id.present?
+    ActiveRecord::Base.transaction do
+      @diary.diary_answers.destroy_all
+      diary_answers_data = build_validated_answers_data(diary_answer_params)
+      DiaryAnswer.insert_all(diary_answers_data) if diary_answers_data.any?
     end
   end
 
@@ -34,10 +32,12 @@ class DiaryService
   def generate_til_candidates_and_redirect
     return { redirect_to: @diary, notice: "日記を作成しました（タネが不足しているためTILは生成されませんでした）" } if @user.seed_count <= 0
 
-    ActiveRecord::Base.transaction do
-      openai_service = OpenaiService.new
-      til_candidates = openai_service.generate_tils(@diary.notes)
+    # 外部API呼び出しをトランザクション外で実行
+    openai_service = OpenaiService.new
+    til_candidates = openai_service.generate_tils(@diary.notes)
 
+    # 外部API成功後、短時間でDB操作のみをトランザクション内で実行
+    ActiveRecord::Base.transaction do
       til_candidates.each_with_index do |content, index|
         @diary.til_candidates.create!(content: content, index: index)
       end
@@ -47,7 +47,8 @@ class DiaryService
 
     { redirect_to: [:select_til, @diary], notice: "日記を作成しました。続いて生成されたTIL を選択してください。" }
   rescue StandardError => e
-    Rails.logger.info("Error generating TIL candidates: #{e.message}")
+    Rails.logger.error "TIL generation failed"
+    Rails.logger.debug "TIL generation error details: #{e.message}" unless Rails.env.production?
     { redirect_to: @diary, notice: "日記を作成しました（TIL生成でエラーが発生しました）" }
   end
 
@@ -55,15 +56,18 @@ class DiaryService
     return false if @diary.notes.blank?
 
     if @user.seed_count <= 0
-      Rails.logger.info("Seed count is zero, skipping TIL regeneration.")
+      Rails.logger.debug "TIL regeneration skipped: insufficient seeds" unless Rails.env.production?
       return false
     end
 
+    # 外部API呼び出しをトランザクション外で実行
+    openai_service = OpenaiService.new
+    til_candidates = openai_service.generate_tils(@diary.notes)
+
+    # 外部API成功後、短時間でDB操作のみをトランザクション内で実行
     ActiveRecord::Base.transaction do
       # Clear existing candidates and generate new ones
       @diary.til_candidates.destroy_all
-      openai_service = OpenaiService.new
-      til_candidates = openai_service.generate_tils(@diary.notes)
 
       til_candidates.each_with_index do |content, index|
         @diary.til_candidates.create!(content: content, index: index)
@@ -74,7 +78,8 @@ class DiaryService
 
     true
   rescue StandardError => e
-    Rails.logger.error("Error regenerating TIL candidates: #{e.message}")
+    Rails.logger.error "TIL regeneration failed"
+    Rails.logger.debug "TIL regeneration error details: #{e.message}" unless Rails.env.production?
     false
   end
 
@@ -113,5 +118,50 @@ class DiaryService
       questions: questions,
       selected_answers: selected_answers
     }
+  end
+
+  private
+
+  # バリデーション付きでanswer dataを構築（DRY原則とセキュリティ向上）
+  def build_validated_answers_data(diary_answer_params)
+    questions_by_identifier = Question.cached_by_identifier
+    diary_answers_data = []
+
+    diary_answer_params.each do |question_identifier, answer_id|
+      question = questions_by_identifier[question_identifier.to_s]
+      next unless question && answer_id.present?
+
+      if valid_answer_for_question?(question, answer_id)
+        diary_answers_data << build_answer_data(question.id, answer_id)
+      else
+        log_invalid_answer_attempt(question.identifier)
+      end
+    end
+
+    diary_answers_data
+  end
+
+  # answer_idが該当questionの有効な値かチェック（キャッシュ汚染対策）
+  def valid_answer_for_question?(question, answer_id)
+    return false unless answer_id.to_s.match?(/\A\d+\z/) # 数値のみ許可
+
+    answer_id_int = answer_id.to_i
+    return false if answer_id_int <= 0 # 負数や0を拒否
+
+    question.answers.pluck(:id).include?(answer_id_int)
+  end
+
+  def build_answer_data(question_id, answer_id)
+    {
+      diary_id: @diary.id,
+      question_id: question_id,
+      answer_id: answer_id.to_i,
+      created_at: Time.current,
+      updated_at: Time.current
+    }
+  end
+
+  def log_invalid_answer_attempt(question_identifier)
+    Rails.logger.warn "Invalid answer submission for question: #{question_identifier}" unless Rails.env.production?
   end
 end

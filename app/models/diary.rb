@@ -8,6 +8,9 @@ class Diary < ApplicationRecord
   scope :public_diaries, -> { where(is_public: true) }
   scope :private_diaries, -> { where(is_public: false) }
 
+  # 統計チャートのキャッシュを無効化
+  after_commit :clear_stats_cache
+
   def github_uploaded?
     github_uploaded == true
   end
@@ -20,5 +23,13 @@ class Diary < ApplicationRecord
     return nil unless selected_til_index.present?
 
     til_candidates.find_by(index: selected_til_index)&.content
+  end
+
+  private
+
+  def clear_stats_cache
+    # ハッシュ化されたuser_idを使用してキャッシュクリア
+    user_hash = Digest::SHA256.hexdigest(user_id.to_s)[0, 8]
+    Rails.cache.delete_matched("stats_charts_#{user_hash}_*")
   end
 end

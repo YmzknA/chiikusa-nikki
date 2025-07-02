@@ -99,6 +99,7 @@ RSpec.describe DiaryService, type: :service do
         service.update_diary_answers(update_params)
       end.to change(DiaryAnswer, :count).by(0) # destroys 1, creates 1
 
+      diary.reload
       updated_answer = diary.diary_answers.last
       expect(updated_answer.answer).to eq(new_answer)
     end
@@ -191,7 +192,8 @@ RSpec.describe DiaryService, type: :service do
       before do
         diary.update!(notes: "Test notes")
         allow(mock_openai_service).to receive(:generate_tils).and_raise(StandardError, "API Error")
-        allow(Rails.logger).to receive(:info)
+        allow(Rails.logger).to receive(:error)
+        allow(Rails.logger).to receive(:debug)
       end
 
       it "handles error gracefully and does not decrement seed count" do
@@ -200,7 +202,7 @@ RSpec.describe DiaryService, type: :service do
 
         expect(result[:redirect_to]).to eq(diary)
         expect(result[:notice]).to include("TIL生成でエラーが発生")
-        expect(Rails.logger).to have_received(:info).with(/Error generating TIL candidates/)
+        expect(Rails.logger).to have_received(:error).with("TIL generation failed")
         expect(user.reload.seed_count).to eq(initial_seed_count) # seed count should not change
       end
     end
@@ -266,7 +268,7 @@ RSpec.describe DiaryService, type: :service do
     context "when user has no seeds" do
       before do
         user.update!(seed_count: 0)
-        allow(Rails.logger).to receive(:info)
+        allow(Rails.logger).to receive(:debug)
       end
 
       it "does not regenerate and logs info" do
@@ -274,7 +276,7 @@ RSpec.describe DiaryService, type: :service do
           service.regenerate_til_candidates_if_needed
         end.not_to(change { diary.til_candidates.count })
 
-        expect(Rails.logger).to have_received(:info).with(/Seed count is zero/)
+        expect(Rails.logger).to have_received(:debug).with(/TIL regeneration skipped: insufficient seeds/)
       end
     end
 
@@ -291,7 +293,7 @@ RSpec.describe DiaryService, type: :service do
           service.regenerate_til_candidates_if_needed
         end.not_to raise_error
 
-        expect(Rails.logger).to have_received(:error).with(/Error regenerating TIL candidates/)
+        expect(Rails.logger).to have_received(:error).with("TIL regeneration failed")
         expect(user.reload.seed_count).to eq(initial_seed_count) # seed count should not change
       end
     end

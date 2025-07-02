@@ -136,6 +136,7 @@ GEM
       activesupport (>= 6.1)
     hashdiff (1.2.0)
     hashie (5.0.0)
+    hiredis (0.6.3)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     io-console (0.8.0)
@@ -285,6 +286,19 @@ GEM
     rdoc (6.14.1)
       erb
       psych (>= 4.0.0)
+    redis (5.4.0)
+      redis-client (>= 0.22.0)
+    redis-actionpack (5.5.0)
+      actionpack (>= 5)
+      redis-rack (>= 2.1.0, < 4)
+      redis-store (>= 1.1.0, < 2)
+    redis-client (0.25.0)
+      connection_pool
+    redis-rack (3.0.0)
+      rack-session (>= 0.2.0)
+      redis-store (>= 1.2, < 2)
+    redis-store (1.11.0)
+      redis (>= 4, < 6)
     regexp_parser (2.10.0)
     reline (0.6.1)
       io-console (~> 0.5)
@@ -422,6 +436,7 @@ DEPENDENCIES
   devise
   factory_bot_rails (~> 6.0)
   faraday-retry
+  hiredis
   jbuilder
   jsbundling-rails
   meta-tags
@@ -435,6 +450,8 @@ DEPENDENCIES
   rails (~> 7.2.2, >= 7.2.2.1)
   rails-controller-testing
   rails-i18n
+  redis (~> 5.0)
+  redis-actionpack
   rspec-rails (~> 6.0)
   rubocop-performance
   rubocop-rails-omakase
