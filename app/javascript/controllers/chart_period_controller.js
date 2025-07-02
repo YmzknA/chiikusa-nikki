@@ -5,7 +5,6 @@ export default class extends Controller {
   static values = { chartType: String }
 
   connect() {
-    console.log("Chart period controller connected for:", this.chartTypeValue)
     this.updateMonthControlsVisibility()
     
     // レイアウト自動修正を無効化 - HTMLの初期設定のみに依存
@@ -136,6 +135,5 @@ export default class extends Controller {
   }
 
   disconnect() {
-    console.log('Chart period controller disconnected for:', this.chartTypeValue)
   }
 }

@@ -7,12 +7,10 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("X share controller connected")
   }
 
   // X共有リンククリック時の処理
   async share(event) {
-    console.log("X share clicked, diary ID:", this.diaryIdValue)
     
     // タネ獲得リクエストを並行して送信
     if (this.shareUrlValue) {

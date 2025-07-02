@@ -7,10 +7,6 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Calendar controller connected")
-    console.log("Calendar data:", this.dataValue)
-    console.log("Has weeks:", !!this.dataValue?.weeks)
-    console.log("Weeks length:", this.dataValue?.weeks?.length)
     this.renderCalendar()
   }
 
@@ -25,7 +21,6 @@ export default class extends Controller {
     const weekdays = this.dataValue.weekdays
     const month = this.dataValue.month
     
-    console.log("Processing calendar with", weeks.length, "weeks")
     
     // カレンダーのHTMLを生成
     let calendarHTML = `

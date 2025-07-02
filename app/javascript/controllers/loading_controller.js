@@ -5,7 +5,6 @@ export default class extends Controller {
   static values = { delay: Number }
   
   connect() {
-    console.log("🔄 Loading controller connected")
     this.delayValue = this.delayValue || 150
     this.timeout = null
     
@@ -40,61 +39,45 @@ export default class extends Controller {
   
   // クリックイベントから呼び出される
   showOnClick(event) {
-    console.log('🖱️ showOnClick triggered', event.currentTarget)
     // フォーム送信やリンククリックの場合のみローディング表示
     const element = event.currentTarget
     if (element.tagName === 'A' || element.tagName === 'BUTTON' || element.closest('form')) {
-      console.log('✅ showOnClick conditions met, calling showDelayed')
       this.showDelayed()
-    } else {
-      console.log('❌ showOnClick conditions not met')
     }
   }
   
   // フォーム送信時に呼び出される
   showOnSubmit(event) {
-    console.log('📝 showOnSubmit triggered', event.currentTarget)
     this.showDelayed()
   }
   
   showDelayed() {
-    console.log('⏱️ showDelayed called, hasSpinnerTarget:', this.hasSpinnerTarget)
     if (!this.hasSpinnerTarget) {
-      console.log('❌ No spinner target found')
       return
     }
     
-    console.log('⏰ Setting timeout with delay:', this.delayValue)
     this.timeout = setTimeout(() => {
-      console.log('⏰ Timeout fired, calling show()')
       this.show()
     }, this.delayValue)
   }
   
   show() {
-    console.log('👁️ show() called, hasSpinnerTarget:', this.hasSpinnerTarget)
     if (!this.hasSpinnerTarget) {
-      console.log('❌ No spinner target in show()')
       return
     }
-    console.log('✨ Showing loading spinner')
     this.spinnerTarget.classList.remove("hidden")
     this.spinnerTarget.classList.add("flex")
   }
   
   hide() {
-    console.log('🙈 hide() called')
     if (this.timeout) {
-      console.log('⏰ Clearing timeout')
       clearTimeout(this.timeout)
       this.timeout = null
     }
     
     if (!this.hasSpinnerTarget) {
-      console.log('❌ No spinner target in hide()')
       return
     }
-    console.log('✨ Hiding loading spinner')
     this.spinnerTarget.classList.add("hidden")
     this.spinnerTarget.classList.remove("flex")
   }

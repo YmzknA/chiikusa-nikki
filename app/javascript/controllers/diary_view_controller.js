@@ -4,7 +4,6 @@ export default class extends Controller {
   static targets = ["listTab", "calendarView", "listView", "monthFilter"]
 
   connect() {
-    console.log("DiaryView controller connected")
     this.initializeView()
   }
 
@@ -29,7 +28,6 @@ export default class extends Controller {
 
   showCalendarView() {
     try {
-      console.log("Switching to calendar view")
 
       // Toggle views
       if (this.hasCalendarViewTarget && this.hasListViewTarget) {
@@ -49,7 +47,6 @@ export default class extends Controller {
 
   showListView() {
     try {
-      console.log("Switching to list view")
 
       // Toggle views
       if (this.hasCalendarViewTarget && this.hasListViewTarget) {
@@ -69,12 +66,10 @@ export default class extends Controller {
 
   filterByMonth(event) {
     try {
-      console.log("Filtering by month")
       const selectElement = event.target
       const form = selectElement.closest('form')
       
       if (form) {
-        console.log("Submitting form with selected month:", selectElement.value)
         form.submit()
       } else {
         console.error("Form not found for select element")

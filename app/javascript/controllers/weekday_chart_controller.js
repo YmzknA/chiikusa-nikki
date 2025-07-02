@@ -10,7 +10,6 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Weekday chart controller connected")
     
     const canvas = this.hasCanvasTarget ? this.canvasTarget : this.element.querySelector('canvas')
     if (!canvas) {
@@ -54,7 +53,6 @@ export default class extends Controller {
         data: this.dataValue || { labels: [], datasets: [] },
         options: customOptions
       })
-      console.log("Weekday chart created successfully:", this.chart)
     } catch (error) {
       console.error("Weekday chart creation failed:", error)
     }
@@ -64,7 +62,6 @@ export default class extends Controller {
     if (this.chart) {
       this.chart.destroy()
       this.chart = undefined
-      console.log("Weekday chart destroyed")
     }
   }
 

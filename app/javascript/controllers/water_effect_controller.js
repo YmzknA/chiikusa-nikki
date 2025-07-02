@@ -7,13 +7,11 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Water effect controller connected")
   }
 
   // 水やりボタンクリック時の処理
   async water(event) {
     event.preventDefault()
-    console.log("Water button clicked, triggering effect")
     
     // エフェクトを即座に実行
     this.createWaterSplashEffect()
@@ -26,7 +24,6 @@ export default class extends Controller {
 
   async onlyWater(event) {
     event.preventDefault()
-    console.log("Only water button clicked, triggering effect")
     
     // エフェクトを即座に実行
     this.createWaterSplashEffect()
@@ -35,7 +32,6 @@ export default class extends Controller {
   // 水しぶきエフェクトの作成
   createWaterSplashEffect() {
     const button = this.buttonTarget
-    console.log("Creating water splash effect for button:", button)
     
     if (!button) {
       console.error("No button target found for water effect")
@@ -71,7 +67,6 @@ export default class extends Controller {
     container.style.position = 'relative'
     container.appendChild(splash)
     
-    console.log("Water splash effect created and added to:", container)
     
     // エフェクト終了後にクリーンアップ
     setTimeout(() => {
@@ -79,7 +74,6 @@ export default class extends Controller {
       if (splash.parentNode) {
         splash.parentNode.removeChild(splash)
       }
-      console.log("Water effect cleaned up")
     }, 800)
   }
 
