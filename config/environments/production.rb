@@ -78,8 +78,6 @@ Rails.application.configure do
     connect_timeout: 5,
     read_timeout: 2,
     write_timeout: 2,
-    pool_size: ENV.fetch('RAILS_MAX_THREADS', 5).to_i,
-    pool_timeout: 5,
     ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_PEER }, # Proper SSL verification
     error_handler: -> (method:, returning:, exception:) {
       Rails.logger.error "Redis cache error: #{method} - #{exception.class}: #{exception.message}"
