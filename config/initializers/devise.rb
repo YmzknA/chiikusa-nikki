@@ -281,8 +281,8 @@ Devise.setup do |config|
   
   # Configure OmniAuth with CSRF protection
   config.omniauth :github, 
-    Rails.application.credentials.dig(:github, :client_id), 
-    Rails.application.credentials.dig(:github, :client_secret), 
+    Rails.env.production? ? Rails.application.credentials.dig(:github, :client_id) : Rails.application.credentials.dig(:github, :test_client_id), 
+    Rails.env.production? ? Rails.application.credentials.dig(:github, :client_secret) : Rails.application.credentials.dig(:github, :test_client_secret), 
     scope: 'user:email,public_repo,repo', 
     prompt: 'consent', 
     authorize_params: { prompt: 'consent' },
