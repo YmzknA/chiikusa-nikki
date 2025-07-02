@@ -10,7 +10,6 @@ class OpenaiService
     generate_smart_tils(notes) if notes.present?
   rescue StandardError => e
     Rails.logger.error "OpenAI API Error: #{e.message}"
-    Rails.logger.error e.backtrace.join("\n")
   end
 
   private

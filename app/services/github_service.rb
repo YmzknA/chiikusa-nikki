@@ -55,10 +55,10 @@ class GithubService
       Rails.logger.warn "Repository not found: #{@user.github_username}/#{repo_name}"
       false
     rescue Octokit::Unauthorized, Octokit::Forbidden => e
-      Rails.logger.error "GitHub API access denied: #{e.message}"
+      Rails.logger.warn "GitHub API access denied: #{e.message}"
       false
     rescue Octokit::Error => e
-      Rails.logger.error "GitHub API Error during repository check: #{e.message}"
+      Rails.logger.warn "GitHub API Error during repository check: #{e.message}"
       false
     end
   end
