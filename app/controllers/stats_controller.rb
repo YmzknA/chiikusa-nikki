@@ -24,12 +24,29 @@ class StatsController < ApplicationController
   end
 
   def build_all_charts
-    @daily_trends_chart = @chart_builder.build_daily_trends_chart(@view_type, @target_month)
-    @monthly_posts_chart = @chart_builder.build_monthly_posts_chart
-    @learning_intensity_heatmap = @chart_builder.build_learning_intensity_heatmap
-    @habit_calendar_chart = @chart_builder.build_habit_calendar_chart
-    @weekday_pattern_chart = @chart_builder.build_weekday_pattern_chart(@weekday_months)
-    @distribution_chart = @chart_builder.build_distribution_chart(@distribution_months)
+    cache_key = "stats_charts_#{current_user.id}_#{@view_type}_#{@target_month}_" \
+                "#{@weekday_months}_#{@distribution_months}"
+
+    cached_charts = Rails.cache.fetch(cache_key, expires_in: 15.minutes) do
+      Rails.logger.info("Cache MISS for stats charts: #{cache_key}")
+      {
+        daily_trends_chart: @chart_builder.build_daily_trends_chart(@view_type, @target_month),
+        monthly_posts_chart: @chart_builder.build_monthly_posts_chart,
+        learning_intensity_heatmap: @chart_builder.build_learning_intensity_heatmap,
+        habit_calendar_chart: @chart_builder.build_habit_calendar_chart,
+        weekday_pattern_chart: @chart_builder.build_weekday_pattern_chart(@weekday_months),
+        distribution_chart: @chart_builder.build_distribution_chart(@distribution_months)
+      }
+    end
+
+    Rails.logger.info("Cache HIT for stats charts: #{cache_key}") if Rails.cache.exist?(cache_key)
+
+    @daily_trends_chart = cached_charts[:daily_trends_chart]
+    @monthly_posts_chart = cached_charts[:monthly_posts_chart]
+    @learning_intensity_heatmap = cached_charts[:learning_intensity_heatmap]
+    @habit_calendar_chart = cached_charts[:habit_calendar_chart]
+    @weekday_pattern_chart = cached_charts[:weekday_pattern_chart]
+    @distribution_chart = cached_charts[:distribution_chart]
   end
 
   def handle_turbo_frame_request
