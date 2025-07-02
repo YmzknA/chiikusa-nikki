@@ -1,13 +1,13 @@
-<div class="min-h-screen p-2 sm:p-4" data-controller="diary-view">
+<div class="min-h-screen p-2 sm:p-4 animate-[fadeIn_0.5s_ease-out]" data-controller="diary-view">
   <!-- Flash Messages Area -->
   <div id="flash-messages">
     <%= render 'shared/flash', flash: flash %>
   </div>
 
   <!-- Mobile Header with Logo -->
-  <div class="relative z-10 sm:hidden neuro-card p-4 mb-4 flex justify-center items-center">
+  <div class="relative z-10 sm:hidden neuro-card p-4 mb-4 flex justify-center items-center animate-[fadeInDown_0.6s_ease-out]">
     <%= link_to root_path do %>
-      <%= image_tag "logo.png", alt: "Neuro Logo", class: "h-10 w-auto" %>
+      <%= image_tag "logo.png", alt: "Neuro Logo", class: "h-10 w-auto transition-all duration-200 hover:scale-110" %>
     <% end %>
     <div class="h-10 flex items-center ml-3">
       <%= render 'shared/watering' %>
@@ -15,7 +15,7 @@
   </div>
 
   <!-- DaisyUI Tab Navigation -->
-  <div class="flex justify-start items-center mb-4">
+  <div class="flex justify-start items-center mb-4 animate-[slideInLeft_0.5s_ease-out_0.2s_both]">
     <div class="tabs tabs-boxed tabs-sm" role="tablist" aria-label="日記表示切り替え">
       <input 
         type="radio" 
@@ -58,7 +58,7 @@
 
 
   <!-- Calendar View -->
-  <div id="calendar-view" class="neuro-card p-3 sm:p-6 overflow-hidden" data-diary-view-target="calendarView" role="tabpanel" aria-labelledby="calendar-tab">
+  <div id="calendar-view" class="neuro-card p-3 sm:p-6 overflow-hidden animate-[scaleIn_0.4s]" data-diary-view-target="calendarView" role="tabpanel" aria-labelledby="calendar-tab">
     <%= month_calendar(events: @diaries, attribute: :date, class: "table table-fixed w-full") do |date, diaries| %>
       <div class="neuro-calendar-cell py-2 sm:py-3 px-1 sm:px-2 min-h-[50px] sm:min-h-[60px] md:min-h-[80px] relative">
         <div class="text-xs sm:text-sm text-base-content/60 mb-1"><%= date.day %></div>
@@ -87,8 +87,8 @@
   <!-- List View -->
   <div id="list-view" class="hidden" data-diary-view-target="listView" role="tabpanel" aria-labelledby="list-tab">
     <div class="grid gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      <% @diaries.each do |diary| %>
-        <div class="neuro-card p-4 md:p-6">
+      <% @diaries.each_with_index do |diary, index| %>
+        <div class="neuro-card p-4 md:p-6" style="animation: fadeInUp 0.6s ease-out <%= (index * 0.1).round(1) %>s both;">
           <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-3">
             <span class="text-base md:text-lg font-semibold text-primary"><%= diary.date.strftime("%Y/%m/%d") %></span>
           </div>
@@ -110,7 +110,7 @@
           </div>
 
           <div class="flex justify-end">
-            <%= link_to diary_path(diary), class: "neuro-button py-2 px-3 md:px-4 text-xs md:text-sm font-medium" do %>
+            <%= link_to diary_path(diary), class: "neuro-button py-2 px-3 md:px-4 text-xs md:text-sm font-medium transition-all duration-200 hover:scale-105" do %>
               詳細を見る
             <% end %>
           </div>
@@ -119,10 +119,10 @@
     </div>
 
     <% if @diaries.empty? %>
-      <div class="neuro-card p-6 md:p-8 text-center">
+      <div class="neuro-card p-6 md:p-8 text-center animate-[scaleIn_0.4s_ease-out]">
         <h2 class="text-lg md:text-xl font-bold text-base-content mb-2">日記がありません</h2>
         <p class="text-sm md:text-base text-base-content/60">まだ日記を書いていません。最初の日記を書いてみましょう。</p>
-        <%= link_to new_diary_path, class: "neuro-button py-2 px-4 text-sm font-medium mt-4 inline-block" do %>
+        <%= link_to new_diary_path, class: "neuro-button py-2 px-4 text-sm font-medium mt-4 inline-block transition-all duration-200 hover:scale-105 hover:animate-[wiggle_0.5s_ease-in-out]" do %>
           日記を書く
         <% end %>
       </div>
