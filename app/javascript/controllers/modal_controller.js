@@ -5,7 +5,6 @@ export default class extends Controller {
   static targets = ["dialog"]
 
   connect() {
-    console.log("Modal controller connected")
   }
 
   show() {

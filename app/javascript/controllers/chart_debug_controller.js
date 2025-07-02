@@ -10,13 +10,7 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Chart debug controller connected")
-    console.log("Type:", this.typeValue)
-    console.log("Data:", this.dataValue)
-    console.log("Options:", this.optionsValue)
-    
     // Chart.jsが利用可能か確認
-    console.log("Chart.js available:", typeof Chart)
     
     const canvas = this.hasCanvasTarget ? this.canvasTarget : this.element.querySelector('canvas')
     if (!canvas) {
@@ -24,7 +18,6 @@ export default class extends Controller {
       return
     }
     
-    console.log("Canvas found:", canvas)
     
     // データのコピーを作成（元データを変更しないため）
     this.chartData = JSON.parse(JSON.stringify(this.dataValue))
@@ -106,7 +99,6 @@ export default class extends Controller {
         data: this.chartData || { labels: [], datasets: [] },
         options: customOptions
       })
-      console.log("Chart created successfully:", this.chart)
     } catch (error) {
       console.error("Chart creation failed:", error)
     }
@@ -116,7 +108,6 @@ export default class extends Controller {
     if (this.chart) {
       this.chart.destroy()
       this.chart = undefined
-      console.log("Chart destroyed")
     }
   }
 

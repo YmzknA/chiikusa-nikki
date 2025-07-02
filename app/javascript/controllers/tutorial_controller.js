@@ -4,11 +4,9 @@ export default class extends Controller {
     static targets = []
 
     connect() {
-        console.log("Tutorial controller connected")
     }
 
     close() {
-        console.log("Tutorial modal closing")
         // モーダルを閉じる処理
         const modal = this.element.closest('.tutorial-modal')
         if (modal) {
@@ -26,7 +24,6 @@ export default class extends Controller {
 
     // モーダル版のチュートリアルを表示
     showModal() {
-        console.log("Showing tutorial modal")
         
         // セキュアなDOM要素作成
         const modalDiv = document.createElement('div')

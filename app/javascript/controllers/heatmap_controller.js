@@ -7,7 +7,6 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Heatmap controller connected")
     this.renderHeatmap()
     
     // 画面サイズ変更時の再描画
@@ -25,7 +24,6 @@ export default class extends Controller {
     const displayData = isMobile ? this.getMobileData(weekdayData, weeksCount) : { weekdayData, weeksCount }
     const displayTitle = "学習強度ヒートマップ（直近4ヶ月）"
     
-    console.log("Rendering heatmap:", { isMobile, weeks: displayData.weeksCount })
     
     // ヒートマップのHTMLを生成（縦：曜日、横：週）
     let heatmapHTML = `

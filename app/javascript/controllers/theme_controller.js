@@ -2,7 +2,6 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   connect() {
-    console.log("Theme controller connected - forcing light mode")
     this.forceLightTheme()
   }
 
@@ -18,6 +17,5 @@ export default class extends Controller {
     localStorage.removeItem('theme')
     localStorage.removeItem('data-theme')
     
-    console.log("Light theme enforced")
   }
 }
