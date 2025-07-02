@@ -473,11 +473,8 @@ label:has(input[type="radio"]:checked) {
   --animate-bounce-in: bounceIn 0.6s ease-out;
   --animate-slide-in-left: slideInLeft 0.5s ease-out;
   --animate-slide-in-right: slideInRight 0.5s ease-out;
-  --animate-pulse-glow: pulseGlow 2s ease-in-out infinite;
-  --animate-float: floatAnimation 3s ease-in-out infinite;
   --animate-wiggle: wiggle 0.5s ease-in-out;
   --animate-heart-beat: heartBeat 1.5s ease-in-out infinite;
-  --animate-sparkle: sparkle 1.5s ease-in-out infinite;
 
   @keyframes flashFade {
     0% { transform: translateX(180px); opacity: 0; }
@@ -523,16 +520,6 @@ label:has(input[type="radio"]:checked) {
     to { opacity: 1; transform: translateX(0); }
   }
 
-  @keyframes pulseGlow {
-    0%, 100% { box-shadow: 0 0 5px rgba(105, 169, 106, 0.4); }
-    50% { box-shadow: 0 0 20px rgba(105, 169, 106, 0.8); }
-  }
-
-  @keyframes floatAnimation {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-  }
-
   @keyframes wiggle {
     0%, 100% { transform: rotate(0deg); }
     25% { transform: rotate(-3deg); }
@@ -542,11 +529,6 @@ label:has(input[type="radio"]:checked) {
   @keyframes heartBeat {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.1); }
-  }
-
-  @keyframes sparkle {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.7; transform: scale(1.2); }
   }
 }
 
