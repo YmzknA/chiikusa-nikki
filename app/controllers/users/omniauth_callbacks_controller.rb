@@ -80,7 +80,9 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
     if @user.persisted?
       log_oauth_attempt(auth.provider, auth.info.email, true)
-      sign_in_and_redirect @user, event: :authentication
+      @user.remember_me = true
+      sign_in(@user)
+      redirect_to after_sign_in_path_for(@user)
       set_flash_message(:notice, :success, kind: provider_name) if is_navigational_format?
     else
       log_oauth_attempt(auth.provider, auth.info.email, false)
