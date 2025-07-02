@@ -229,9 +229,12 @@ class ChartBuilderService
   end
 
   def fetch_monthly_posts_data
+    # JSTタイムゾーンを考慮した月別集計
     @user.diaries
-         .group_by { |diary| diary.date.beginning_of_month }
-         .transform_values(&:count)
+         .where(date: 12.months.ago.beginning_of_month..Date.current.end_of_month)
+         .group("DATE_TRUNC('month', date AT TIME ZONE 'Asia/Tokyo')")
+         .count
+         .transform_keys { |month_str| Date.parse(month_str.to_s).beginning_of_month }
          .sort_by { |month, _count| month }
          .last(12)
   end
