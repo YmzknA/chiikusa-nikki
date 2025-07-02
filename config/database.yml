@@ -84,3 +84,6 @@ test:
 production:
   <<: *default
   url: <%= Rails.application.credentials.dig(:DATABASE_URL) %>
+  connect_timeout: 10
+  pool_timeout: 15
+  prepared_statements: false
