@@ -15,7 +15,7 @@ class DiaryService
     return unless diary_answer_params.present?
 
     ActiveRecord::Base.transaction do
-      @diary.diary_answers.delete_all
+      @diary.diary_answers.destroy_all
       diary_answers_data = build_validated_answers_data(diary_answer_params)
       DiaryAnswer.insert_all(diary_answers_data) if diary_answers_data.any?
     end
@@ -155,7 +155,7 @@ class DiaryService
     {
       diary_id: @diary.id,
       question_id: question_id,
-      answer_id: answer_id,
+      answer_id: answer_id.to_i,
       created_at: Time.current,
       updated_at: Time.current
     }
