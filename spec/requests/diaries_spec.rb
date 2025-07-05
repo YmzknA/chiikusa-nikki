@@ -119,7 +119,7 @@ RSpec.describe "Diaries", type: :request do
       it "redirects with TIL generation when notes present" do
         user.update!(seed_count: 3)
         mock_openai = instance_double(OpenaiService::Base)
-        allow_any_instance_of(DiaryService).to receive(:create_openai_service).and_return(mock_openai)
+        allow(AiServiceFactory).to receive(:create).and_return(mock_openai)
         allow(mock_openai).to receive(:generate_tils).and_return(["TIL 1", "TIL 2", "TIL 3"])
 
         post diaries_path, params: { diary: diary_params, diary_answers: diary_answers_params }

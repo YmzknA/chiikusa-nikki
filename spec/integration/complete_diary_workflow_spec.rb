@@ -36,7 +36,7 @@ RSpec.describe "Complete Diary Workflow Integration", type: :request do
       )
 
     allow(user).to receive(:github_service).and_return(mock_github_service)
-    allow_any_instance_of(DiaryService).to receive(:create_openai_service).and_return(mock_openai_service)
+    allow(AiServiceFactory).to receive(:create).and_return(mock_openai_service)
   end
 
   describe "end-to-end diary creation and publication workflow" do
