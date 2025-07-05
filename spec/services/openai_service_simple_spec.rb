@@ -97,9 +97,7 @@ RSpec.describe OpenaiService::PersonalDiary, type: :service do
       end
 
       it "handles errors gracefully and logs them" do
-        result = service.generate_tils(notes)
-
-        expect(result).to be_nil
+        expect { service.generate_tils(notes) }.to raise_error(StandardError, "AIサービスでエラーが発生しました。時間をおいて再度お試しください。")
         expect(Rails.logger).to have_received(:error).with("OpenAI API Error: API Error")
       end
     end

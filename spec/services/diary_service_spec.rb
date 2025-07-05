@@ -116,7 +116,7 @@ RSpec.describe DiaryService, type: :service do
     let(:til_contents) { ["TIL 1", "TIL 2", "TIL 3"] }
 
     before do
-      allow(service).to receive(:create_openai_service).and_return(mock_openai_service)
+      allow(AiServiceFactory).to receive(:create).and_return(mock_openai_service)
       allow(mock_openai_service).to receive(:generate_tils).and_return(til_contents)
     end
 
@@ -231,7 +231,7 @@ RSpec.describe DiaryService, type: :service do
 
     before do
       diary.update!(notes: "Updated notes")
-      allow(service).to receive(:create_openai_service).and_return(mock_openai_service)
+      allow(AiServiceFactory).to receive(:create).and_return(mock_openai_service)
       allow(mock_openai_service).to receive(:generate_tils).and_return(new_til_contents)
     end
 
