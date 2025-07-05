@@ -50,7 +50,7 @@
     <% unless hide_navigation? %>
       <%= render 'shared/sidebar_navigation' %>
     <% end %>
-    <main class="<%= 'sm:pl-64' unless hide_navigation? %>">
+    <main class="pb-20 sm:pb-0 <%= 'sm:pl-64' unless hide_navigation? %>">
       <%= yield %>
     </main>
     <% unless hide_navigation? %>
