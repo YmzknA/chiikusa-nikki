@@ -85,17 +85,17 @@ RSpec.describe AiServiceErrorHandler, type: :service do
     context "with context" do
       it "logs context in debug mode when not in production" do
         allow(Rails.env).to receive(:production?).and_return(false)
-        
+
         AiServiceErrorHandler.log_error(error, { user_id: 123, action: "generate_tils" })
-        
+
         expect(Rails.logger).to have_received(:debug).with("Error context: {:user_id=>123, :action=>\"generate_tils\"}")
       end
 
       it "does not log context in production" do
         allow(Rails.env).to receive(:production?).and_return(true)
-        
+
         AiServiceErrorHandler.log_error(error, { user_id: 123 })
-        
+
         expect(Rails.logger).not_to have_received(:debug)
       end
     end
