@@ -39,22 +39,31 @@ class DiaryService
 
     # 外部API呼び出しをトランザクション外で実行
     openai_service = AiServiceFactory.create(diary_type)
-    til_candidates = openai_service.generate_tils(@diary.notes)
+    
+    begin
+      til_candidates = openai_service.generate_tils(@diary.notes)
+      
+      # 外部API成功後、短時間でDB操作のみをトランザクション内で実行
+      ActiveRecord::Base.transaction do
+        til_candidates.each_with_index do |content, index|
+          @diary.til_candidates.create!(content: content, index: index)
+        end
 
-    # 外部API成功後、短時間でDB操作のみをトランザクション内で実行
-    ActiveRecord::Base.transaction do
-      til_candidates.each_with_index do |content, index|
-        @diary.til_candidates.create!(content: content, index: index)
+        seed_manager.consume_seed!
       end
 
-      seed_manager.consume_seed!
+      { redirect_to: [:select_til, @diary], notice: "日記を作成しました。続いて生成されたTIL を選択してください。" }
+    rescue StandardError => e
+      # タイムアウトエラーの場合はタネを消費しない
+      if AiServiceErrorHandler.timeout_error?(e)
+        Rails.logger.warn "TIL generation timeout for user_id: #{@user.id} - seed not consumed"
+        { redirect_to: @diary, notice: "日記を作成しました（AI応答がタイムアウトしました。タネは消費されていません）" }
+      else
+        Rails.logger.error "TIL generation failed for user_id: #{@user.id}"
+        Rails.logger.debug "TIL generation error details: #{sanitize_log_message(e.message)}" unless Rails.env.production?
+        { redirect_to: @diary, notice: "日記を作成しました（TIL生成でエラーが発生しました）" }
+      end
     end
-
-    { redirect_to: [:select_til, @diary], notice: "日記を作成しました。続いて生成されたTIL を選択してください。" }
-  rescue StandardError => e
-    Rails.logger.error "TIL generation failed for user_id: #{@user.id}"
-    Rails.logger.debug "TIL generation error details: #{sanitize_log_message(e.message)}" unless Rails.env.production?
-    { redirect_to: @diary, notice: "日記を作成しました（TIL生成でエラーが発生しました）" }
   end
 
   def regenerate_til_candidates_if_needed(diary_type: "personal")
@@ -69,25 +78,34 @@ class DiaryService
 
     # 外部API呼び出しをトランザクション外で実行
     openai_service = AiServiceFactory.create(diary_type)
-    til_candidates = openai_service.generate_tils(@diary.notes)
+    
+    begin
+      til_candidates = openai_service.generate_tils(@diary.notes)
 
-    # 外部API成功後、短時間でDB操作のみをトランザクション内で実行
-    ActiveRecord::Base.transaction do
-      # Clear existing candidates and generate new ones
-      @diary.til_candidates.destroy_all
+      # 外部API成功後、短時間でDB操作のみをトランザクション内で実行
+      ActiveRecord::Base.transaction do
+        # Clear existing candidates and generate new ones
+        @diary.til_candidates.destroy_all
 
-      til_candidates.each_with_index do |content, index|
-        @diary.til_candidates.create!(content: content, index: index)
+        til_candidates.each_with_index do |content, index|
+          @diary.til_candidates.create!(content: content, index: index)
+        end
+
+        seed_manager.consume_seed!
       end
 
-      seed_manager.consume_seed!
+      true
+    rescue StandardError => e
+      # タイムアウトエラーの場合はタネを消費しない
+      if AiServiceErrorHandler.timeout_error?(e)
+        Rails.logger.warn "TIL regeneration timeout for user_id: #{@user.id} - seed not consumed"
+        false
+      else
+        Rails.logger.error "TIL regeneration failed for user_id: #{@user.id}"
+        Rails.logger.debug "TIL regeneration error details: #{sanitize_log_message(e.message)}" unless Rails.env.production?
+        false
+      end
     end
-
-    true
-  rescue StandardError => e
-    Rails.logger.error "TIL regeneration failed for user_id: #{@user.id}"
-    Rails.logger.debug "TIL regeneration error details: #{sanitize_log_message(e.message)}" unless Rails.env.production?
-    false
   end
 
   def handle_creation_error(questions, params, current_user)
