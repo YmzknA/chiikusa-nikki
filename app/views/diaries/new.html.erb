@@ -72,30 +72,8 @@
           </label>
         </div>
 
-        <div class="form-control animate-[fadeInUp_0.6s_ease-out_0.7s_both]">
-          <div class="mb-2 md:mb-3">
-            <span class="block text-base-content font-semibold mb-2 text-sm md:text-base">AIタイプ</span>
-          </div>
-          <div class="flex gap-2 md:gap-3 flex-wrap">
-            <label data-ai-type-selection-target="label">
-              <input type="radio" name="diary_type" value="personal" checked class="peer sr-only" data-ai-type-selection-target="radio">
-              <div class="neuro-button py-2 md:py-3 px-3 md:px-4 text-sm md:text-base peer-checked:!bg-primary peer-checked:!text-primary-content peer-checked:!shadow-inner transition-all duration-200" data-ai-type-selection-target="button">
-                📝 いつもの日記
-              </div>
-            </label>
-            <label data-ai-type-selection-target="label">
-              <input type="radio" name="diary_type" value="learning" class="peer sr-only" data-ai-type-selection-target="radio">
-              <div class="neuro-button py-2 md:py-3 px-3 md:px-4 text-sm md:text-base peer-checked:!bg-primary peer-checked:!text-primary-content peer-checked:!shadow-inner transition-all duration-200" data-ai-type-selection-target="button">
-                📚 学習日記
-              </div>
-            </label>
-            <label data-ai-type-selection-target="label">
-              <input type="radio" name="diary_type" value="novel" class="peer sr-only" data-ai-type-selection-target="radio">
-              <div class="neuro-button py-2 md:py-3 px-3 md:px-4 text-sm md:text-base peer-checked:!bg-primary peer-checked:!text-primary-content peer-checked:!shadow-inner transition-all duration-200" data-ai-type-selection-target="button">
-                ✨ 小説風
-              </div>
-            </label>
-          </div>
+        <div class="animate-[fadeInUp_0.6s_ease-out_0.7s_both]">
+          <%= render 'shared/ai_type_selection' %>
         </div>
 
         <div class="divider my-4 md:my-6 mx-auto"></div>
