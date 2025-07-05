@@ -5,7 +5,6 @@ export default class extends Controller {
   static values = { triggerCheckboxId: String }
 
   connect() {
-    this.debugLog("AI Type Selection controller connected")
     // 少し遅延させて初期化
     setTimeout(() => this.updateState(), 100)
   }
@@ -20,7 +19,6 @@ export default class extends Controller {
       }
 
       const isEnabled = triggerCheckbox.checked
-      this.debugLog("AI Type Selection - isEnabled:", isEnabled)
 
       const elements = this.getTargetElements()
       
@@ -80,14 +78,4 @@ export default class extends Controller {
     this.updateButtonStates(elements.buttons, false)
   }
 
-  // デバッグログの制御（本番環境では出力しない）
-  debugLog(...args) {
-    // hostname が localhost または development環境を示唆する場合のみログ出力
-    if (window.location.hostname === 'localhost' || 
-        window.location.hostname === '127.0.0.1' || 
-        window.location.hostname.includes('dev') ||
-        window.location.port !== '') {
-      console.log(...args)
-    }
-  }
 }
