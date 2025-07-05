@@ -37,34 +37,19 @@ class DiaryService
                notice: "日記を作成しました（#{seed_manager.insufficient_seeds_message}）" }
     end
 
-    # 外部API呼び出しをトランザクション外で実行
-    openai_service = AiServiceFactory.create(diary_type)
-
-    begin
-      til_candidates = openai_service.generate_tils(@diary.notes)
-
-      # 外部API成功後、短時間でDB操作のみをトランザクション内で実行
-      ActiveRecord::Base.transaction do
-        til_candidates.each_with_index do |content, index|
-          @diary.til_candidates.create!(content: content, index: index)
-        end
-
-        seed_manager.consume_seed!
+    result = handle_til_generation_with_error_handling(diary_type, seed_manager) do |til_candidates|
+      til_candidates.each_with_index do |content, index|
+        @diary.til_candidates.create!(content: content, index: index)
       end
+    end
 
+    case result[:status]
+    when :success
       { redirect_to: [:select_til, @diary], notice: "日記を作成しました。続いて生成されたTIL を選択してください。" }
-    rescue StandardError => e
-      # タイムアウトエラーの場合はタネを消費しない
-      if AiServiceErrorHandler.timeout_error?(e)
-        Rails.logger.warn "TIL generation timeout for user: [REDACTED] - seed not consumed"
-        { redirect_to: @diary, notice: "日記を作成しました（AI応答がタイムアウトしました。タネは消費されていません）" }
-      else
-        Rails.logger.error "TIL generation failed for user: [REDACTED]"
-        unless Rails.env.production?
-          Rails.logger.debug "TIL generation error details: #{sanitize_log_message(e.message)}"
-        end
-        { redirect_to: @diary, notice: "日記を作成しました（TIL生成でエラーが発生しました）" }
-      end
+    when :timeout
+      { redirect_to: @diary, notice: "日記を作成しました（AI応答がタイムアウトしました。タネは消費されていません）" }
+    else
+      { redirect_to: @diary, notice: "日記を作成しました（TIL生成でエラーが発生しました）" }
     end
   end
 
@@ -78,37 +63,16 @@ class DiaryService
       return false
     end
 
-    # 外部API呼び出しをトランザクション外で実行
-    openai_service = AiServiceFactory.create(diary_type)
+    result = handle_til_generation_with_error_handling(diary_type, seed_manager) do |til_candidates|
+      # Clear existing candidates and generate new ones
+      @diary.til_candidates.destroy_all
 
-    begin
-      til_candidates = openai_service.generate_tils(@diary.notes)
-
-      # 外部API成功後、短時間でDB操作のみをトランザクション内で実行
-      ActiveRecord::Base.transaction do
-        # Clear existing candidates and generate new ones
-        @diary.til_candidates.destroy_all
-
-        til_candidates.each_with_index do |content, index|
-          @diary.til_candidates.create!(content: content, index: index)
-        end
-
-        seed_manager.consume_seed!
+      til_candidates.each_with_index do |content, index|
+        @diary.til_candidates.create!(content: content, index: index)
       end
-
-      true
-    rescue StandardError => e
-      # タイムアウトエラーの場合はタネを消費しない
-      if AiServiceErrorHandler.timeout_error?(e)
-        Rails.logger.warn "TIL regeneration timeout for user: [REDACTED] - seed not consumed"
-      else
-        Rails.logger.error "TIL regeneration failed for user: [REDACTED]"
-        unless Rails.env.production?
-          Rails.logger.debug "TIL regeneration error details: #{sanitize_log_message(e.message)}"
-        end
-      end
-      false
     end
+
+    result[:status] == :success
   end
 
   def handle_creation_error(questions, params, current_user)
@@ -197,5 +161,43 @@ class DiaryService
     # ユーザー入力を含む可能性のある部分を除去
     message.gsub(/user input:.*$/i, "user input: [REDACTED]")
            .gsub(/notes:.*$/i, "notes: [REDACTED]")
+  end
+
+  # DRY原則に従い、TIL生成の共通エラーハンドリングロジックを抽出
+  def handle_til_generation_with_error_handling(diary_type, seed_manager)
+    openai_service = AiServiceFactory.create(diary_type)
+
+    begin
+      til_candidates = openai_service.generate_tils(@diary.notes)
+
+      # 外部API成功後、短時間でDB操作のみをトランザクション内で実行
+      ActiveRecord::Base.transaction do
+        yield(til_candidates) if block_given?
+        seed_manager.consume_seed!
+      end
+
+      { status: :success }
+    rescue StandardError => e
+      # タイムアウトエラーの場合はタネを消費しない
+      if AiServiceErrorHandler.timeout_error?(e)
+        log_til_generation_error(:timeout, e)
+        { status: :timeout }
+      else
+        log_til_generation_error(:general, e)
+        { status: :error }
+      end
+    end
+  end
+
+  def log_til_generation_error(error_type, error)
+    case error_type
+    when :timeout
+      Rails.logger.warn "TIL generation timeout for user: [REDACTED] - seed not consumed"
+    when :general
+      Rails.logger.error "TIL generation failed for user: [REDACTED]"
+      unless Rails.env.production?
+        Rails.logger.debug "TIL generation error details: #{sanitize_log_message(error.message)}"
+      end
+    end
   end
 end

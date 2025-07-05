@@ -293,7 +293,7 @@ RSpec.describe DiaryService, type: :service do
           service.regenerate_til_candidates_if_needed
         end.not_to raise_error
 
-        expect(Rails.logger).to have_received(:error).with("TIL regeneration failed for user: [REDACTED]")
+        expect(Rails.logger).to have_received(:error).with("TIL generation failed for user: [REDACTED]")
         expect(user.reload.seed_count).to eq(initial_seed_count) # seed count should not change
       end
     end
