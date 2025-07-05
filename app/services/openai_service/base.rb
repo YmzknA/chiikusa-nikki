@@ -58,11 +58,22 @@ class OpenaiService::Base
   def sanitize_user_input(input)
     return "" if input.blank?
 
-    # プロンプトインジェクションを防ぐためのサニタイズ
-    input.gsub(/(?:ignore|forget|system|prompt|instruction)[\s\S]*?(?:above|before|previous)/i, "[FILTERED]")
-         .gsub(/```[\s\S]*?```/, "[CODE_BLOCK]")
-         .strip
-         .truncate(INPUT_MAX_LENGTH) # 長すぎる入力を制限
+    # より厳密なプロンプトインジェクション対策
+    dangerous_patterns = [
+      /(?:ignore|forget|system|prompt|instruction)[\s\S]*?(?:above|before|previous)/i,
+      /```[\s\S]*?```/,
+      /\n\s*system[\s\S]*?:/i,
+      /\n\s*assistant[\s\S]*?:/i,
+      /\n\s*user[\s\S]*?:/i,
+      /role\s*[:=]\s*['"](system|assistant)['"]/i
+    ]
+
+    sanitized = input.dup
+    dangerous_patterns.each do |pattern|
+      sanitized.gsub!(pattern, "[FILTERED]")
+    end
+
+    sanitized.strip.truncate(INPUT_MAX_LENGTH)
   end
 
   def system_prompt

@@ -52,8 +52,8 @@ class DiaryService
 
     { redirect_to: [:select_til, @diary], notice: "日記を作成しました。続いて生成されたTIL を選択してください。" }
   rescue StandardError => e
-    Rails.logger.error "TIL generation failed"
-    Rails.logger.debug "TIL generation error details: #{e.message}" unless Rails.env.production?
+    Rails.logger.error "TIL generation failed for user_id: #{@user.id}"
+    Rails.logger.debug "TIL generation error details: #{sanitize_log_message(e.message)}" unless Rails.env.production?
     { redirect_to: @diary, notice: "日記を作成しました（TIL生成でエラーが発生しました）" }
   end
 
@@ -85,8 +85,8 @@ class DiaryService
 
     true
   rescue StandardError => e
-    Rails.logger.error "TIL regeneration failed"
-    Rails.logger.debug "TIL regeneration error details: #{e.message}" unless Rails.env.production?
+    Rails.logger.error "TIL regeneration failed for user_id: #{@user.id}"
+    Rails.logger.debug "TIL regeneration error details: #{sanitize_log_message(e.message)}" unless Rails.env.production?
     false
   end
 
@@ -170,5 +170,11 @@ class DiaryService
 
   def log_invalid_answer_attempt(question_identifier)
     Rails.logger.warn "Invalid answer submission for question: #{question_identifier}" unless Rails.env.production?
+  end
+
+  def sanitize_log_message(message)
+    # ユーザー入力を含む可能性のある部分を除去
+    message.gsub(/user input:.*$/i, "user input: [REDACTED]")
+           .gsub(/notes:.*$/i, "notes: [REDACTED]")
   end
 end
