@@ -2,11 +2,12 @@ class OpenaiService::Base
   DEFAULT_TEMPERATURE = 1.0
   DEFAULT_MAX_TOKENS = 200
   INPUT_MAX_LENGTH = 1000
+  DEFAULT_TIMEOUT = 15
 
   def initialize
     @client = OpenAI::Client.new(
       access_token: Rails.application.credentials.dig(:openai, :api_key),
-      request_timeout: 15
+      request_timeout: openai_timeout
     )
   end
 
@@ -80,5 +81,9 @@ class OpenaiService::Base
 
   def ai_max_tokens
     DEFAULT_MAX_TOKENS # デフォルト値、サブクラスでオーバーライド可能
+  end
+
+  def openai_timeout
+    ENV.fetch("OPENAI_TIMEOUT", DEFAULT_TIMEOUT).to_i
   end
 end

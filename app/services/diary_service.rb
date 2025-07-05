@@ -39,10 +39,10 @@ class DiaryService
 
     # 外部API呼び出しをトランザクション外で実行
     openai_service = AiServiceFactory.create(diary_type)
-    
+
     begin
       til_candidates = openai_service.generate_tils(@diary.notes)
-      
+
       # 外部API成功後、短時間でDB操作のみをトランザクション内で実行
       ActiveRecord::Base.transaction do
         til_candidates.each_with_index do |content, index|
@@ -56,11 +56,13 @@ class DiaryService
     rescue StandardError => e
       # タイムアウトエラーの場合はタネを消費しない
       if AiServiceErrorHandler.timeout_error?(e)
-        Rails.logger.warn "TIL generation timeout for user_id: #{@user.id} - seed not consumed"
+        Rails.logger.warn "TIL generation timeout for user: [REDACTED] - seed not consumed"
         { redirect_to: @diary, notice: "日記を作成しました（AI応答がタイムアウトしました。タネは消費されていません）" }
       else
-        Rails.logger.error "TIL generation failed for user_id: #{@user.id}"
-        Rails.logger.debug "TIL generation error details: #{sanitize_log_message(e.message)}" unless Rails.env.production?
+        Rails.logger.error "TIL generation failed for user: [REDACTED]"
+        unless Rails.env.production?
+          Rails.logger.debug "TIL generation error details: #{sanitize_log_message(e.message)}"
+        end
         { redirect_to: @diary, notice: "日記を作成しました（TIL生成でエラーが発生しました）" }
       end
     end
@@ -78,7 +80,7 @@ class DiaryService
 
     # 外部API呼び出しをトランザクション外で実行
     openai_service = AiServiceFactory.create(diary_type)
-    
+
     begin
       til_candidates = openai_service.generate_tils(@diary.notes)
 
@@ -98,13 +100,14 @@ class DiaryService
     rescue StandardError => e
       # タイムアウトエラーの場合はタネを消費しない
       if AiServiceErrorHandler.timeout_error?(e)
-        Rails.logger.warn "TIL regeneration timeout for user_id: #{@user.id} - seed not consumed"
-        false
+        Rails.logger.warn "TIL regeneration timeout for user: [REDACTED] - seed not consumed"
       else
-        Rails.logger.error "TIL regeneration failed for user_id: #{@user.id}"
-        Rails.logger.debug "TIL regeneration error details: #{sanitize_log_message(e.message)}" unless Rails.env.production?
-        false
+        Rails.logger.error "TIL regeneration failed for user: [REDACTED]"
+        unless Rails.env.production?
+          Rails.logger.debug "TIL regeneration error details: #{sanitize_log_message(e.message)}"
+        end
       end
+      false
     end
   end
 
