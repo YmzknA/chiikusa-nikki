@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe OpenaiService, type: :service do
+RSpec.describe OpenaiService::PersonalDiary, type: :service do
   let(:service) { described_class.new }
   let(:mock_client) { instance_double(OpenAI::Client) }
   let(:notes) { "今日はRailsの勉強をした。MVCパターンを理解した。" }
@@ -55,7 +55,7 @@ RSpec.describe OpenaiService, type: :service do
             messages: array_including(
               hash_including(
                 role: "system",
-                content: a_string_including("ユーザーが書いた今日のメモから", "TIL（Today I Learned）", "3文~5文")
+                content: a_string_including("日常の何気ない瞬間に温かさを見つける", "TIL（Today I Learned）", "親しみやすく自然な日本語")
               )
             )
           )
