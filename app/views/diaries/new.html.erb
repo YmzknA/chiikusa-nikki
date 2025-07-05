@@ -72,6 +72,34 @@
           </label>
         </div>
 
+        <div class="form-control animate-[fadeInUp_0.6s_ease-out_0.7s_both]">
+          <div class="mb-2 md:mb-3">
+            <span class="block text-base-content font-semibold mb-2 text-sm md:text-base">AIタイプ</span>
+          </div>
+          <div class="flex gap-2 md:gap-3 flex-wrap">
+            <label class="cursor-pointer">
+              <%= radio_button_tag "diary_type", "personal", true, class: "peer sr-only" %>
+              <div class="neuro-button py-2 md:py-3 px-3 md:px-4 text-sm md:text-base peer-checked:!bg-primary peer-checked:!text-primary-content peer-checked:!shadow-inner transition-all duration-200 hover:scale-102">
+                📝 いつもの日記
+              </div>
+            </label>
+            <label class="cursor-pointer">
+              <%= radio_button_tag "diary_type", "learning", false, class: "peer sr-only" %>
+              <div class="neuro-button py-2 md:py-3 px-3 md:px-4 text-sm md:text-base peer-checked:!bg-primary peer-checked:!text-primary-content peer-checked:!shadow-inner transition-all duration-200 hover:scale-102">
+                📚 学習日記
+              </div>
+            </label>
+            <label class="cursor-pointer">
+              <%= radio_button_tag "diary_type", "novel", false, class: "peer sr-only" %>
+              <div class="neuro-button py-2 md:py-3 px-3 md:px-4 text-sm md:text-base peer-checked:!bg-primary peer-checked:!text-primary-content peer-checked:!shadow-inner transition-all duration-200 hover:scale-102">
+                ✨ 小説風
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="divider my-4 md:my-6 mx-auto"></div>
+
         <div class="form-control">
           <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-badge py-2 md:py-3 px-3 md:px-4 hover:scale-99 transition-transform">
             <%= form.check_box :is_public, class: "checkbox checkbox-secondary bg-gray-100 " %>
