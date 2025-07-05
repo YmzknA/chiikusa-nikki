@@ -32,12 +32,22 @@ class OpenaiService::Base
         { role: "system", content: system_prompt },
         { role: "user", content: "以下の今日のメモに基づいて文章を生成してください:\n#{notes}" }
       ],
-      temperature: 1,
-      max_tokens: 200
+      temperature: ai_temperature,
+      max_tokens: ai_max_tokens
     }
   end
 
   def system_prompt
     raise NotImplementedError, "Subclasses must implement system_prompt"
+  end
+
+  protected
+
+  def ai_temperature
+    1.0  # デフォルト値、サブクラスでオーバーライド可能
+  end
+
+  def ai_max_tokens
+    200  # デフォルト値、サブクラスでオーバーライド可能
   end
 end

@@ -1,4 +1,14 @@
 class OpenaiService::NovelDiary < OpenaiService::Base
+  protected
+
+  def ai_temperature
+    1.2  # 小説風はより創造的な出力のため高めに設定
+  end
+
+  def ai_max_tokens
+    250  # 詩的表現のため少し長めに設定
+  end
+
   private
 
   def system_prompt
