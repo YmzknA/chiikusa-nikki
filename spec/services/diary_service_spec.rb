@@ -112,11 +112,11 @@ RSpec.describe DiaryService, type: :service do
   end
 
   describe "#handle_til_generation_and_redirect" do
-    let(:mock_openai_service) { instance_double(OpenaiService) }
+    let(:mock_openai_service) { instance_double(OpenaiService::Base) }
     let(:til_contents) { ["TIL 1", "TIL 2", "TIL 3"] }
 
     before do
-      allow(OpenaiService).to receive(:new).and_return(mock_openai_service)
+      allow(service).to receive(:create_openai_service).and_return(mock_openai_service)
       allow(mock_openai_service).to receive(:generate_tils).and_return(til_contents)
     end
 
@@ -226,12 +226,12 @@ RSpec.describe DiaryService, type: :service do
   end
 
   describe "#regenerate_til_candidates_if_needed" do
-    let(:mock_openai_service) { instance_double(OpenaiService) }
+    let(:mock_openai_service) { instance_double(OpenaiService::Base) }
     let(:new_til_contents) { ["New TIL 1", "New TIL 2", "New TIL 3"] }
 
     before do
       diary.update!(notes: "Updated notes")
-      allow(OpenaiService).to receive(:new).and_return(mock_openai_service)
+      allow(service).to receive(:create_openai_service).and_return(mock_openai_service)
       allow(mock_openai_service).to receive(:generate_tils).and_return(new_til_contents)
     end
 

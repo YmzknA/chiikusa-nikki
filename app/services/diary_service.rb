@@ -21,19 +21,19 @@ class DiaryService
     end
   end
 
-  def handle_til_generation_and_redirect(skip_ai_generation: false)
+  def handle_til_generation_and_redirect(skip_ai_generation: false, diary_type: 'personal')
     if @diary.notes.present? && !skip_ai_generation
-      generate_til_candidates_and_redirect
+      generate_til_candidates_and_redirect(diary_type: diary_type)
     else
       { redirect_to: @diary, notice: "日記を作成しました" }
     end
   end
 
-  def generate_til_candidates_and_redirect
+  def generate_til_candidates_and_redirect(diary_type: 'personal')
     return { redirect_to: @diary, notice: "日記を作成しました（タネが不足しているためTILは生成されませんでした）" } if @user.seed_count <= 0
 
     # 外部API呼び出しをトランザクション外で実行
-    openai_service = OpenaiService.new
+    openai_service = create_openai_service(diary_type)
     til_candidates = openai_service.generate_tils(@diary.notes)
 
     # 外部API成功後、短時間でDB操作のみをトランザクション内で実行
@@ -52,7 +52,7 @@ class DiaryService
     { redirect_to: @diary, notice: "日記を作成しました（TIL生成でエラーが発生しました）" }
   end
 
-  def regenerate_til_candidates_if_needed
+  def regenerate_til_candidates_if_needed(diary_type: 'personal')
     return false if @diary.notes.blank?
 
     if @user.seed_count <= 0
@@ -61,7 +61,7 @@ class DiaryService
     end
 
     # 外部API呼び出しをトランザクション外で実行
-    openai_service = OpenaiService.new
+    openai_service = create_openai_service(diary_type)
     til_candidates = openai_service.generate_tils(@diary.notes)
 
     # 外部API成功後、短時間でDB操作のみをトランザクション内で実行
@@ -121,6 +121,18 @@ class DiaryService
   end
 
   private
+
+  # 日記タイプに応じたOpenAI サービスを生成
+  def create_openai_service(diary_type)
+    case diary_type
+    when 'learning'
+      OpenaiService::LearningDiary.new
+    when 'novel'
+      OpenaiService::NovelDiary.new
+    else
+      OpenaiService::PersonalDiary.new
+    end
+  end
 
   # バリデーション付きでanswer dataを構築（DRY原則とセキュリティ向上）
   def build_validated_answers_data(diary_answer_params)

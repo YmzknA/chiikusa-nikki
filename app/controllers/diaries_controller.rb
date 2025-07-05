@@ -58,7 +58,8 @@ class DiariesController < ApplicationController
     if @diary.save
       diary_service.create_diary_answers(diary_answer_params)
       skip_ai = params[:skip_ai_generation] == "true" || params[:use_ai_generation] != "1"
-      result = diary_service.handle_til_generation_and_redirect(skip_ai_generation: skip_ai)
+      diary_type = params[:diary_type].presence || 'personal'
+      result = diary_service.handle_til_generation_and_redirect(skip_ai_generation: skip_ai, diary_type: diary_type)
       redirect_to result[:redirect_to], notice: result[:notice]
     else
       handle_creation_error
@@ -69,7 +70,8 @@ class DiariesController < ApplicationController
     if @diary.update(diary_update_params)
       diary_service.update_diary_answers(diary_answer_params)
       if params[:regenerate_ai] == "1"
-        result = diary_service.regenerate_til_candidates_if_needed
+        diary_type = params[:diary_type].presence || 'personal'
+        result = diary_service.regenerate_til_candidates_if_needed(diary_type: diary_type)
         redirect_to result ? select_til_diary_path(@diary) : diary_path(@diary),
                     notice: result ? "TILを再生成しました。新しいTILを選択してください。" : "日記を更新しました"
       else
