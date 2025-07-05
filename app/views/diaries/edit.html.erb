@@ -1,7 +1,7 @@
 <div class="min-h-screen p-4">
   <div class="container mx-auto max-w-2xl">
     <div class="neuro-card p-4 md:p-6">
-      <%= loading_form_with(model: @diary, local: true, class: "space-y-4 md:space-y-6") do |form| %>
+      <%= loading_form_with(model: @diary, local: true, class: "space-y-4 md:space-y-6", data: { controller: "ai-type-selection", "ai-type-selection-trigger-checkbox-id-value": "regenerate_ai_checkbox" }) do |form| %>
         <% if @diary.errors.any? %>
           <div class="neuro-error p-4 mb-4 rounded-2xl">
             <div class="flex items-start gap-3">
@@ -101,16 +101,20 @@
 
           <% if @diary.til_candidates.any? %>
             <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-badge py-2 md:py-3 px-3 md:px-4">
-              <%= check_box_tag "regenerate_ai", "1", false, class: "checkbox checkbox-secondary bg-gray-100", id: "regenerate_ai_checkbox" %>
-              <span class="text-base-content font-semibold text-sm md:text-base">AIでTIL候補を再生成を使用する（タネを1つ消費）</span>
+              <%= check_box_tag "regenerate_ai", "1", false, class: "checkbox checkbox-secondary bg-gray-100", id: "regenerate_ai_checkbox", data: { action: "change->ai-type-selection#updateState" } %>
+              <span class="text-base-content font-semibold text-sm md:text-base">AIでTIL候補を再生成する（タネを1つ消費）</span>
             </label>
           <% else %>
-            <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-badge py-2 md:py-3 px-3 md:px-4">
-              <%= check_box_tag "regenerate_ai", "1", false, class: "checkbox checkbox-secondary bg-gray-100", id: "regenerate_ai_checkbox" %>
+            <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-badge py-2 md:gap-3 px-3 md:px-4">
+              <%= check_box_tag "regenerate_ai", "1", false, class: "checkbox checkbox-secondary bg-gray-100", id: "regenerate_ai_checkbox", data: { action: "change->ai-type-selection#updateState" } %>
               <span class="text-base-content font-semibold text-sm md:text-base">AIでTIL候補を生成する（タネを1つ消費）</span>
             </label>
           <% end %>
         </div>
+
+        <%= render 'shared/ai_type_selection' %>
+
+        <div class="divider my-4 md:my-6 mx-auto"></div>
 
         <div class="form-control">
           <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-badge py-2 md:py-3 px-3 md:px-4">
@@ -140,7 +144,12 @@
     function continueUpdate() {
       closeSeedShortageModal();
       // AI生成チェックボックスをオフにして続行
-      document.getElementById('regenerate_ai_checkbox').checked = false;
+      const checkbox = document.getElementById('regenerate_ai_checkbox');
+      checkbox.checked = false;
+
+      // Stimulusコントローラーの状態更新をトリガー
+      checkbox.dispatchEvent(new Event('change'));
+
       document.querySelector('form').submit();
     }
   </script>

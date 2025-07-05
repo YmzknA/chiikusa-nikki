@@ -118,8 +118,8 @@ RSpec.describe "Diaries", type: :request do
 
       it "redirects with TIL generation when notes present" do
         user.update!(seed_count: 3)
-        mock_openai = instance_double(OpenaiService)
-        allow(OpenaiService).to receive(:new).and_return(mock_openai)
+        mock_openai = instance_double(OpenaiService::Base)
+        allow(AiServiceFactory).to receive(:create).and_return(mock_openai)
         allow(mock_openai).to receive(:generate_tils).and_return(["TIL 1", "TIL 2", "TIL 3"])
 
         post diaries_path, params: { diary: diary_params, diary_answers: diary_answers_params }
@@ -185,8 +185,8 @@ RSpec.describe "Diaries", type: :request do
 
       it "regenerates TIL candidates when requested" do
         user.update!(seed_count: 3)
-        mock_service = instance_double(OpenaiService)
-        allow(OpenaiService).to receive(:new).and_return(mock_service)
+        mock_service = instance_double(OpenaiService::Base)
+        allow(AiServiceFactory).to receive(:create).and_return(mock_service)
         allow(mock_service).to receive(:generate_tils).and_return(["New TIL 1", "New TIL 2", "New TIL 3"])
 
         patch diary_path(diary), params: {

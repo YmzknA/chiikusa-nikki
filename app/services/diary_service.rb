@@ -21,19 +21,24 @@ class DiaryService
     end
   end
 
-  def handle_til_generation_and_redirect(skip_ai_generation: false)
+  def handle_til_generation_and_redirect(skip_ai_generation: false, diary_type: "personal")
     if @diary.notes.present? && !skip_ai_generation
-      generate_til_candidates_and_redirect
+      generate_til_candidates_and_redirect(diary_type: diary_type)
     else
       { redirect_to: @diary, notice: "日記を作成しました" }
     end
   end
 
-  def generate_til_candidates_and_redirect
-    return { redirect_to: @diary, notice: "日記を作成しました（タネが不足しているためTILは生成されませんでした）" } if @user.seed_count <= 0
+  def generate_til_candidates_and_redirect(diary_type: "personal")
+    seed_manager = SeedManager.new(@user)
+
+    unless seed_manager.sufficient_seeds?
+      return { redirect_to: @diary,
+               notice: "日記を作成しました（#{seed_manager.insufficient_seeds_message}）" }
+    end
 
     # 外部API呼び出しをトランザクション外で実行
-    openai_service = OpenaiService.new
+    openai_service = AiServiceFactory.create(diary_type)
     til_candidates = openai_service.generate_tils(@diary.notes)
 
     # 外部API成功後、短時間でDB操作のみをトランザクション内で実行
@@ -42,26 +47,28 @@ class DiaryService
         @diary.til_candidates.create!(content: content, index: index)
       end
 
-      @user.decrement!(:seed_count)
+      seed_manager.consume_seed!
     end
 
     { redirect_to: [:select_til, @diary], notice: "日記を作成しました。続いて生成されたTIL を選択してください。" }
   rescue StandardError => e
-    Rails.logger.error "TIL generation failed"
-    Rails.logger.debug "TIL generation error details: #{e.message}" unless Rails.env.production?
+    Rails.logger.error "TIL generation failed for user_id: #{@user.id}"
+    Rails.logger.debug "TIL generation error details: #{sanitize_log_message(e.message)}" unless Rails.env.production?
     { redirect_to: @diary, notice: "日記を作成しました（TIL生成でエラーが発生しました）" }
   end
 
-  def regenerate_til_candidates_if_needed
+  def regenerate_til_candidates_if_needed(diary_type: "personal")
     return false if @diary.notes.blank?
 
-    if @user.seed_count <= 0
+    seed_manager = SeedManager.new(@user)
+
+    unless seed_manager.sufficient_seeds?
       Rails.logger.debug "TIL regeneration skipped: insufficient seeds" unless Rails.env.production?
       return false
     end
 
     # 外部API呼び出しをトランザクション外で実行
-    openai_service = OpenaiService.new
+    openai_service = AiServiceFactory.create(diary_type)
     til_candidates = openai_service.generate_tils(@diary.notes)
 
     # 外部API成功後、短時間でDB操作のみをトランザクション内で実行
@@ -73,13 +80,13 @@ class DiaryService
         @diary.til_candidates.create!(content: content, index: index)
       end
 
-      @user.decrement!(:seed_count)
+      seed_manager.consume_seed!
     end
 
     true
   rescue StandardError => e
-    Rails.logger.error "TIL regeneration failed"
-    Rails.logger.debug "TIL regeneration error details: #{e.message}" unless Rails.env.production?
+    Rails.logger.error "TIL regeneration failed for user_id: #{@user.id}"
+    Rails.logger.debug "TIL regeneration error details: #{sanitize_log_message(e.message)}" unless Rails.env.production?
     false
   end
 
@@ -163,5 +170,11 @@ class DiaryService
 
   def log_invalid_answer_attempt(question_identifier)
     Rails.logger.warn "Invalid answer submission for question: #{question_identifier}" unless Rails.env.production?
+  end
+
+  def sanitize_log_message(message)
+    # ユーザー入力を含む可能性のある部分を除去
+    message.gsub(/user input:.*$/i, "user input: [REDACTED]")
+           .gsub(/notes:.*$/i, "notes: [REDACTED]")
   end
 end
