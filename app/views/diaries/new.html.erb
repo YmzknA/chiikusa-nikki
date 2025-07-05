@@ -1,6 +1,6 @@
 <div class="min-h-screen p-4 animate-[fadeIn_0.5s_ease-out]">
     <div class="neuro-card p-4 md:p-6 animate-[scaleIn_0.4s_ease-out_0.2s_both]">
-      <%= loading_form_with(model: @diary, url: diaries_path, local: true, data: { turbo: false, turbo_frame: "_top" }, class: "space-y-4 md:space-y-6") do |form| %>
+      <%= loading_form_with(model: @diary, url: diaries_path, local: true, data: { turbo: false, turbo_frame: "_top", controller: "ai-type-selection", "ai-type-selection-trigger-checkbox-id-value": "use_ai_generation_checkbox" }, class: "space-y-4 md:space-y-6") do |form| %>
         <% if @existing_diary %>
           <div class="neuro-input p-3 md:p-4 mb-4 rounded-2xl bg-warning border border-warning/20">
             <div class="flex items-start gap-2 md:gap-3">
@@ -67,7 +67,7 @@
           </div>
 
           <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-badge py-2 md:py-3 px-3 md:px-4 hover:scale-99 transition-transform">
-            <%= check_box_tag "use_ai_generation", "1", true, class: "checkbox checkbox-secondary bg-gray-100", id: "use_ai_generation_checkbox" %>
+            <%= check_box_tag "use_ai_generation", "1", true, class: "checkbox checkbox-secondary bg-gray-100", id: "use_ai_generation_checkbox", data: { action: "change->ai-type-selection#updateState" } %>
             <span class="text-base-content font-semibold text-sm md:text-base">AI生成を使用する（タネを1つ消費）</span>
           </label>
         </div>
@@ -77,21 +77,21 @@
             <span class="block text-base-content font-semibold mb-2 text-sm md:text-base">AIタイプ</span>
           </div>
           <div class="flex gap-2 md:gap-3 flex-wrap">
-            <label class="cursor-pointer">
-              <%= radio_button_tag "diary_type", "personal", true, class: "peer sr-only" %>
-              <div class="neuro-button py-2 md:py-3 px-3 md:px-4 text-sm md:text-base peer-checked:!bg-primary peer-checked:!text-primary-content peer-checked:!shadow-inner transition-all duration-200 hover:scale-102">
+            <label data-ai-type-selection-target="label">
+              <input type="radio" name="diary_type" value="personal" checked class="peer sr-only" data-ai-type-selection-target="radio">
+              <div class="neuro-button py-2 md:py-3 px-3 md:px-4 text-sm md:text-base peer-checked:!bg-primary peer-checked:!text-primary-content peer-checked:!shadow-inner transition-all duration-200" data-ai-type-selection-target="button">
                 📝 いつもの日記
               </div>
             </label>
-            <label class="cursor-pointer">
-              <%= radio_button_tag "diary_type", "learning", false, class: "peer sr-only" %>
-              <div class="neuro-button py-2 md:py-3 px-3 md:px-4 text-sm md:text-base peer-checked:!bg-primary peer-checked:!text-primary-content peer-checked:!shadow-inner transition-all duration-200 hover:scale-102">
+            <label data-ai-type-selection-target="label">
+              <input type="radio" name="diary_type" value="learning" class="peer sr-only" data-ai-type-selection-target="radio">
+              <div class="neuro-button py-2 md:py-3 px-3 md:px-4 text-sm md:text-base peer-checked:!bg-primary peer-checked:!text-primary-content peer-checked:!shadow-inner transition-all duration-200" data-ai-type-selection-target="button">
                 📚 学習日記
               </div>
             </label>
-            <label class="cursor-pointer">
-              <%= radio_button_tag "diary_type", "novel", false, class: "peer sr-only" %>
-              <div class="neuro-button py-2 md:py-3 px-3 md:px-4 text-sm md:text-base peer-checked:!bg-primary peer-checked:!text-primary-content peer-checked:!shadow-inner transition-all duration-200 hover:scale-102">
+            <label data-ai-type-selection-target="label">
+              <input type="radio" name="diary_type" value="novel" class="peer sr-only" data-ai-type-selection-target="radio">
+              <div class="neuro-button py-2 md:py-3 px-3 md:px-4 text-sm md:text-base peer-checked:!bg-primary peer-checked:!text-primary-content peer-checked:!shadow-inner transition-all duration-200" data-ai-type-selection-target="button">
                 ✨ 小説風
               </div>
             </label>
@@ -128,7 +128,12 @@
     function continueDiaryCreation() {
       closeSeedShortageModal();
       // AI生成チェックボックスをオフにして続行
-      document.getElementById('use_ai_generation_checkbox').checked = false;
+      const checkbox = document.getElementById('use_ai_generation_checkbox');
+      checkbox.checked = false;
+      
+      // Stimulusコントローラーの状態更新をトリガー
+      checkbox.dispatchEvent(new Event('change'));
+      
       const form = document.querySelector('form');
       const hiddenField = document.createElement('input');
       hiddenField.type = 'hidden';

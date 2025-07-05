@@ -53,3 +53,6 @@ application.register("github-upload", GithubUploadController)
 
 import ThemeController from "./theme_controller"
 application.register("theme", ThemeController)
+
+import AiTypeSelectionController from "./ai_type_selection_controller"
+application.register("ai-type-selection", AiTypeSelectionController)
