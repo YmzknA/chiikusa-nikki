@@ -77,3 +77,4 @@ Metrics/ClassLength:
 Naming/PredicateMethod:
   Exclude:
     - "app/services/seed_manager.rb"
+    - "app/services/diary_service.rb"

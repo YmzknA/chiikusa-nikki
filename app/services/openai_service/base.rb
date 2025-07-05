@@ -2,10 +2,12 @@ class OpenaiService::Base
   DEFAULT_TEMPERATURE = 1.0
   DEFAULT_MAX_TOKENS = 200
   INPUT_MAX_LENGTH = 1000
+  DEFAULT_TIMEOUT = 15
 
   def initialize
     @client = OpenAI::Client.new(
-      access_token: Rails.application.credentials.dig(:openai, :api_key)
+      access_token: Rails.application.credentials.dig(:openai, :api_key),
+      request_timeout: openai_timeout
     )
   end
 
@@ -13,17 +15,8 @@ class OpenaiService::Base
     # 学習記録に基づいてTILを生成（一時的にフォールバック版を使用）
     generate_smart_tils(notes) if notes.present?
   rescue OpenAI::Error => e
-    Rails.logger.error "OpenAI API error: #{e.class} - #{e.message}"
-
-    # セキュリティ上の理由で詳細なエラーメッセージを隠蔽
-    case e
-    when OpenAI::RateLimitError
-      raise StandardError, "現在、AIサービスが混雑しています。しばらく待ってからお試しください。"
-    when OpenAI::AuthenticationError
-      raise StandardError, "AIサービスの認証エラーが発生しました。管理者にお問い合わせください。"
-    else
-      raise StandardError, "AIサービスでエラーが発生しました。時間をおいて再度お試しください。"
-    end
+    AiServiceErrorHandler.log_error(e, { context: "generate_tils" })
+    raise StandardError, AiServiceErrorHandler.handle_openai_error(e)
   rescue StandardError => e
     Rails.logger.error "OpenAI API Error: #{e.message}"
     raise StandardError, "AIサービスでエラーが発生しました。時間をおいて再度お試しください。"
@@ -88,5 +81,9 @@ class OpenaiService::Base
 
   def ai_max_tokens
     DEFAULT_MAX_TOKENS # デフォルト値、サブクラスでオーバーライド可能
+  end
+
+  def openai_timeout
+    ENV.fetch("OPENAI_TIMEOUT", DEFAULT_TIMEOUT).to_i
   end
 end
