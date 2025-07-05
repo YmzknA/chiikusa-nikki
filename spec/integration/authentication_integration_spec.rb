@@ -82,14 +82,14 @@ RSpec.describe "Authentication Integration", type: :request do
       it "authenticates existing GitHub user" do
         # Ensure no user is signed in
         post "/users/sign_out" if defined?(Warden)
-        
+
         create(:user, :with_github, github_id: "12345", username: "configured_user")
 
         expect do
           get "/users/auth/github/callback", env: request_with_omniauth_env(github_auth_hash)
         end.not_to change(User, :count)
 
-        # Note: In current implementation, this redirects to profile instead of diaries
+        # NOTE: In current implementation, this redirects to profile instead of diaries
         # This might be due to the user being treated as already authenticated during OAuth
         expect(response).to redirect_to(profile_path)
       end
@@ -130,7 +130,7 @@ RSpec.describe "Authentication Integration", type: :request do
           get "/users/auth/google_oauth2/callback", env: request_with_omniauth_env(google_auth_hash)
         end.not_to change(User, :count)
 
-        # Note: In current implementation, this redirects to profile instead of diaries
+        # NOTE: In current implementation, this redirects to profile instead of diaries
         # This is due to the user being treated as already authenticated during OAuth
         expect(response).to redirect_to(profile_path)
       end
@@ -349,7 +349,7 @@ RSpec.describe "Authentication Integration", type: :request do
       Rails.application.env_config["omniauth.auth"] = github_auth_redirect
       get "/users/auth/github/callback", env: request_with_omniauth_env(github_auth_redirect)
 
-      # Note: In current implementation, this redirects to profile instead of diaries
+      # NOTE: In current implementation, this redirects to profile instead of diaries
       # This is due to the user being treated as already authenticated during OAuth
       expect(response).to redirect_to(profile_path)
     end
