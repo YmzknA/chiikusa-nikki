@@ -5,7 +5,7 @@ export default class extends Controller {
   static values = { triggerCheckboxId: String }
 
   connect() {
-    console.log("AI Type Selection controller connected")
+    this.debugLog("AI Type Selection controller connected")
     // 少し遅延させて初期化
     setTimeout(() => this.updateState(), 100)
   }
@@ -20,60 +20,74 @@ export default class extends Controller {
       }
 
       const isEnabled = triggerCheckbox.checked
-      console.log("AI Type Selection - isEnabled:", isEnabled)
+      this.debugLog("AI Type Selection - isEnabled:", isEnabled)
 
-      // ターゲットが見つからない場合は直接セレクタで取得
-      const radios = this.radioTargets?.length > 0 ? this.radioTargets : this.element.querySelectorAll('[data-ai-type-selection-target="radio"]')
-      const labels = this.labelTargets?.length > 0 ? this.labelTargets : this.element.querySelectorAll('[data-ai-type-selection-target="label"]')
-      const buttons = this.buttonTargets?.length > 0 ? this.buttonTargets : this.element.querySelectorAll('[data-ai-type-selection-target="button"]')
-
-      radios.forEach(radio => {
-        radio.disabled = !isEnabled
-      })
-
-      labels.forEach(label => {
-        if (isEnabled) {
-          label.classList.remove('cursor-not-allowed', 'pointer-events-none')
-          label.classList.add('cursor-pointer')
-        } else {
-          label.classList.remove('cursor-pointer')
-          label.classList.add('cursor-not-allowed', 'pointer-events-none')
-        }
-      })
-
-      buttons.forEach(button => {
-        if (isEnabled) {
-          button.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none')
-          button.classList.add('hover:scale-102')
-        } else {
-          button.classList.remove('hover:scale-102')
-          button.classList.add('opacity-50', 'cursor-not-allowed', 'pointer-events-none')
-        }
-      })
+      const elements = this.getTargetElements()
+      
+      this.updateRadioStates(elements.radios, isEnabled)
+      this.updateLabelStates(elements.labels, isEnabled)
+      this.updateButtonStates(elements.buttons, isEnabled)
       
     } catch (error) {
       console.error("Error in updateState:", error)
     }
   }
 
+  getTargetElements() {
+    return {
+      radios: this.radioTargets?.length > 0 ? this.radioTargets : this.element.querySelectorAll('[data-ai-type-selection-target="radio"]'),
+      labels: this.labelTargets?.length > 0 ? this.labelTargets : this.element.querySelectorAll('[data-ai-type-selection-target="label"]'),
+      buttons: this.buttonTargets?.length > 0 ? this.buttonTargets : this.element.querySelectorAll('[data-ai-type-selection-target="button"]')
+    }
+  }
+
+  updateRadioStates(radios, isEnabled) {
+    radios.forEach(radio => {
+      radio.disabled = !isEnabled
+    })
+  }
+
+  updateLabelStates(labels, isEnabled) {
+    labels.forEach(label => {
+      if (isEnabled) {
+        label.classList.remove('cursor-not-allowed', 'pointer-events-none')
+        label.classList.add('cursor-pointer')
+      } else {
+        label.classList.remove('cursor-pointer')
+        label.classList.add('cursor-not-allowed', 'pointer-events-none')
+      }
+    })
+  }
+
+  updateButtonStates(buttons, isEnabled) {
+    buttons.forEach(button => {
+      if (isEnabled) {
+        button.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none')
+        button.classList.add('hover:scale-102')
+      } else {
+        button.classList.remove('hover:scale-102')
+        button.classList.add('opacity-50', 'cursor-not-allowed', 'pointer-events-none')
+      }
+    })
+  }
+
   // 外部から呼び出し可能なメソッド（種不足モーダル用）
   disable() {
-    const radios = this.radioTargets?.length > 0 ? this.radioTargets : this.element.querySelectorAll('[data-ai-type-selection-target="radio"]')
-    const labels = this.labelTargets?.length > 0 ? this.labelTargets : this.element.querySelectorAll('[data-ai-type-selection-target="label"]')
-    const buttons = this.buttonTargets?.length > 0 ? this.buttonTargets : this.element.querySelectorAll('[data-ai-type-selection-target="button"]')
+    const elements = this.getTargetElements()
+    
+    this.updateRadioStates(elements.radios, false)
+    this.updateLabelStates(elements.labels, false)
+    this.updateButtonStates(elements.buttons, false)
+  }
 
-    radios.forEach(radio => {
-      radio.disabled = true
-    })
-
-    labels.forEach(label => {
-      label.classList.remove('cursor-pointer')
-      label.classList.add('cursor-not-allowed', 'pointer-events-none')
-    })
-
-    buttons.forEach(button => {
-      button.classList.remove('hover:scale-102')
-      button.classList.add('opacity-50', 'cursor-not-allowed', 'pointer-events-none')
-    })
+  // デバッグログの制御（本番環境では出力しない）
+  debugLog(...args) {
+    // hostname が localhost または development環境を示唆する場合のみログ出力
+    if (window.location.hostname === 'localhost' || 
+        window.location.hostname === '127.0.0.1' || 
+        window.location.hostname.includes('dev') ||
+        window.location.port !== '') {
+      console.log(...args)
+    }
   }
 }
