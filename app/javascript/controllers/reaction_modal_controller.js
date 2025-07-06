@@ -56,7 +56,7 @@ export default class extends Controller {
     if (window.innerWidth < 768) { // md breakpoint
       // スマホサイズ: アニメーション終了を待つ
       this.mobileModalContentTarget.removeAttribute("data-modal-visible")
-      
+
       setTimeout(() => {
         this.mobileModalTarget.classList.add("hidden")
       }, 300) // transition-duration と合わせる
