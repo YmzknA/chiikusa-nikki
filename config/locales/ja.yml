@@ -161,3 +161,25 @@ ja:
       sharing:
         title: "GitHub連携とX投稿"
         content: "学習内容を共有しましょう"
+
+  text_display:
+    buttons:
+      read_more: "続きを読む"
+      close: "閉じる"
+      top_close: "閉じる ↑"
+      bottom_read_more: "続きを読む ↓"
+    errors:
+      initialization_failed: "テキストの初期化に失敗しました。"
+      display_failed: "テキストの表示更新に失敗しました。"
+      processing_failed: "テキストの処理に失敗しました。"
+      general_error: "テキストの表示中にエラーが発生しました。"
+      unsafe_content: "不適切なコンテンツが検出されました。"
+      timeout: "処理時間が長すぎます。"
+    messages:
+      loading: "読み込み中..."
+      no_text: "表示するテキストがありません。"
+      content_filtered: "[不適切な内容が検出されました]"
+    security:
+      xss_detected: "XSS攻撃の可能性があるコンテンツが検出されました。"
+      injection_detected: "プロンプトインジェクション攻撃の可能性があるコンテンツが検出されました。"
+      sanitization_applied: "セキュリティ上の理由で一部のコンテンツが修正されました。"
