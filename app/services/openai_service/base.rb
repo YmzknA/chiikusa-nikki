@@ -33,13 +33,13 @@ class OpenaiService::Base
   def generate_single_til(notes)
     response = @client.chat(parameters: til_generation_parameters(notes))
     raw_content = response.dig("choices", 0, "message", "content")
-    
+
     # 新しいTextFormatterを使用してセキュリティ強化と改行処理を実行
     TextFormatter.process_ai_text(raw_content, {
-      sanitize: true,
-      format_newlines: true,
-      validate_security: true
-    })
+                                    sanitize: true,
+                                    format_newlines: true,
+                                    validate_security: true
+                                  })
   end
 
   def til_generation_parameters(notes)
