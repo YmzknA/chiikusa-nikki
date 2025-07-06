@@ -4,7 +4,7 @@ import { TextProcessor } from "../utils/text_processor"
 export default class extends Controller {
   static targets = ["content", "button", "fullText", "topButton"]
   static values = { 
-    maxLength: { type: Number, default: TextProcessor.getConfig('DEFAULT_MAX_LENGTH') },
+    maxLength: { type: Number, default: TextProcessor.getConfig('TEXT_DEFAULT_LENGTH') },
     expanded: { type: Boolean, default: false },
     readMoreText: { type: String, default: '続きを読む' },
     closeText: { type: String, default: '閉じる' },
@@ -99,7 +99,7 @@ export default class extends Controller {
     TextProcessor.setSafeTextToElement(this.contentTarget, truncatedText)
     this.buttonTarget.textContent = this.readMoreTextValue
     this.buttonTarget.classList.remove("mt-2")
-    this.buttonTarget.classList.add("mt-0.5")
+    this.buttonTarget.classList.add("mt-1")
     
     // 上部の閉じるボタンを非表示
     if (this.hasTopButtonTarget) {

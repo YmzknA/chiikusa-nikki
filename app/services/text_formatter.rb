@@ -12,7 +12,7 @@ class TextFormatter
     # @option options [Boolean] :validate_security セキュリティ検証を実行（デフォルト: true）
     # @return [String] 処理済みテキスト
     def process_ai_text(text, options = {})
-      return '' if text.blank?
+      return "" if text.blank?
 
       # デフォルトオプション
       opts = {
@@ -24,19 +24,13 @@ class TextFormatter
       processed_text = text.to_s.strip
 
       # セキュリティ検証（処理前）
-      if opts[:validate_security]
-        validate_input_security(processed_text)
-      end
+      validate_input_security(processed_text) if opts[:validate_security]
 
       # セキュリティサニタイゼーション
-      if opts[:sanitize]
-        processed_text = TextSanitizer.sanitize_ai_output(processed_text)
-      end
+      processed_text = TextSanitizer.sanitize_ai_output(processed_text) if opts[:sanitize]
 
       # 改行フォーマット処理
-      if opts[:format_newlines]
-        processed_text = format_newlines_for_display(processed_text)
-      end
+      processed_text = format_newlines_for_display(processed_text) if opts[:format_newlines]
 
       processed_text
     end
@@ -52,9 +46,7 @@ class TextFormatter
       formatted = TextSanitizer.normalize_newlines(text)
 
       # 文末の改行が不足している場合の補完
-      formatted = ensure_sentence_breaks(formatted)
-
-      formatted
+      ensure_sentence_breaks(formatted)
     end
 
     # 文ごとの改行確保（AIサービスの出力形式に合わせて）
@@ -65,7 +57,7 @@ class TextFormatter
 
       # 文末記号の後に改行がない場合の補完
       text.gsub(/([。！？])\s*(?!\n)/, "\\1\n")
-          .gsub(/\n+/, "\n")  # 重複改行の整理
+          .gsub(/\n+/, "\n") # 重複改行の整理
           .strip
     end
 
@@ -73,10 +65,10 @@ class TextFormatter
     # @param text [String] 検証対象のテキスト
     # @raise [SecurityError] セキュリティ違反を検出した場合
     def validate_input_security(text)
-      unless TextSanitizer.safe_text?(text)
-        Rails.logger.error("Unsafe AI output detected: #{text[0, 100]}...")
-        raise SecurityError, "AI output failed security validation"
-      end
+      return if TextSanitizer.safe_text?(text)
+
+      Rails.logger.error("Unsafe AI output detected: #{text[0, 100]}...")
+      raise SecurityError, "AI output failed security validation"
     end
 
     # 表示用の安全な改行処理
@@ -84,14 +76,16 @@ class TextFormatter
     # @param text [String] 処理対象のテキスト
     # @return [ActiveSupport::SafeBuffer] HTML安全な改行処理済みテキスト
     def safe_join_with_breaks(text)
-      return ''.html_safe if text.blank?
+      return "".html_safe if text.blank?
 
-      # テキストの事前処理
-      processed_text = process_ai_text(text)
-      
+      # 直接サニタイゼーションを実行（再帰を避ける）
+      sanitized_text = TextSanitizer.sanitize_ai_output(text)
+
       # 改行文字で分割してHTML安全な結合
-      lines = processed_text.split("\n")
-      ActionController::Base.helpers.safe_join(lines, ActionController::Base.helpers.tag(:br))
+      lines = sanitized_text.split("\n")
+      # safe_joinとtagヘルパーを直接実装して依存を排除
+      escaped_lines = lines.map { |line| ERB::Util.html_escape(line) }
+      escaped_lines.join("<br>".html_safe).html_safe
     end
 
     # デバッグ用のテキスト情報表示

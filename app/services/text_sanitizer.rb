@@ -5,9 +5,9 @@
 class TextSanitizer
   # 危険な文字列パターン
   DANGEROUS_PATTERNS = [
-    /<script[^>]*>.*?<\/script>/mi,           # スクリプトタグ
-    /<iframe[^>]*>.*?<\/iframe>/mi,           # iframeタグ
-    /javascript:/i,                           # JavaScriptプロトコル
+    %r{<script[^>]*>.*?</script>}mi,           # スクリプトタグ
+    %r{<iframe[^>]*>.*?</iframe>}mi,           # iframeタグ
+    /javascript:/i, # JavaScriptプロトコル
     /vbscript:/i,                            # VBScriptプロトコル
     /on\w+\s*=/i,                            # イベントハンドラー属性
     /<[^>]*\s(on\w+|href|src)\s*=/i,         # 危険な属性
@@ -16,7 +16,7 @@ class TextSanitizer
     /\balert\s*\(/i,                         # alert関数
     /\bconfirm\s*\(/i,                       # confirm関数
     /\bprompt\s*\(/i,                        # prompt関数
-    /\bdocument\.(write|cookie|location)/i,   # 危険なdocumentプロパティ
+    /\bdocument\.(write|cookie|location)/i, # 危険なdocumentプロパティ
     /\bwindow\.(open|location)/i,            # 危険なwindowプロパティ
     /<!--.*?-->/m,                           # HTMLコメント
     /<!\[CDATA\[.*?\]\]>/m,                  # CDATAセクション
@@ -49,48 +49,46 @@ class TextSanitizer
   ].freeze
 
   # 最大許可文字数（DoS攻撃対策）
-  MAX_ALLOWED_LENGTH = 5000
+  TEXT_MAX_LENGTH = 5000
 
   # 最大許可改行数（メモリ攻撃対策）
-  MAX_ALLOWED_LINES = 100
+  TEXT_MAX_LINES = 100
 
   class << self
     # AI生成テキストの包括的サニタイゼーション
     # @param text [String] サニタイズ対象のテキスト
     # @return [String] サニタイズされたテキスト
     def sanitize_ai_output(text)
-      return '' if text.blank?
+      return "" if text.blank?
 
       # 基本的なサニタイゼーション
       sanitized = text.to_s.strip
-      
+
       # 文字数制限チェック
-      if sanitized.length > MAX_ALLOWED_LENGTH
+      if sanitized.length > TEXT_MAX_LENGTH
         Rails.logger.warn("AI output text too long: #{sanitized.length} characters")
-        sanitized = sanitized[0, MAX_ALLOWED_LENGTH]
+        sanitized = sanitized[0, TEXT_MAX_LENGTH]
       end
 
       # 改行数制限チェック
       line_count = sanitized.count("\n")
-      if line_count > MAX_ALLOWED_LINES
+      if line_count > TEXT_MAX_LINES
         Rails.logger.warn("AI output has too many lines: #{line_count}")
-        lines = sanitized.split("\n")[0, MAX_ALLOWED_LINES]
+        lines = sanitized.split("\n")[0, TEXT_MAX_LINES]
         sanitized = lines.join("\n")
       end
 
       # 危険なパターンの検出と除去
       sanitized = remove_dangerous_patterns(sanitized)
-      
+
       # プロンプトインジェクション攻撃の検出
-      detect_prompt_injection(sanitized)
-      
-      # HTMLエスケープ（Rails標準）
-      sanitized = ERB::Util.html_escape(sanitized)
-      
-      # 改行文字の正規化
+      sanitized = detect_prompt_injection(sanitized)
+
+      # 改行文字の正規化（HTMLエスケープ前に実行）
       sanitized = normalize_newlines(sanitized)
-      
-      sanitized
+
+      # HTMLエスケープ（Rails標準）
+      ERB::Util.html_escape(sanitized)
     end
 
     # 改行文字の安全な処理
@@ -98,7 +96,7 @@ class TextSanitizer
     # @return [String] 正規化されたテキスト
     def normalize_newlines(text)
       return text if text.blank?
-      
+
       # 改行文字を統一（\r\n, \r → \n）
       text.gsub(/\r\n|\r/, "\n")
           .gsub(/\n{3,}/, "\n\n") # 3つ以上の連続改行を2つに制限
@@ -110,11 +108,11 @@ class TextSanitizer
     # @return [Boolean] 安全な場合はtrue
     def safe_text?(text)
       return false if text.blank?
-      
+
       # 基本的な長さチェック
-      return false if text.length > MAX_ALLOWED_LENGTH
-      return false if text.count("\n") > MAX_ALLOWED_LINES
-      
+      return false if text.length > TEXT_MAX_LENGTH
+      return false if text.count("\n") > TEXT_MAX_LINES
+
       # 危険なパターンの検出
       DANGEROUS_PATTERNS.none? { |pattern| text.match?(pattern) } &&
         PROMPT_INJECTION_PATTERNS.none? { |pattern| text.match?(pattern) }
@@ -127,28 +125,32 @@ class TextSanitizer
     # @return [String] 処理済みテキスト
     def remove_dangerous_patterns(text)
       result = text.dup
-      
+
       DANGEROUS_PATTERNS.each do |pattern|
         if result.match?(pattern)
           Rails.logger.warn("Dangerous pattern detected and removed: #{pattern}")
-          result = result.gsub(pattern, '[不適切な内容が検出されました]')
+          result = result.gsub(pattern, "[不適切な内容が検出されました]")
         end
       end
-      
+
       result
     end
 
     # プロンプトインジェクション攻撃の検出
     # @param text [String] チェック対象のテキスト
+    # @return [String] 安全なテキストまたはフォールバックメッセージ
     def detect_prompt_injection(text)
       PROMPT_INJECTION_PATTERNS.each do |pattern|
-        if text.match?(pattern)
-          Rails.logger.error("Potential prompt injection detected: #{pattern}")
-          # セキュリティ監査のためのアラート
-          # 本番環境では適切な監視システムに通知
-          raise SecurityError, "Potential prompt injection detected in AI output"
-        end
+        next unless text.match?(pattern)
+
+        Rails.logger.error("Potential prompt injection detected: #{pattern}")
+        # セキュリティ監査のためのアラート
+        # 本番環境では適切な監視システムに通知
+        return "[AI生成に失敗しました。しばらく時間をおいて再度お試しください。]" if Rails.env.production?
+
+        raise SecurityError, "Potential prompt injection detected in AI output"
       end
+      text
     end
   end
 end

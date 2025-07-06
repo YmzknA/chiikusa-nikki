@@ -3,11 +3,11 @@
 export class TextProcessor {
   // 設定値（Rails側の設定と同期）
   static CONFIG = {
-    DEFAULT_MAX_LENGTH: 150,
+    TEXT_DEFAULT_LENGTH: 150,
     WORD_BOUNDARY_RATIO: 0.8,
     TRUNCATE_SUFFIX: '...',
     TRUNCATE_BOUNDARIES: [' ', '\n', '。', '、', '！', '？', '：', '；'],
-    MAX_PROCESSING_TIME: 5000, // 5秒のタイムアウト
+    TEXT_MAX_PROCESSING_TIME: 5000, // 5秒のタイムアウト
     ENABLE_DEBUG_LOGGING: document.documentElement.dataset.railsEnv === 'development'
   }
 
@@ -18,7 +18,7 @@ export class TextProcessor {
    * @param {number} maxLength - 最大文字数
    * @returns {string} 切り詰められたテキスト
    */
-  static truncateText(text, maxLength = this.CONFIG.DEFAULT_MAX_LENGTH) {
+  static truncateText(text, maxLength = this.CONFIG.TEXT_DEFAULT_LENGTH) {
     if (!text || typeof text !== 'string') {
       console.warn('TextProcessor.truncateText: Invalid text input')
       return ''
@@ -50,7 +50,7 @@ export class TextProcessor {
       
       // 処理時間チェック
       const processingTime = performance.now() - startTime
-      if (processingTime > this.CONFIG.MAX_PROCESSING_TIME) {
+      if (processingTime > this.CONFIG.TEXT_MAX_PROCESSING_TIME) {
         console.warn(`TextProcessor.truncateText: Processing took too long (${processingTime}ms)`)
       }
       
@@ -165,7 +165,7 @@ export class TextProcessor {
       length: text.length,
       lines: text.split('\n').length,
       safe: this.isTextSafe(text),
-      truncated: text.length > this.CONFIG.DEFAULT_MAX_LENGTH
+      truncated: text.length > this.CONFIG.TEXT_DEFAULT_LENGTH
     }
   }
 }
