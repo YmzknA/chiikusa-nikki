@@ -11,19 +11,27 @@ export default class extends Controller {
     // このコントローラーインスタンスをグローバルに保存
     window.loadingController = this
     
+    // バインドしたハンドラーを保存してdisconnect時に適切に削除できるようにする
+    this.boundHide = this.hide.bind(this)
+    
     // Turboイベントをリッスン（ページ遷移完了時に自動的に隠す）
-    document.addEventListener("turbo:load", this.hide.bind(this))
-    document.addEventListener("turbo:frame-load", this.hide.bind(this))
-    document.addEventListener("turbo:submit-end", this.hide.bind(this))
+    document.addEventListener("turbo:load", this.boundHide)
+    document.addEventListener("turbo:frame-load", this.boundHide)
+    document.addEventListener("turbo:submit-end", this.boundHide)
   }
   
   disconnect() {
-    document.removeEventListener("turbo:load", this.hide.bind(this))
-    document.removeEventListener("turbo:frame-load", this.hide.bind(this))
-    document.removeEventListener("turbo:submit-end", this.hide.bind(this))
+    // 適切にイベントリスナーを削除
+    if (this.boundHide) {
+      document.removeEventListener("turbo:load", this.boundHide)
+      document.removeEventListener("turbo:frame-load", this.boundHide)
+      document.removeEventListener("turbo:submit-end", this.boundHide)
+      this.boundHide = null
+    }
     
     if (this.timeout) {
       clearTimeout(this.timeout)
+      this.timeout = null
     }
     
     // グローバル参照をクリア

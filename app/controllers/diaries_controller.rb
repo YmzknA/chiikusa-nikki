@@ -15,7 +15,7 @@ class DiariesController < ApplicationController
   def index
     @selected_month = params[:month].present? ? params[:month] : "all"
     @diaries = filter_diaries_by_month(
-      current_user.diaries.includes(:diary_answers, :til_candidates),
+      current_user.diaries.includes(:diary_answers, :til_candidates, :reactions, reactions: :user),
       @selected_month
     ).order(date: :desc, created_at: :desc)
     @available_months = available_months
@@ -36,7 +36,7 @@ class DiariesController < ApplicationController
 
   def public_index
     @diaries = Diary.public_diaries
-                    .includes(user: [], diary_answers: [:answer])
+                    .includes(:user, diary_answers: [:answer], reactions: :user)
                     .order(date: :desc, created_at: :desc)
                     .limit(20)
   end

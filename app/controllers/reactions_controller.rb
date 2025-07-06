@@ -37,8 +37,11 @@ class ReactionsController < ApplicationController
 
   def set_diary
     # 公開されている日記のみを対象とする（N+1対策でincludesを追加）
-    @diary = Diary.includes(:reactions, reactions: :user).where(is_public: true).find(params[:diary_id])
+    @diary = Diary.includes(:reactions, reactions: :user)
+                 .where(is_public: true)
+                 .find(params[:diary_id])
   rescue ActiveRecord::RecordNotFound
+    Rails.logger.warn "Unauthorized reaction access attempt: diary_id=#{params[:diary_id]}, user_id=#{current_user&.id}, ip=#{request.remote_ip}"
     head :not_found
   end
 
