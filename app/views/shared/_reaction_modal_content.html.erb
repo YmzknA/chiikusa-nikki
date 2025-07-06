@@ -7,14 +7,14 @@
           <!-- リアクション済み：削除フォーム -->
           <%= button_to diary_reaction_path(diary, emoji), method: :delete, local: false, 
                 class: "inline",
-                data: { action: "click->page-reaction-modal#hideModal" } do %>
+                data: { action: "click->reaction-modal#hideModal" } do %>
             <span class="flex items-center justify-center w-12 h-12 bg-primary/20 ring-2 ring-primary/50 rounded-full text-xl transition-colors border-0 cursor-pointer hover:bg-primary/30"><%= emoji %></span>
           <% end %>
         <% else %>
           <!-- 未リアクション：追加フォーム -->
           <%= form_with model: [diary, diary.reactions.build], local: false, 
                 class: "inline",
-                data: { action: "submit->page-reaction-modal#hideModal" } do |form| %>
+                data: { action: "submit->reaction-modal#hideModal" } do |form| %>
             <%= form.hidden_field :emoji, value: emoji %>
             <%= form.submit emoji, 
                   class: "flex items-center justify-center w-12 h-12 bg-base-200 hover:bg-base-300 rounded-full text-xl transition-colors border-0 cursor-pointer" %>
