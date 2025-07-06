@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_07_06_083753) do
+ActiveRecord::Schema[7.2].define(version: 2025_07_06_221250) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -80,9 +80,12 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_06_083753) do
     t.string "emoji", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["diary_id", "emoji"], name: "index_reactions_on_diary_emoji"
     t.index ["diary_id", "emoji"], name: "index_reactions_on_diary_id_and_emoji"
+    t.index ["diary_id", "user_id", "emoji"], name: "index_reactions_unique_constraint", unique: true
     t.index ["diary_id"], name: "index_reactions_on_diary_id"
     t.index ["user_id", "diary_id", "emoji"], name: "index_reactions_on_user_id_and_diary_id_and_emoji", unique: true
+    t.index ["user_id", "diary_id"], name: "index_reactions_on_user_diary"
     t.index ["user_id"], name: "index_reactions_on_user_id"
   end
 
