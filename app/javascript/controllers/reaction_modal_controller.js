@@ -39,15 +39,16 @@ export default class extends Controller {
     if (window.innerWidth < 768) { // md breakpoint
       // スマホサイズ: 下から伸びてくるモーダル
       this.mobileModalTarget.classList.remove("hidden")
-      this.mobileModalTarget.classList.add("flex")
       
       requestAnimationFrame(() => {
         this.mobileModalContentTarget.setAttribute("data-modal-visible", "true")
       })
     } else {
       // デスクトップサイズ: 従来通りの中央表示
-      this.desktopModalTarget.classList.remove("hidden")
-      this.desktopModalTarget.classList.add("flex")
+      if (this.hasDesktopModalTarget) {
+        this.desktopModalTarget.classList.remove("hidden")
+        this.desktopModalTarget.classList.add("flex")
+      }
     }
   }
 
@@ -58,12 +59,13 @@ export default class extends Controller {
       
       setTimeout(() => {
         this.mobileModalTarget.classList.add("hidden")
-        this.mobileModalTarget.classList.remove("flex")
       }, 300) // transition-duration と合わせる
     } else {
       // デスクトップサイズ: 即座に非表示
-      this.desktopModalTarget.classList.add("hidden")
-      this.desktopModalTarget.classList.remove("flex")
+      if (this.hasDesktopModalTarget) {
+        this.desktopModalTarget.classList.add("hidden")
+        this.desktopModalTarget.classList.remove("flex")
+      }
     }
   }
 

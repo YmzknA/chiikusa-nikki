@@ -74,3 +74,4 @@ application.register("flash", FlashController)
 
 import ReactionStatsController from "./reaction_stats_controller"
 application.register("reaction-stats", ReactionStatsController)
+

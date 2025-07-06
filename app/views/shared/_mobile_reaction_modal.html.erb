@@ -1,0 +1,29 @@
+<!-- ページレベルのリアクションモーダル -->
+<% if user_signed_in? %>
+  <!-- スマホサイズ用: 画面下から出てくるモーダル -->
+  <div class="fixed inset-0 bg-black/20 hidden z-50 md:hidden"
+       data-controller="reaction-modal"
+       data-reaction-modal-target="mobileModal"
+       data-action="click->reaction-modal#hideModal">
+    <!-- 画面下部に固定されたモーダルコンテンツ -->
+    <div class="absolute bottom-0 left-0 right-0 bg-base-100 border-t border-base-content/10 shadow-xl
+                rounded-t-xl p-4 max-h-[70vh] overflow-y-auto
+                transform transition-transform duration-300 ease-out
+                translate-y-full data-[modal-visible]:translate-y-0"
+         data-action="click->reaction-modal#stopPropagation"
+         data-reaction-modal-target="mobileModalContent">
+      <div data-reaction-modal-target="modalEmojiContent">
+        <!-- 絵文字コンテンツはJavaScriptで動的に挿入 -->
+      </div>
+
+      <div class="flex justify-center mt-6">
+        <button class="flex items-center justify-center p-1 mb-5 bg-accent/60 hover:bg-accent/40 hover:cursor-pointer text-base-content/60 rounded-full transition-colors"
+          data-action="click->reaction-modal#hideModal">
+          <span class="material-symbols-outlined">
+            close
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+<% end %>

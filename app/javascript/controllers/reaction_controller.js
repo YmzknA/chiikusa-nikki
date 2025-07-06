@@ -36,20 +36,13 @@ export default class extends Controller {
   }
 
   hideModal() {
-    if (window.innerWidth < 768) { // md breakpoint
-      // スマホサイズ: ページレベルのモーダルを閉じる
-      const modalEvent = new CustomEvent("reaction:hide-modal", {
-        bubbles: true
-      })
-      document.dispatchEvent(modalEvent)
-    } else {
-      // デスクトップサイズ: カード内のモーダルを閉じる
-      if (this.hasDesktopModalTarget) {
-        this.desktopModalTarget.classList.add("hidden")
-        this.desktopModalTarget.classList.remove("flex")
-      }
+    // デスクトップサイズ: カード内のモーダルを閉じる
+    if (this.hasDesktopModalTarget) {
+      this.desktopModalTarget.classList.add("hidden")
+      this.desktopModalTarget.classList.remove("flex")
     }
   }
+
 
   stopPropagation(event) {
     event.stopPropagation()
