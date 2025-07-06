@@ -1,7 +1,8 @@
-<div class="min-h-screen p-4 animate-[fadeIn_0.5s_ease-out]">
+<div class="min-h-screen p-4 animate-[fadeIn_0.5s_ease-out]" 
+     data-controller="reaction-modal">
     <div class="grid gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3">
       <% @diaries.each_with_index do |diary, index| %>
-        <div class="neuro-card p-4 md:p-6" style="animation: fadeInUp 0.6s ease-out <%= (index * 0.1).round(1) %>s both;">
+        <div class="neuro-card p-4 md:p-6 relative" style="animation: fadeInUp 0.6s ease-out <%= (index * 0.1).round(1) %>s both;">
           <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-3">
             <span class="text-base md:text-lg font-semibold text-primary"><%= diary.date.strftime("%Y/%m/%d") %></span>
             <span class="text-xs md:text-sm text-base-content/60">by <%= diary.user.username %></span>
@@ -30,7 +31,7 @@
           <!-- リアクション表示 -->
           <%= render 'shared/reactions', diary: diary, current_user: current_user %>
 
-          <div class="flex justify-end">
+          <div class="flex justify-end mt-4">
             <%= link_to diary_path(diary), class: "neuro-button py-2 px-3 md:px-4 text-xs md:text-sm font-medium transition-all duration-200 hover:scale-105" do %>
               詳細を見る
             <% end %>
@@ -44,6 +45,36 @@
         <h2 class="text-lg md:text-xl font-bold text-base-content mb-2">公開されている日記がありません</h2>
         <p class="text-sm md:text-base text-base-content/60">まだ公開されている日記がありません。</p>
       </div>
+    <% end %>
+
+    <!-- ページレベルのリアクションモーダル -->
+    <% if user_signed_in? %>
+      <!-- スマホサイズ用: 画面下から出てくるモーダル -->
+      <div class="fixed inset-0 bg-black/20 hidden z-50 md:hidden"
+           data-reaction-modal-target="mobileModal"
+           data-action="click->reaction-modal#hideModal">
+        <!-- 画面下部に固定されたモーダルコンテンツ -->
+        <div class="absolute bottom-0 left-0 right-0 bg-base-100 border-t border-base-content/10 shadow-xl
+                    rounded-t-xl p-4 max-h-[70vh] overflow-y-auto
+                    transform transition-transform duration-300 ease-out
+                    translate-y-full data-[modal-visible]:translate-y-0"
+             data-action="click->reaction-modal#stopPropagation"
+             data-reaction-modal-target="mobileModalContent">
+          <div data-reaction-modal-target="modalEmojiContent">
+            <!-- 絵文字コンテンツはJavaScriptで動的に挿入 -->
+          </div>
+          
+          <div class="flex justify-center mt-6">
+            <button class="flex items-center justify-center p-1 mb-5 bg-accent/60 hover:bg-accent/40 hover:cursor-pointer text-base-content/60 rounded-full transition-colors"
+              data-action="click->reaction-modal#hideModal">
+              <span class="material-symbols-outlined">
+                close
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+
     <% end %>
   </div>
 </div>

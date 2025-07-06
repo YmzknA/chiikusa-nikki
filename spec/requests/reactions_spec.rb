@@ -6,6 +6,16 @@ RSpec.describe "Reactions", type: :request do
 
   before { sign_in user }
 
+  describe "GET /diaries/:diary_id/reactions/new" do
+    it "returns turbo stream response" do
+      get new_diary_reaction_path(diary), headers: { 'Accept' => 'text/vnd.turbo-stream.html' }
+      
+      expect(response).to have_http_status(:ok)
+      expect(response.content_type).to include('text/vnd.turbo-stream.html')
+      expect(response.body).to include("reaction_form_#{diary.id}")
+    end
+  end
+
   describe "POST /diaries/:diary_id/reactions" do
     let(:valid_emoji) { '😂' }
     let(:invalid_emoji) { 'invalid' }
@@ -33,7 +43,8 @@ RSpec.describe "Reactions", type: :request do
           post diary_reactions_path(diary), params: { reaction: { emoji: invalid_emoji } }, headers: { 'Accept' => 'text/vnd.turbo-stream.html' }
         }.not_to change(Reaction, :count)
         
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:ok)
+        expect(response.content_type).to include('text/vnd.turbo-stream.html')
       end
 
       it "does not create duplicate reactions" do
@@ -43,7 +54,8 @@ RSpec.describe "Reactions", type: :request do
           post diary_reactions_path(diary), params: { reaction: { emoji: valid_emoji } }, headers: { 'Accept' => 'text/vnd.turbo-stream.html' }
         }.not_to change(Reaction, :count)
         
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:ok)
+        expect(response.content_type).to include('text/vnd.turbo-stream.html')
       end
     end
 
@@ -59,7 +71,7 @@ RSpec.describe "Reactions", type: :request do
 
   describe "DELETE /diaries/:diary_id/reactions/:id" do
     let(:emoji) { '😂' }
-    let!(:reaction) { create(:reaction, user: user, diary: diary, emoji: emoji) }
+    let\!(:reaction) { create(:reaction, user: user, diary: diary, emoji: emoji) }
 
     context "when reaction exists" do
       it "destroys the reaction" do

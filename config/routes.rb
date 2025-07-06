@@ -19,6 +19,7 @@ Rails.application.routes.draw do
       post :upload_to_github
       get :select_til
       patch :update_til_selection
+      get :reaction_modal_content
     end
     collection do
       post :increment_seed

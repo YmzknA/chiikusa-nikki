@@ -7,9 +7,12 @@ class ReactionsController < ApplicationController
     @reaction.user = current_user
 
     if @reaction.save
-      render turbo_stream: turbo_stream.replace("reactions_#{@diary.id}", partial: 'shared/reactions', locals: { diary: @diary, current_user: current_user })
+      render turbo_stream: [
+        turbo_stream.replace("reactions_#{@diary.id}", partial: 'shared/reactions', locals: { diary: @diary, current_user: current_user }),
+        turbo_stream.append('body', "<script>document.getElementById('reactions_#{@diary.id}').dispatchEvent(new CustomEvent('reaction:hide-modal'));</script>")
+      ]
     else
-      head :unprocessable_entity
+      render turbo_stream: turbo_stream.append('body', "<script>alert('#{@reaction.errors.full_messages.join(', ')}');</script>")
     end
   end
 
@@ -17,7 +20,10 @@ class ReactionsController < ApplicationController
     @reaction = @diary.reactions.find_by(user: current_user, emoji: params[:id])
     if @reaction
       @reaction.destroy
-      render turbo_stream: turbo_stream.replace("reactions_#{@diary.id}", partial: 'shared/reactions', locals: { diary: @diary, current_user: current_user })
+      render turbo_stream: [
+        turbo_stream.replace("reactions_#{@diary.id}", partial: 'shared/reactions', locals: { diary: @diary, current_user: current_user }),
+        turbo_stream.append('body', "<script>document.getElementById('reactions_#{@diary.id}').dispatchEvent(new CustomEvent('reaction:hide-modal'));</script>")
+      ]
     else
       head :not_found
     end

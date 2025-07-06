@@ -62,3 +62,6 @@ application.register("text-truncate", TextTruncateController)
 
 import ReactionController from "./reaction_controller"
 application.register("reaction", ReactionController)
+
+import ReactionModalController from "./reaction_modal_controller"
+application.register("reaction-modal", ReactionModalController)
