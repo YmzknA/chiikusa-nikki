@@ -83,9 +83,8 @@ class TextFormatter
 
       # 改行文字で分割してHTML安全な結合
       lines = sanitized_text.split("\n")
-      # safe_joinとtagヘルパーを直接実装して依存を排除
-      escaped_lines = lines.map { |line| ERB::Util.html_escape(line) }
-      escaped_lines.join("<br>".html_safe).html_safe
+      # sanitize_ai_outputで既にHTMLエスケープ済みのため、二重エスケープを避ける
+      lines.join("<br>".html_safe).html_safe
     end
 
     # デバッグ用のテキスト情報表示

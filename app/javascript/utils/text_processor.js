@@ -4,6 +4,7 @@ export class TextProcessor {
   // 設定値（Rails側の設定と同期）
   static CONFIG = {
     TEXT_DEFAULT_LENGTH: 150,
+    TEXT_MAX_LENGTH: 5000, // サーバーサイドと統一
     WORD_BOUNDARY_RATIO: 0.8,
     TRUNCATE_SUFFIX: '...',
     TRUNCATE_BOUNDARIES: [' ', '\n', '。', '、', '！', '？', '：', '；'],
@@ -72,8 +73,8 @@ export class TextProcessor {
       return false
     }
 
-    // 基本的な長さチェック
-    if (text.length > 10000) {
+    // 基本的な長さチェック（サーバーサイドの設定と統一）
+    if (text.length > this.CONFIG.TEXT_MAX_LENGTH) {
       return false
     }
 
