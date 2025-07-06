@@ -28,13 +28,13 @@
 
   <!-- デスクトップ用: カード上のモーダル -->
   <% if user_signed_in? %>
-    <div class="absolute inset-0 hidden items-center justify-center z-40 max-md:hidden"
+    <div class="absolute inset-0 w-full hidden items-center justify-center z-40 max-md:hidden"
          data-reaction-target="desktopModal"
          data-action="click->reaction#hideModal">
       <div class="bg-base-100 border border-base-content/10 rounded-xl p-4 m-4 max-w-md w-full shadow-xl"
            data-action="click->reaction#stopPropagation">
         <% Reaction::EMOJI_CATEGORIES.each do |category_key, category_data| %>
-          <div class="mb-4">
+          <div class="mb-4 mx-auto">
             <h4 class="text-sm font-medium text-base-content/70 mb-2"><%= category_data[:label] %></h4>
             <div class="flex flex-wrap gap-2">
               <% category_data[:emojis].each do |emoji| %>

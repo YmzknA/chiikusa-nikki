@@ -1,5 +1,5 @@
 <% Reaction::EMOJI_CATEGORIES.each do |category_key, category_data| %>
-  <div class="mb-4">
+  <div class="mb-4 flex justify-between items-center">
     <h4 class="text-sm font-medium text-base-content/70 mb-2"><%= category_data[:label] %></h4>
     <div class="flex flex-wrap gap-2">
       <% category_data[:emojis].each do |emoji| %>
