@@ -85,7 +85,7 @@ class TextSanitizer
       detect_prompt_injection(sanitized)
       
       # HTMLエスケープ（Rails標準）
-      sanitized = ActionController::Base.helpers.html_escape(sanitized)
+      sanitized = ERB::Util.html_escape(sanitized)
       
       # 改行文字の正規化
       sanitized = normalize_newlines(sanitized)
