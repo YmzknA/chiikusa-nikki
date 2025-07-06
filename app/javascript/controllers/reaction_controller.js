@@ -11,6 +11,10 @@ export default class extends Controller {
     })
   }
 
+  disconnect() {
+    console.log("Reaction controller disconnected")
+  }
+
   showModal(event) {
     const button = event.currentTarget
     const diaryId = button.dataset.diaryId
