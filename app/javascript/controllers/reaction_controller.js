@@ -5,14 +5,21 @@ export default class extends Controller {
 
   connect() {
     console.log("Reaction controller connected")
-    // カスタムイベントを監視してモーダルを閉じる
-    this.element.addEventListener("reaction:hide-modal", () => {
+    // バインドしたハンドラーを保存
+    this.boundHideModal = () => {
       this.hideModal()
-    })
+    }
+    // カスタムイベントを監視してモーダルを閉じる
+    this.element.addEventListener("reaction:hide-modal", this.boundHideModal)
   }
 
   disconnect() {
     console.log("Reaction controller disconnected")
+    // 適切にイベントリスナーを削除
+    if (this.boundHideModal) {
+      this.element.removeEventListener("reaction:hide-modal", this.boundHideModal)
+      this.boundHideModal = null
+    }
   }
 
   showModal(event) {

@@ -26,7 +26,7 @@ Rails.application.routes.draw do
       post :share_on_x
       get :search_by_date
     end
-    
+
     resources :reactions, only: [:create, :destroy]
   end
 

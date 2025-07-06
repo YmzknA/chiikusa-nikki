@@ -8,7 +8,9 @@ class DiariesController < ApplicationController
 
   before_action :authenticate_user!, except: [:show, :public_index]
   before_action :set_diary_for_show, only: [:show]
-  before_action :set_diary, only: [:edit, :update, :destroy, :upload_to_github, :select_til, :update_til_selection, :reaction_modal_content]
+  before_action :set_diary,
+                only: [:edit, :update, :destroy, :upload_to_github, :select_til, :update_til_selection,
+                       :reaction_modal_content]
 
   def index
     @selected_month = params[:month].present? ? params[:month] : "all"
@@ -126,7 +128,7 @@ class DiariesController < ApplicationController
   end
 
   def reaction_modal_content
-    render partial: 'shared/reaction_modal_content', locals: { diary: @diary, current_user: current_user }
+    render partial: "shared/reaction_modal_content", locals: { diary: @diary, current_user: current_user }
   end
 
   private

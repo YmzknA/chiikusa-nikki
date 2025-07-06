@@ -5,12 +5,18 @@ export default class extends Controller {
 
   connect() {
     console.log("Reaction modal controller connected")
-    // 各リアクションボタンからのイベントを監視
-    document.addEventListener("reaction:show-modal", this.handleShowModal.bind(this))
+    // バインドしたハンドラーを保存してdisconnect時に適切に削除できるようにする
+    this.boundHandleShowModal = this.handleShowModal.bind(this)
+    document.addEventListener("reaction:show-modal", this.boundHandleShowModal)
   }
 
   disconnect() {
-    document.removeEventListener("reaction:show-modal", this.handleShowModal.bind(this))
+    console.log("Reaction modal controller disconnected")
+    // 適切にイベントリスナーを削除
+    if (this.boundHandleShowModal) {
+      document.removeEventListener("reaction:show-modal", this.boundHandleShowModal)
+      this.boundHandleShowModal = null
+    }
   }
 
   handleShowModal(event) {
@@ -21,9 +27,16 @@ export default class extends Controller {
   }
 
   async loadEmojiContent(diaryId) {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 5000)
+
     try {
       // サーバーから絵文字コンテンツを取得
-      const response = await fetch(`/diaries/${diaryId}/reaction_modal_content`)
+      const response = await fetch(`/diaries/${diaryId}/reaction_modal_content`, {
+        signal: controller.signal
+      })
+      clearTimeout(timeoutId)
+      
       if (response.ok) {
         const html = await response.text()
         this.modalEmojiContentTargets.forEach(target => {
@@ -31,6 +44,10 @@ export default class extends Controller {
         })
       }
     } catch (error) {
+      clearTimeout(timeoutId)
+      if (error.name === 'AbortError') {
+        console.error('Request timeout')
+      }
       console.error("Failed to load emoji content:", error)
     }
   }

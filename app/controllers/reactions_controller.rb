@@ -8,13 +8,14 @@ class ReactionsController < ApplicationController
 
     if @reaction.save
       render turbo_stream: [
-        turbo_stream.replace("reactions_#{@diary.id}", partial: 'shared/reactions', locals: { diary: @diary, current_user: current_user }),
-        turbo_stream.append('body', render_event_dispatcher('reaction:hide-modal', "reactions_#{@diary.id}"))
+        turbo_stream.replace("reactions_#{@diary.id}", partial: "shared/reactions",
+                                                       locals: { diary: @diary, current_user: current_user }),
+        turbo_stream.append("body", render_event_dispatcher("reaction:hide-modal", "reactions_#{@diary.id}"))
       ]
     else
       # Use flash message instead of JavaScript alert for security
-      flash.now[:alert] = @reaction.errors.full_messages.join(', ')
-      render turbo_stream: turbo_stream.update('flash', partial: 'shared/flash')
+      flash.now[:alert] = "リアクションの処理に失敗しました。もう一度お試しください。"
+      render turbo_stream: turbo_stream.update("flash", partial: "shared/flash")
     end
   end
 
@@ -23,8 +24,9 @@ class ReactionsController < ApplicationController
     if @reaction
       @reaction.destroy
       render turbo_stream: [
-        turbo_stream.replace("reactions_#{@diary.id}", partial: 'shared/reactions', locals: { diary: @diary, current_user: current_user }),
-        turbo_stream.append('body', render_event_dispatcher('reaction:hide-modal', "reactions_#{@diary.id}"))
+        turbo_stream.replace("reactions_#{@diary.id}", partial: "shared/reactions",
+                                                       locals: { diary: @diary, current_user: current_user }),
+        turbo_stream.append("body", render_event_dispatcher("reaction:hide-modal", "reactions_#{@diary.id}"))
       ]
     else
       head :not_found
@@ -34,7 +36,10 @@ class ReactionsController < ApplicationController
   private
 
   def set_diary
-    @diary = Diary.find(params[:diary_id])
+    # 公開されている日記のみを対象とする（N+1対策でincludesを追加）
+    @diary = Diary.includes(:reactions, reactions: :user).where(is_public: true).find(params[:diary_id])
+  rescue ActiveRecord::RecordNotFound
+    head :not_found
   end
 
   def reaction_params
@@ -43,14 +48,13 @@ class ReactionsController < ApplicationController
 
   # Secure event dispatcher helper method
   def render_event_dispatcher(event_name, target_id = nil, detail = {})
-    helpers.content_tag(:div, '', 
-      data: {
-        controller: 'event-dispatcher',
-        event_dispatcher_event_name_value: event_name,
-        event_dispatcher_target_id_value: target_id,
-        event_dispatcher_detail_value: detail.to_json
-      },
-      style: 'display: none;'
-    )
+    helpers.content_tag(:div, "",
+                        data: {
+                          controller: "event-dispatcher",
+                          event_dispatcher_event_name_value: event_name,
+                          event_dispatcher_target_id_value: target_id,
+                          event_dispatcher_detail_value: detail.to_json
+                        },
+                        style: "display: none;")
   end
 end
