@@ -33,6 +33,11 @@
                 <div class="text-base md:text-lg font-semibold text-base-content"><%= current_user.diaries.where(github_uploaded: true).count %>件</div>
               </div>
             <% end %>
+            
+            <div class="neuro-badge p-3 md:p-4">
+              <div class="text-xs md:text-sm text-base-content/60">総リアクション送信数</div>
+              <div class="text-base md:text-lg font-semibold text-base-content"><%= current_user.total_reactions_sent %>件</div>
+            </div>
           </div>
         </div>
       </div>

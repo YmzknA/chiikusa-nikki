@@ -27,6 +27,9 @@
             <% end %>
           </div>
 
+          <!-- リアクション表示 -->
+          <%= render 'shared/reactions', diary: diary, current_user: current_user %>
+
           <div class="flex justify-end">
             <%= link_to diary_path(diary), class: "neuro-button py-2 px-3 md:px-4 text-xs md:text-sm font-medium transition-all duration-200 hover:scale-105" do %>
               詳細を見る

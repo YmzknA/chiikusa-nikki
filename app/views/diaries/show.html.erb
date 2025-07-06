@@ -109,6 +109,17 @@
         </div>
       </div>
 
+      <%# Reactions Section %>
+      <div class="neuro-card p-4 md:p-6 animate-[slideInRight_0.5s_ease-out_0.6s_both]">
+        <h2 class="flex items-center gap-2 text-xl md:text-2xl font-bold text-info mb-3 md:mb-4">
+          <svg class="h-5 w-5 md:h-6 md:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+          </svg>
+          リアクション
+        </h2>
+        <%= render 'shared/reactions', diary: @diary, current_user: current_user %>
+      </div>
+
       <%# Actions Section %>
       <%= render 'diary_action_buttons' %>
 

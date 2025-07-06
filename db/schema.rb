@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_07_02_103316) do
+ActiveRecord::Schema[7.2].define(version: 2025_07_06_083753) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -74,6 +74,18 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_02_103316) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "reactions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "diary_id", null: false
+    t.string "emoji", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["diary_id", "emoji"], name: "index_reactions_on_diary_id_and_emoji"
+    t.index ["diary_id"], name: "index_reactions_on_diary_id"
+    t.index ["user_id", "diary_id", "emoji"], name: "index_reactions_on_user_id_and_diary_id_and_emoji", unique: true
+    t.index ["user_id"], name: "index_reactions_on_user_id"
+  end
+
   create_table "til_candidates", force: :cascade do |t|
     t.bigint "diary_id", null: false
     t.text "content"
@@ -115,5 +127,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_02_103316) do
   add_foreign_key "diary_answers", "answers"
   add_foreign_key "diary_answers", "diaries"
   add_foreign_key "diary_answers", "questions"
+  add_foreign_key "reactions", "diaries"
+  add_foreign_key "reactions", "users"
   add_foreign_key "til_candidates", "diaries"
 end

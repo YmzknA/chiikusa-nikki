@@ -2,6 +2,7 @@ class Diary < ApplicationRecord
   belongs_to :user
   has_many :diary_answers, dependent: :destroy
   has_many :til_candidates, dependent: :destroy
+  has_many :reactions, dependent: :destroy
 
   validates :date, presence: true, uniqueness: { scope: :user_id, message: "の日記は既に作成されています" }
 
@@ -23,6 +24,22 @@ class Diary < ApplicationRecord
     return nil unless selected_til_index.present?
 
     til_candidates.find_by(index: selected_til_index)&.content
+  end
+
+  def reactions_summary
+    reactions.group(:emoji).count
+  end
+
+  def user_reactions(user)
+    return [] unless user
+
+    reactions.where(user: user).pluck(:emoji)
+  end
+
+  def user_reacted?(user, emoji)
+    return false unless user
+
+    reactions.exists?(user: user, emoji: emoji)
   end
 
   private
