@@ -4,20 +4,18 @@ export default class extends Controller {
   static targets = ["modal"]
 
   connect() {
-    console.log("Reaction stats controller connected")
+    // Controller connected
   }
 
   disconnect() {
-    console.log("Reaction stats controller disconnected")
+    // Controller disconnected
   }
 
   showModal(event) {
-    console.log("Showing reaction stats modal")
     this.modalTarget.showModal()
   }
 
   hideModal(event) {
-    console.log("Hiding reaction stats modal")
     this.modalTarget.close()
   }
 
