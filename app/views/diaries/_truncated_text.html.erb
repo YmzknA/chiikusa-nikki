@@ -8,7 +8,7 @@
   - title_class: タイトルのCSSクラス（オプション）
 %>
 
-<% max_length ||= TextDisplayConfig::Truncation::DEFAULT_MAX_LENGTH %>
+<% max_length ||= 150 %>
 <% if text.present? %>
   <% if title.present? %>
     <h3 class="text-base md:text-lg font-bold mb-2 <%= title_class %>"><%= title %></h3>
