@@ -3,7 +3,7 @@ class AddReactionsIndexes < ActiveRecord::Migration[7.0]
     # リアクション検索・集計のパフォーマンス最適化用インデックス
     
     # 日記別の絵文字集計用（reactions_summary メソッド）
-    add_index :reactions, [:diary_id, :emoji], name: 'index_reactions_on_diary_emoji'
+    # 既存のマイグレーションで作成済みのため削除
     
     # ユーザー別のリアクション検索用（user_reacted? メソッド）
     add_index :reactions, [:user_id, :diary_id], name: 'index_reactions_on_user_diary'
