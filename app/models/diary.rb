@@ -27,7 +27,10 @@ class Diary < ApplicationRecord
   end
 
   def reactions_summary
-    reactions.group(:emoji).count
+    summary = reactions.group(:emoji).count
+    # Reaction::EMOJI_CATEGORIESの順番でソート
+    emoji_order = Reaction::EMOJI_CATEGORIES.values.flat_map { |category| category[:emojis] }
+    summary.sort_by { |emoji, _count| emoji_order.index(emoji) || Float::INFINITY }.to_h
   end
 
   def user_reactions(user)
