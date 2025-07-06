@@ -6,7 +6,6 @@ RSpec.describe "Reactions", type: :request do
 
   before { sign_in user }
 
-
   describe "POST /diaries/:diary_id/reactions" do
     let(:valid_emoji) { "😂" }
     let(:invalid_emoji) { "invalid" }
