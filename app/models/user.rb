@@ -322,6 +322,13 @@ class User < ApplicationRecord
     reactions.count
   end
 
+  def reactions_sent_by_emoji
+    summary = reactions.group(:emoji).count
+    # Reaction::EMOJI_CATEGORIESの順番でソート
+    emoji_order = Reaction::EMOJI_CATEGORIES.values.flat_map { |category| category[:emojis] }
+    summary.sort_by { |emoji, _count| emoji_order.index(emoji) || Float::INFINITY }.to_h
+  end
+
   private
 
   def at_least_one_provider_id

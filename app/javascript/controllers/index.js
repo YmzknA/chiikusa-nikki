@@ -71,3 +71,6 @@ application.register("event-dispatcher", EventDispatcherController)
 
 import FlashController from "./flash_controller"
 application.register("flash", FlashController)
+
+import ReactionStatsController from "./reaction_stats_controller"
+application.register("reaction-stats", ReactionStatsController)
