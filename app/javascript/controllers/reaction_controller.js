@@ -15,8 +15,8 @@ export default class extends Controller {
     const button = event.currentTarget
     const diaryId = button.dataset.diaryId
     
-    if (window.innerWidth < 768) { // md breakpoint
-      // スマホサイズ: ページレベルのモーダルにイベントを送信
+    if (window.innerWidth < 1024) { // lg breakpoint
+      // スマホ・タブレットサイズ: ページレベルのモーダルにイベントを送信
       const modalEvent = new CustomEvent("reaction:show-modal", {
         detail: { diaryId: diaryId },
         bubbles: true
@@ -32,8 +32,8 @@ export default class extends Controller {
   }
 
   hideModal() {
-    if (window.innerWidth < 768) { // md breakpoint
-      // スマホサイズ: ページレベルのモーダルを閉じる
+    if (window.innerWidth < 1024) { // lg breakpoint
+      // スマホ・タブレットサイズ: ページレベルのモーダルを閉じる
       const modalEvent = new CustomEvent("reaction:hide-modal", {
         bubbles: true
       })

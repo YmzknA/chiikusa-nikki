@@ -49,8 +49,8 @@
 
     <!-- ページレベルのリアクションモーダル -->
     <% if user_signed_in? %>
-      <!-- スマホサイズ用: 画面下から出てくるモーダル -->
-      <div class="fixed inset-0 bg-black/20 hidden z-50 md:hidden"
+      <!-- スマホ・タブレットサイズ用: 画面下から出てくるモーダル -->
+      <div class="fixed inset-0 bg-black/20 hidden z-50 lg:hidden"
            data-reaction-modal-target="mobileModal"
            data-action="click->reaction-modal#hideModal">
         <!-- 画面下部に固定されたモーダルコンテンツ -->
