@@ -49,7 +49,7 @@
             </svg>
             Today I Learned
           </h2>
-          <p class="text-base md:text-lg leading-relaxed text-base-content"><%= @diary.til_text %></p>
+          <p class="text-base md:text-lg leading-relaxed text-base-content"><%= safe_join(@diary.til_text.split("\n"), tag(:br)) %></p>
 
           <% if @diary&.notes.present? %>
             <div class="mt-4 md:mt-6">
@@ -62,7 +62,7 @@
                   今日のメモ
                 </div>
                 <div class="collapse-content">
-                  <div class="whitespace-pre-line text-sm md:text-base leading-relaxed text-base-content pt-2"><%= @diary.notes %></div>
+                  <div class="text-sm md:text-base leading-relaxed text-base-content pt-2"><%= safe_join(@diary.notes.split("\n"), tag(:br)) %></div>
                 </div>
               </div>
             </div>
@@ -74,7 +74,7 @@
             </svg>
             今日のメモ
           </h2>
-          <div class="whitespace-pre-line text-sm md:text-base leading-relaxed text-base-content"><%= @diary.notes %></div>
+          <div class="text-sm md:text-base leading-relaxed text-base-content"><%= safe_join(@diary.notes.split("\n"), tag(:br)) %></div>
           <%= render 'til_selection_button' %>
         <% else %>
           <h2 class="flex items-center gap-2 text-xl md:text-2xl font-bold text-warning mb-3 md:mb-4">

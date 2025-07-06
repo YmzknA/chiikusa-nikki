@@ -56,3 +56,6 @@ application.register("theme", ThemeController)
 
 import AiTypeSelectionController from "./ai_type_selection_controller"
 application.register("ai-type-selection", AiTypeSelectionController)
+
+import TextTruncateController from "./text_truncate_controller"
+application.register("text-truncate", TextTruncateController)

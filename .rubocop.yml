@@ -74,6 +74,11 @@ Metrics/ClassLength:
   CountComments: false
   CountAsOne: ['array', 'hash', 'heredoc']
 
+Naming/PredicatePrefix:
+  Exclude:
+    - "app/services/seed_manager.rb"
+    - "app/services/diary_service.rb"
+
 Naming/PredicateMethod:
   Exclude:
     - "app/services/seed_manager.rb"
