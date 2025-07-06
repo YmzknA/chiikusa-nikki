@@ -1,4 +1,4 @@
-<div id="flash" class="animate-flash-fade fixed m-5 top-0 right-0 z-100">
+<div id="flash" class="animate-flash-fade fixed m-5 top-0 right-0 z-100" data-controller="flash">
 <% if flash[:notice] %>
   <div role="alert" class="alert alert-success glasscard-success">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
@@ -7,7 +7,7 @@
     <%= flash[:notice] %>
 
     <!-- フラッシュメッセージ閉じるボタン -->
-    <button class="btn btn-sm btn-circle btn-ghost" onclick="this.parentElement.remove()">
+    <button class="btn btn-sm btn-circle btn-ghost" data-action="click->flash#close">
       <span class="material-symbols-outlined">
         close
       </span>
@@ -23,7 +23,7 @@
     <%= flash[:alert] %>
 
     <!-- フラッシュメッセージ閉じるボタン -->
-    <button class="btn btn-sm btn-circle btn-ghost" onclick="this.parentElement.remove()">
+    <button class="btn btn-sm btn-circle btn-ghost" data-action="click->flash#close">
       <span class="material-symbols-outlined">
         close
       </span>
@@ -39,7 +39,7 @@
     <%= flash[:error] %>
 
     <!-- フラッシュメッセージ閉じるボタン -->
-    <button class="btn btn-sm btn-circle btn-ghost" onclick="this.parentElement.remove()">
+    <button class="btn btn-sm btn-circle btn-ghost" data-action="click->flash#close">
       <span class="material-symbols-outlined">
         close
       </span>

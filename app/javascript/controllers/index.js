@@ -65,3 +65,9 @@ application.register("reaction", ReactionController)
 
 import ReactionModalController from "./reaction_modal_controller"
 application.register("reaction-modal", ReactionModalController)
+
+import EventDispatcherController from "./event_dispatcher_controller"
+application.register("event-dispatcher", EventDispatcherController)
+
+import FlashController from "./flash_controller"
+application.register("flash", FlashController)
