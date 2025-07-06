@@ -24,7 +24,7 @@
       <% end %>
     <% else %>
       <!-- ログインしていないユーザー：クリック不可 -->
-      <div class="flex items-center gap-1 px-2 py-1 bg-accent/10 rounded-full text-sm border border-base-content/10 text-base-content/60">
+      <div class="flex items-center gap-1 px-2 py-1 bg-accent/10 rounded-full text-sm border border-base-content/10">
         <span><%= emoji %></span>
         <span class="text-xs text-base-content/60"><%= count %></span>
       </div>
@@ -73,7 +73,7 @@
             </div>
           </div>
         <% end %>
-        
+
         <div class="flex justify-center mt-6">
           <button class="flex items-center justify-center p-1 bg-accent/60 hover:bg-accent/40 hover:cursor-pointer text-base-content/60 rounded-full transition-colors"
             data-action="click->reaction#hideModal">
