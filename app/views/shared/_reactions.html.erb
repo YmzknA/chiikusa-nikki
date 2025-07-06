@@ -1,0 +1,90 @@
+<div id="reactions_<%= diary.id %>" class="mt-4 flex flex-wrap items-center gap-2"
+     data-controller="reaction">
+  
+  <!-- 既存のリアクション表示 -->
+  <% diary.reactions_summary.each do |emoji, count| %>
+    <% if user_signed_in? %>
+      <% if diary.user_reacted?(current_user, emoji) %>
+        <!-- ユーザーが既にリアクション済み：クリックで削除 -->
+        <%= button_to diary_reaction_path(diary, emoji), method: :delete, local: false, 
+              class: "flex items-center gap-1 px-2 py-1 bg-primary/20 ring-2 ring-primary/50 rounded-full text-sm transition-colors border-0 hover:cursor-pointer hover:bg-primary/30" do %>
+          <span><%= emoji %></span>
+          <span class="text-xs text-base-content/60"><%= count %></span>
+        <% end %>
+      <% else %>
+        <!-- ユーザーが未リアクション：クリックで追加 -->
+        <%= form_with model: [diary, diary.reactions.build], local: false, 
+              class: "inline" do |form| %>
+          <%= form.hidden_field :emoji, value: emoji %>
+          <button type="submit" class="flex items-center gap-1 px-2 py-1 bg-secondary/20 rounded-full text-sm transition-colors border-0 hover:cursor-pointer hover:bg-secondary/40">
+            <span><%= emoji %></span>
+            <span class="text-xs text-base-content/60"><%= count %></span>
+          </button>
+        <% end %>
+      <% end %>
+    <% else %>
+      <!-- ログインしていないユーザー：クリック不可 -->
+      <div class="flex items-center gap-1 px-2 py-1 bg-accent/10 rounded-full text-sm border border-base-content/10">
+        <span><%= emoji %></span>
+        <span class="text-xs text-base-content/60"><%= count %></span>
+      </div>
+    <% end %>
+  <% end %>
+  
+  <!-- リアクション追加ボタン -->
+  <% if user_signed_in? %>
+    <button class="flex items-center justify-center size-8 bg-base-300 hover:bg-base-300/60 rounded-full text-sm transition-colors hover:cursor-pointer"
+            data-action="click->reaction#showModal"
+            data-diary-id="<%= diary.id %>"
+            aria-label="Add reaction">
+      <span class="text-base-content/60">+</span>
+    </button>
+  <% end %>
+
+  <!-- デスクトップ用: カード上のモーダル -->
+  <% if user_signed_in? %>
+    <div class="absolute inset-0 w-full hidden items-center justify-center z-40 max-md:hidden"
+         data-reaction-target="desktopModal"
+         data-action="click->reaction#hideModal">
+      <div class="bg-base-100 border border-base-content/10 rounded-xl p-4 m-4 max-w-md w-full shadow-xl"
+           data-action="click->reaction#stopPropagation">
+        <% Reaction::EMOJI_CATEGORIES.each do |category_key, category_data| %>
+          <div class="mb-4 mx-auto">
+            <h4 class="text-sm font-medium text-base-content/70 mb-2"><%= category_data[:label] %></h4>
+            <div class="flex flex-wrap gap-2">
+              <% category_data[:emojis].each do |emoji| %>
+                <% if diary.user_reacted?(current_user, emoji) %>
+                  <!-- リアクション済み：削除フォーム -->
+                  <%= button_to diary_reaction_path(diary, emoji), method: :delete, local: false, 
+                        class: "inline",
+                        data: { action: "click->reaction#hideModal" } do %>
+                    <span class="flex items-center justify-center w-10 h-10 bg-primary/20 ring-2 ring-primary/50 rounded-full text-lg transition-colors border-0 cursor-pointer hover:bg-primary/30"><%= emoji %></span>
+                  <% end %>
+                <% else %>
+                  <!-- 未リアクション：追加フォーム -->
+                  <%= form_with model: [diary, diary.reactions.build], local: false, 
+                        class: "inline",
+                        data: { action: "submit->reaction#hideModal" } do |form| %>
+                    <%= form.hidden_field :emoji, value: emoji %>
+                    <%= form.submit emoji, 
+                          class: "flex items-center justify-center w-10 h-10 bg-base-200 hover:bg-base-300 rounded-full text-lg transition-colors border-0 cursor-pointer" %>
+                  <% end %>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="flex justify-center mt-6">
+          <button class="flex items-center justify-center p-1 bg-accent/60 hover:bg-accent/40 hover:cursor-pointer text-base-content/60 rounded-full transition-colors"
+            data-action="click->reaction#hideModal">
+            <span class="material-symbols-outlined">
+              close
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+</div>

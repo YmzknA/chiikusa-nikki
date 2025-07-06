@@ -4,6 +4,7 @@ class User < ApplicationRecord
          :omniauthable, omniauth_providers: [:github, :google_oauth2]
 
   has_many :diaries, dependent: :destroy
+  has_many :reactions, dependent: :destroy
 
   # 定数定義
   DEFAULT_USERNAME = "ユーザー名🌱".freeze
@@ -315,6 +316,17 @@ class User < ApplicationRecord
 
   def username_setup_pending?
     username == DEFAULT_USERNAME
+  end
+
+  def total_reactions_sent
+    reactions.count
+  end
+
+  def reactions_sent_by_emoji
+    summary = reactions.group(:emoji).count
+    # Reaction::EMOJI_CATEGORIESの順番でソート
+    emoji_order = Reaction::EMOJI_CATEGORIES.values.flat_map { |category| category[:emojis] }
+    summary.sort_by { |emoji, _count| emoji_order.index(emoji) || Float::INFINITY }.to_h
   end
 
   private

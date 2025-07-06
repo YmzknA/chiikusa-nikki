@@ -59,3 +59,19 @@ application.register("ai-type-selection", AiTypeSelectionController)
 
 import TextTruncateController from "./text_truncate_controller"
 application.register("text-truncate", TextTruncateController)
+
+import ReactionController from "./reaction_controller"
+application.register("reaction", ReactionController)
+
+import ReactionModalController from "./reaction_modal_controller"
+application.register("reaction-modal", ReactionModalController)
+
+import EventDispatcherController from "./event_dispatcher_controller"
+application.register("event-dispatcher", EventDispatcherController)
+
+import FlashController from "./flash_controller"
+application.register("flash", FlashController)
+
+import ReactionStatsController from "./reaction_stats_controller"
+application.register("reaction-stats", ReactionStatsController)
+

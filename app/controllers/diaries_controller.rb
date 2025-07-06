@@ -8,12 +8,14 @@ class DiariesController < ApplicationController
 
   before_action :authenticate_user!, except: [:show, :public_index]
   before_action :set_diary_for_show, only: [:show]
-  before_action :set_diary, only: [:edit, :update, :destroy, :upload_to_github, :select_til, :update_til_selection]
+  before_action :set_diary,
+                only: [:edit, :update, :destroy, :upload_to_github, :select_til, :update_til_selection,
+                       :reaction_modal_content]
 
   def index
     @selected_month = params[:month].present? ? params[:month] : "all"
     @diaries = filter_diaries_by_month(
-      current_user.diaries.includes(:diary_answers, :til_candidates),
+      current_user.diaries.includes(:diary_answers, :til_candidates, :reactions, reactions: :user),
       @selected_month
     ).order(date: :desc, created_at: :desc)
     @available_months = available_months
@@ -34,7 +36,7 @@ class DiariesController < ApplicationController
 
   def public_index
     @diaries = Diary.public_diaries
-                    .includes(user: [], diary_answers: [:answer])
+                    .includes(:user, diary_answers: [:answer], reactions: :user)
                     .order(date: :desc, created_at: :desc)
                     .limit(20)
   end
@@ -123,6 +125,10 @@ class DiariesController < ApplicationController
     end
   rescue ActiveRecord::RecordInvalid
     redirect_with_alert("TILの選択に失敗しました。もう一度お試しください。")
+  end
+
+  def reaction_modal_content
+    render partial: "shared/reaction_modal_content", locals: { diary: @diary, current_user: current_user }
   end
 
   private
