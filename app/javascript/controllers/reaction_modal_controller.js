@@ -33,7 +33,10 @@ export default class extends Controller {
     try {
       // サーバーから絵文字コンテンツを取得
       const response = await fetch(`/diaries/${diaryId}/reaction_modal_content`, {
-        signal: controller.signal
+        signal: controller.signal,
+        headers: {
+          'Accept': 'text/html'
+        }
       })
       clearTimeout(timeoutId)
       

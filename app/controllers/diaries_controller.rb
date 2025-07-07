@@ -128,7 +128,9 @@ class DiariesController < ApplicationController
   end
 
   def reaction_modal_content
-    render partial: "shared/reaction_modal_content", locals: { diary: @diary, current_user: current_user }
+    respond_to do |format|
+      format.html { render partial: "shared/reaction_modal_content", locals: { diary: @diary, current_user: current_user }, layout: false }
+    end
   end
 
   private
