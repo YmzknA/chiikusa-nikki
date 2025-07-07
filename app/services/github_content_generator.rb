@@ -38,7 +38,7 @@ module GithubContentGenerator
 
       ## 概要
 
-      このリポジトリは[ちいくさ日記](https://tiikusa-nikki.fly.dev)で作成された日記を自動で保存しています。
+      このリポジトリは[ちいくさ日記](https://chiikusa-diary.fly.dev)で作成された日記を自動で保存しています。
 
       ## ファイル命名規則
 
