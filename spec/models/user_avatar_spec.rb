@@ -24,12 +24,11 @@ RSpec.describe User, "avatar functionality", type: :model do
     end
 
     context "when user has no uploaded avatar but has GitHub ID" do
-      before do
-        user.update!(github_id: "12345")
-      end
+      let(:github_id) { SecureRandom.random_number(999_999) }
+      let(:user_with_github) { create(:user, github_id: github_id.to_s, providers: ["github"]) }
 
       it "has GitHub avatar URL method" do
-        expect(user.github_avatar_url).to eq("https://avatars.githubusercontent.com/u/12345?v=4")
+        expect(user_with_github.github_avatar_url).to eq("https://avatars.githubusercontent.com/u/#{github_id}?v=4")
       end
     end
 
