@@ -104,7 +104,7 @@ RSpec.describe User, type: :model do
       double(
         provider: "google_oauth2",
         uid: "67890",
-        info: double(email: "test@example.com"),
+        info: double(email: "test@example.com", image: "https://example.com/avatar.jpg"),
         credentials: double(token: "google_token")
       )
     end
@@ -175,7 +175,7 @@ RSpec.describe User, type: :model do
         google_auth_unique = double(
           provider: "google_oauth2",
           uid: "unique_google_id_999",
-          info: double(email: "test@example.com"),
+          info: double(email: "test@example.com", image: "https://example.com/avatar.jpg"),
           credentials: double(token: "google_token")
         )
 

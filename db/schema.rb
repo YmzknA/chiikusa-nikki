@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_07_06_221250) do
+ActiveRecord::Schema[7.2].define(version: 2025_07_08_161845) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -118,6 +118,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_06_221250) do
     t.datetime "last_seed_incremented_at"
     t.datetime "last_shared_at"
     t.string "github_username"
+    t.string "avatar"
+    t.string "google_avatar_url"
+    t.datetime "avatar_updated_at"
     t.index ["email"], name: "index_users_on_email"
     t.index ["github_id"], name: "index_users_on_github_id", unique: true
     t.index ["google_email"], name: "index_users_on_google_email"
