@@ -31,11 +31,18 @@ module Myapp
     #
     config.time_zone = "Tokyo"
     config.i18n.default_locale = :ja
-    
+
     # アバター更新制限の設定
     config.avatar_update_account_age_limit = 1.day
     config.avatar_update_interval_limit = 1.hour
-    
+
+    # 設定値のバリデーション
+    if config.avatar_update_account_age_limit <= 0
+      raise ArgumentError,
+            "avatar_update_account_age_limit must be positive"
+    end
+    raise ArgumentError, "avatar_update_interval_limit must be positive" if config.avatar_update_interval_limit <= 0
+
     # config.eager_load_paths << Rails.root.join("extras")
   end
 end
