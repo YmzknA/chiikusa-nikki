@@ -4,7 +4,9 @@ export default class extends Controller {
   static targets = ["preview", "previewContainer"]
 
   connect() {
-    console.log("Avatar preview controller connected")
+    if (process.env.NODE_ENV !== "production") {
+      console.log("Avatar preview controller connected")
+    }
   }
 
   showPreview(event) {
