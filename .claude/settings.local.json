@@ -5,7 +5,11 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git checkout:*)",
-      "Bash(docker-compose exec web npm run build:css:*)"
+      "Bash(docker-compose exec web npm run build:css:*)",
+      "Bash(rg:*)",
+      "Bash(bin/rails generate migration:*)",
+      "Bash(docker compose:*)",
+      "Bash(rm:*)"
     ],
     "deny": []
   }
