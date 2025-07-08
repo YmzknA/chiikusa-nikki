@@ -7,15 +7,10 @@ class UsersController < ApplicationController
   end
 
   def update_username
-    # アバター取得フラグを分離
-    fetch_github_avatar = params[:user][:fetch_github_avatar] == "true"
-    fetch_google_avatar = params[:user][:fetch_google_avatar] == "true"
-
     if current_user.update(username_params)
-      # GitHubアバター取得の処理
-      handle_avatar_fetch if fetch_github_avatar
-      # Googleアバター取得の処理
-      handle_google_avatar_fetch if fetch_google_avatar
+      # アバター取得処理
+      handle_avatar_fetch_for_provider("github") if params[:user][:fetch_github_avatar] == "true"
+      handle_avatar_fetch_for_provider("google") if params[:user][:fetch_google_avatar] == "true"
 
       redirect_to tutorial_path, notice: "ユーザー名を設定しました！まずは使い方を確認しましょう 🌱"
     else
@@ -57,14 +52,6 @@ class UsersController < ApplicationController
 
   def username_params
     params.require(:user).permit(:username)
-  end
-
-  def handle_avatar_fetch
-    handle_avatar_fetch_for_provider("github")
-  end
-
-  def handle_google_avatar_fetch
-    handle_avatar_fetch_for_provider("google")
   end
 
   def handle_avatar_fetch_for_provider(provider)
