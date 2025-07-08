@@ -47,9 +47,7 @@ class ProfilesController < ApplicationController
     return true if current_user.avatar_updated_at.nil?
 
     # 新規アカウント制限チェック（2回目以降のみ）
-    if current_user.created_at > limits[:account_age_limit].ago
-      return false
-    end
+    return false if current_user.created_at > limits[:account_age_limit].ago
 
     # 短時間での連続更新防止のみ適用
     current_user.avatar_updated_at < limits[:update_interval_limit].ago
