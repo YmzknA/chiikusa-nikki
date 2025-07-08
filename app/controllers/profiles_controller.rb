@@ -69,7 +69,6 @@ class ProfilesController < ApplicationController
     I18n.t("avatar_security.update_permission_denied")
   end
 
-
   # 更新間隔が短すぎるかチェック
   def update_too_soon?(update_interval_limit, _current_time)
     current_user.avatar_updated_at && current_user.avatar_updated_at >= update_interval_limit.ago
