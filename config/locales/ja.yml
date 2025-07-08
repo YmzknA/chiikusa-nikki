@@ -8,6 +8,16 @@ ja:
     invalid_url_format: "無効なURL形式です"
     invalid_file_type: "不正なファイル形式です"
     update_permission_denied: "アバター更新権限がありません"
+    account_too_new: "アカウント作成直後はアバターを変更できません。あと%{time}お待ちください。"
+    update_too_soon: "アバターの変更は%{interval}に一回行えます。あと%{time}お待ちください。"
+    time_just_now: "まもなく"
+    time_hours: "%{hours}時間"
+    time_hours_minutes: "%{hours}時間%{minutes}分"
+    time_minutes: "%{minutes}分"
+    time_seconds: "%{seconds}秒"
+    interval_hours: "%{hours}時間"
+    interval_minutes: "%{minutes}分"
+    interval_seconds: "%{seconds}秒"
   
   activerecord:
     errors:

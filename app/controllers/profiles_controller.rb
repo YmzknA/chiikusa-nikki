@@ -11,7 +11,9 @@ class ProfilesController < ApplicationController
     # アバター更新時の追加検証
     if user_params[:avatar].present?
       unless avatar_update_allowed?
-        return render :edit, alert: I18n.t('avatar_security.update_permission_denied'), status: :forbidden
+        wait_time_message = calculate_wait_time_message
+        flash.now[:alert] = wait_time_message
+        return render :edit, status: :forbidden
       end
     end
 
@@ -28,13 +30,89 @@ class ProfilesController < ApplicationController
     params.require(:user).permit(:username, :avatar)
   end
 
+  # アバター更新制限の設定値を取得
+  def avatar_update_limits
+    @avatar_update_limits ||= {
+      account_age_limit: Rails.application.config.avatar_update_account_age_limit || 1.day,
+      update_interval_limit: Rails.application.config.avatar_update_interval_limit || 1.hour
+    }
+  end
+
+  # アバター更新が許可されているかチェック
   def avatar_update_allowed?
-    account_age_limit = Rails.application.config.avatar_update_account_age_limit || 1.day
-    update_interval_limit = Rails.application.config.avatar_update_interval_limit || 1.hour
+    limits = avatar_update_limits
     
     # アカウント作成から指定時間経過チェック
-    current_user.created_at < account_age_limit.ago &&
+    current_user.created_at < limits[:account_age_limit].ago &&
     # 短時間での連続更新防止
-    (current_user.updated_at.nil? || current_user.updated_at < update_interval_limit.ago)
+    (current_user.updated_at.nil? || current_user.updated_at < limits[:update_interval_limit].ago)
+  end
+
+  # 待機時間メッセージを計算して返す
+  def calculate_wait_time_message
+    limits = avatar_update_limits
+    current_time = Time.current
+    
+    # アカウント作成時間チェック
+    if account_too_new?(limits[:account_age_limit], current_time)
+      remaining_time = limits[:account_age_limit] - (current_time - current_user.created_at)
+      time_text = format_remaining_time(remaining_time)
+      return I18n.t('avatar_security.account_too_new', time: time_text)
+    end
+    
+    # 更新間隔チェック
+    if update_too_soon?(limits[:update_interval_limit], current_time)
+      remaining_time = limits[:update_interval_limit] - (current_time - current_user.updated_at)
+      time_text = format_remaining_time(remaining_time)
+      interval_text = format_interval_text(limits[:update_interval_limit])
+      return I18n.t('avatar_security.update_too_soon', time: time_text, interval: interval_text)
+    end
+    
+    # フォールバック（通常はここには到達しない）
+    I18n.t('avatar_security.update_permission_denied')
+  end
+
+  # アカウントが新しすぎるかチェック
+  def account_too_new?(account_age_limit, current_time)
+    current_user.created_at >= account_age_limit.ago
+  end
+
+  # 更新間隔が短すぎるかチェック
+  def update_too_soon?(update_interval_limit, current_time)
+    current_user.updated_at && current_user.updated_at >= update_interval_limit.ago
+  end
+
+  # 残り時間を人間が読みやすい形式で返す
+  # @param seconds [Numeric] 残り時間（秒）
+  # @return [String] 国際化対応の時間テキスト
+  def format_remaining_time(seconds)
+    return I18n.t('avatar_security.time_just_now') if seconds <= 0
+    
+    if seconds >= 3600
+      hours = (seconds / 3600).floor
+      minutes = ((seconds % 3600) / 60).floor
+      return I18n.t('avatar_security.time_hours_minutes', hours: hours, minutes: minutes) if minutes > 0
+      return I18n.t('avatar_security.time_hours', hours: hours)
+    elsif seconds >= 60
+      minutes = (seconds / 60).floor
+      return I18n.t('avatar_security.time_minutes', minutes: minutes)
+    else
+      return I18n.t('avatar_security.time_seconds', seconds: seconds.ceil)
+    end
+  end
+
+  # 間隔テキストを国際化対応で返す
+  # @param seconds [Numeric] 間隔時間（秒）
+  # @return [String] 国際化対応の間隔テキスト
+  def format_interval_text(seconds)
+    if seconds >= 3600
+      hours = (seconds / 3600).floor
+      return I18n.t('avatar_security.interval_hours', hours: hours)
+    elsif seconds >= 60
+      minutes = (seconds / 60).floor
+      return I18n.t('avatar_security.interval_minutes', minutes: minutes)
+    else
+      return I18n.t('avatar_security.interval_seconds', seconds: seconds)
+    end
   end
 end
