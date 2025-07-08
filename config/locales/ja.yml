@@ -1,6 +1,14 @@
 ja:
   hello: "こんにちは"
   
+  avatar_security:
+    https_required: "HTTPS URLのみ許可されています"
+    localhost_forbidden: "ローカルホストへのアクセスは禁止されています"
+    invalid_url: "無効なURLです"
+    invalid_url_format: "無効なURL形式です"
+    invalid_file_type: "不正なファイル形式です"
+    update_permission_denied: "アバター更新権限がありません"
+  
   activerecord:
     errors:
       messages:

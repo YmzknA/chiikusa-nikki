@@ -55,31 +55,33 @@ class UsersController < ApplicationController
   end
 
   def handle_avatar_fetch_for_provider(provider)
+    avatar_data = get_avatar_data_for_provider(provider)
+    return unless avatar_data
+
+    update_user_avatar(avatar_data[:url], provider)
+  end
+
+  def get_avatar_data_for_provider(provider)
     case provider
     when "github"
-      return unless current_user.github_id.present?
-
-      avatar_url = current_user.github_avatar_url
-      log_message = "GitHub avatar fetched"
+      return nil unless current_user.github_id.present?
+      { url: current_user.github_avatar_url, provider: "github" }
     when "google"
-      return unless current_user.google_id.present?
-
-      avatar_url = current_user.google_avatar_url
-      log_message = "Google avatar fetched"
-    else
-      return
+      return nil unless current_user.google_id.present?
+      { url: current_user.google_avatar_url, provider: "google" }
     end
+  end
 
+  def update_user_avatar(avatar_url, provider)
     return unless avatar_url.present?
 
     begin
       validated_url = AvatarSecurityService.validate_url!(avatar_url)
       current_user.remote_avatar_url = validated_url
       current_user.save!
-      AvatarUpdateLogger.log_success(current_user.id, provider)
+      AvatarUpdateLogger.log_success(current_user.id, provider, avatar_url)
     rescue SecurityError => e
       AvatarUpdateLogger.log_error(current_user.id, provider, e)
-      return
     rescue StandardError => e
       AvatarUpdateLogger.log_error(current_user.id, provider, e)
     end

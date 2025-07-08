@@ -11,7 +11,7 @@ class ProfilesController < ApplicationController
     # アバター更新時の追加検証
     if user_params[:avatar].present?
       unless avatar_update_allowed?
-        return render :edit, alert: "アバター更新権限がありません", status: :forbidden
+        return render :edit, alert: I18n.t('avatar_security.update_permission_denied'), status: :forbidden
       end
     end
 
@@ -29,9 +29,12 @@ class ProfilesController < ApplicationController
   end
 
   def avatar_update_allowed?
-    # アカウント作成から24時間経過チェック
-    current_user.created_at < 1.day.ago &&
+    account_age_limit = Rails.application.config.avatar_update_account_age_limit || 1.day
+    update_interval_limit = Rails.application.config.avatar_update_interval_limit || 1.hour
+    
+    # アカウント作成から指定時間経過チェック
+    current_user.created_at < account_age_limit.ago &&
     # 短時間での連続更新防止
-    (current_user.updated_at.nil? || current_user.updated_at < 1.hour.ago)
+    (current_user.updated_at.nil? || current_user.updated_at < update_interval_limit.ago)
   end
 end

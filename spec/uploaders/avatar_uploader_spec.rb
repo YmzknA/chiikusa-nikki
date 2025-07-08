@@ -68,7 +68,7 @@ RSpec.describe AvatarUploader do
 
       context "with valid JPEG file" do
         it "does not raise error" do
-          allow(mock_file).to receive(:read).with(8).and_return("\xFF\xD8\xFF\xE0test")
+          allow(mock_file).to receive(:read).with(12).and_return("\xFF\xD8\xFF\xE0test")
           allow(mock_file).to receive(:rewind)
           allow(mock_file).to receive(:present?).and_return(true)
 
@@ -78,7 +78,17 @@ RSpec.describe AvatarUploader do
 
       context "with valid PNG file" do
         it "does not raise error" do
-          allow(mock_file).to receive(:read).with(8).and_return("\x89PNG\r\n\x1A\ntest")
+          allow(mock_file).to receive(:read).with(12).and_return("\x89PNG\r\n\x1A\ntest")
+          allow(mock_file).to receive(:rewind)
+          allow(mock_file).to receive(:present?).and_return(true)
+
+          expect { uploader.send(:check_file_type!) }.not_to raise_error
+        end
+      end
+
+      context "with valid WebP file" do
+        it "does not raise error" do
+          allow(mock_file).to receive(:read).with(12).and_return("RIFF\x00\x00\x00\x00WEBPtest")
           allow(mock_file).to receive(:rewind)
           allow(mock_file).to receive(:present?).and_return(true)
 
@@ -88,13 +98,13 @@ RSpec.describe AvatarUploader do
 
       context "with invalid file type" do
         it "raises CarrierWave::IntegrityError" do
-          allow(mock_file).to receive(:read).with(8).and_return("INVALID_CONTENT")
+          allow(mock_file).to receive(:read).with(12).and_return("INVALID_CONTENT")
           allow(mock_file).to receive(:rewind)
           allow(mock_file).to receive(:present?).and_return(true)
 
           expect do
             uploader.send(:check_file_type!)
-          end.to raise_error(CarrierWave::IntegrityError, "不正なファイル形式です")
+          end.to raise_error(CarrierWave::IntegrityError, I18n.t('avatar_security.invalid_file_type'))
         end
       end
     end
