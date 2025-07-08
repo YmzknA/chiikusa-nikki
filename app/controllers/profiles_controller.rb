@@ -34,7 +34,8 @@ class ProfilesController < ApplicationController
   # アバター更新制限の設定値を取得
   def avatar_update_limits
     @avatar_update_limits ||= {
-      update_interval_limit: Rails.application.config.avatar_update_interval_limit || 1.hour
+      update_interval_limit: Rails.application.config.avatar_update_interval_limit || 1.hour,
+      account_age_limit: Rails.application.config.avatar_update_account_age_limit || 24.hours
     }
   end
 
@@ -42,8 +43,13 @@ class ProfilesController < ApplicationController
   def avatar_update_allowed?
     limits = avatar_update_limits
 
-    # 初回アバター設定は常に許可
+    # 初回アバター設定は新規アカウント制限なしで許可
     return true if current_user.avatar_updated_at.nil?
+
+    # 新規アカウント制限チェック（2回目以降のみ）
+    if current_user.created_at > limits[:account_age_limit].ago
+      return false
+    end
 
     # 短時間での連続更新防止のみ適用
     current_user.avatar_updated_at < limits[:update_interval_limit].ago
@@ -56,6 +62,14 @@ class ProfilesController < ApplicationController
 
     # 初回アバター設定の場合は制限なし
     return nil if current_user.avatar_updated_at.nil?
+
+    # 新規アカウント制限チェック（初回アバター設定でない場合のみ）
+    if current_user.avatar_updated_at.present? && current_user.created_at > limits[:account_age_limit].ago
+      remaining_time = limits[:account_age_limit] - (current_time - current_user.created_at)
+      time_text = format_remaining_time(remaining_time)
+      interval_text = format_interval_text(limits[:account_age_limit])
+      return I18n.t("avatar_security.account_too_new", time: time_text, interval: interval_text)
+    end
 
     # 更新間隔チェックのみ
     if update_too_soon?(limits[:update_interval_limit], current_time)
