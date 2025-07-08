@@ -34,7 +34,6 @@ class ProfilesController < ApplicationController
   # アバター更新制限の設定値を取得
   def avatar_update_limits
     @avatar_update_limits ||= {
-      account_age_limit: Rails.application.config.avatar_update_account_age_limit || 1.day,
       update_interval_limit: Rails.application.config.avatar_update_interval_limit || 1.hour
     }
   end
@@ -43,10 +42,11 @@ class ProfilesController < ApplicationController
   def avatar_update_allowed?
     limits = avatar_update_limits
 
-    # アカウント作成から指定時間経過チェック
-    current_user.created_at < limits[:account_age_limit].ago &&
-      # 短時間での連続更新防止
-      (current_user.avatar_updated_at.nil? || current_user.avatar_updated_at < limits[:update_interval_limit].ago)
+    # 初回アバター設定は常に許可
+    return true if current_user.avatar_updated_at.nil?
+
+    # 短時間での連続更新防止のみ適用
+    current_user.avatar_updated_at < limits[:update_interval_limit].ago
   end
 
   # 待機時間メッセージを計算して返す
@@ -54,14 +54,10 @@ class ProfilesController < ApplicationController
     limits = avatar_update_limits
     current_time = Time.current
 
-    # アカウント作成時間チェック
-    if account_too_new?(limits[:account_age_limit], current_time)
-      remaining_time = limits[:account_age_limit] - (current_time - current_user.created_at)
-      time_text = format_remaining_time(remaining_time)
-      return I18n.t("avatar_security.account_too_new", time: time_text)
-    end
+    # 初回アバター設定の場合は制限なし
+    return nil if current_user.avatar_updated_at.nil?
 
-    # 更新間隔チェック
+    # 更新間隔チェックのみ
     if update_too_soon?(limits[:update_interval_limit], current_time)
       remaining_time = limits[:update_interval_limit] - (current_time - current_user.avatar_updated_at)
       time_text = format_remaining_time(remaining_time)
@@ -73,10 +69,6 @@ class ProfilesController < ApplicationController
     I18n.t("avatar_security.update_permission_denied")
   end
 
-  # アカウントが新しすぎるかチェック
-  def account_too_new?(account_age_limit, _current_time)
-    current_user.created_at >= account_age_limit.ago
-  end
 
   # 更新間隔が短すぎるかチェック
   def update_too_soon?(update_interval_limit, _current_time)
