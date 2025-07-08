@@ -73,11 +73,15 @@ class UsersController < ApplicationController
     return unless avatar_url.present?
 
     begin
-      current_user.remote_avatar_url = avatar_url
+      validated_url = AvatarSecurityService.validate_url!(avatar_url)
+      current_user.remote_avatar_url = validated_url
       current_user.save!
-      Rails.logger.info "#{log_message} for user #{current_user.id}: #{avatar_url}"
+      AvatarUpdateLogger.log_success(current_user.id, provider)
+    rescue SecurityError => e
+      AvatarUpdateLogger.log_error(current_user.id, provider, e)
+      return
     rescue StandardError => e
-      Rails.logger.error "Failed to fetch #{provider} avatar for user #{current_user.id}: #{e.message}"
+      AvatarUpdateLogger.log_error(current_user.id, provider, e)
     end
   end
 
