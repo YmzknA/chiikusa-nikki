@@ -176,7 +176,6 @@ class User < ApplicationRecord
 
       attributes
     end
-
   end
 
   def email_required?
@@ -322,9 +321,11 @@ class User < ApplicationRecord
   def username_setup_pending?
     username == DEFAULT_USERNAME
   end
+
   # Avatar methods
   def avatar_url
     return avatar.url if avatar.present?
+
     nil
   end
 
@@ -339,16 +340,19 @@ class User < ApplicationRecord
 
   def github_avatar_url
     return nil unless github_id.present?
+
     "https://avatars.githubusercontent.com/u/#{github_id}?v=4"
   end
 
   def google_avatar_url
     return nil unless google_id.present?
+
     read_attribute(:google_avatar_url)
   end
 
   def initials
     return "U" if username.blank? || username == DEFAULT_USERNAME
+
     username.split.map(&:first).join.upcase[0..1]
   end
 

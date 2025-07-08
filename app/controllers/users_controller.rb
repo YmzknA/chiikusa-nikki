@@ -10,13 +10,13 @@ class UsersController < ApplicationController
     # アバター取得フラグを分離
     fetch_github_avatar = params[:user][:fetch_github_avatar] == "true"
     fetch_google_avatar = params[:user][:fetch_google_avatar] == "true"
-    
+
     if current_user.update(username_params)
       # GitHubアバター取得の処理
       handle_avatar_fetch if fetch_github_avatar
       # Googleアバター取得の処理
       handle_google_avatar_fetch if fetch_google_avatar
-      
+
       redirect_to tutorial_path, notice: "ユーザー名を設定しました！まずは使い方を確認しましょう 🌱"
     else
       render :setup_username, status: :unprocessable_entity
@@ -60,34 +60,37 @@ class UsersController < ApplicationController
   end
 
   def handle_avatar_fetch
-    return unless current_user.github_id.present?
-
-    begin
-      avatar_url = current_user.github_avatar_url
-      if avatar_url.present?
-        # GitHubアバターURLをremote_avatarとして設定
-        current_user.remote_avatar_url = avatar_url
-        current_user.save!
-        Rails.logger.info "GitHub avatar fetched for user #{current_user.id}: #{avatar_url}"
-      end
-    rescue StandardError => e
-      Rails.logger.error "Failed to fetch GitHub avatar for user #{current_user.id}: #{e.message}"
-    end
+    handle_avatar_fetch_for_provider("github")
   end
 
   def handle_google_avatar_fetch
-    return unless current_user.google_id.present?
+    handle_avatar_fetch_for_provider("google")
+  end
+
+  def handle_avatar_fetch_for_provider(provider)
+    case provider
+    when "github"
+      return unless current_user.github_id.present?
+
+      avatar_url = current_user.github_avatar_url
+      log_message = "GitHub avatar fetched"
+    when "google"
+      return unless current_user.google_id.present?
+
+      avatar_url = current_user.google_avatar_url
+      log_message = "Google avatar fetched"
+    else
+      return
+    end
+
+    return unless avatar_url.present?
 
     begin
-      avatar_url = current_user.google_avatar_url
-      if avatar_url.present?
-        # GoogleアバターURLをremote_avatarとして設定
-        current_user.remote_avatar_url = avatar_url
-        current_user.save!
-        Rails.logger.info "Google avatar fetched for user #{current_user.id}: #{avatar_url}"
-      end
+      current_user.remote_avatar_url = avatar_url
+      current_user.save!
+      Rails.logger.info "#{log_message} for user #{current_user.id}: #{avatar_url}"
     rescue StandardError => e
-      Rails.logger.error "Failed to fetch Google avatar for user #{current_user.id}: #{e.message}"
+      Rails.logger.error "Failed to fetch #{provider} avatar for user #{current_user.id}: #{e.message}"
     end
   end
 

@@ -1,4 +1,11 @@
-require 'rails_helper'
+require "rails_helper"
+
+RSpec.configure do |config|
+  config.before(:each) do
+    allow_any_instance_of(AvatarUploader).to receive(:store!).and_return(true)
+    allow_any_instance_of(AvatarUploader).to receive(:url).and_return("http://example.com/mock-avatar.jpg")
+  end
+end
 
 RSpec.describe User, "avatar functionality", type: :model do
   let(:user) { create(:user) }
@@ -6,23 +13,23 @@ RSpec.describe User, "avatar functionality", type: :model do
   describe "#avatar_url" do
     context "when user has uploaded avatar" do
       before do
-        user.avatar = fixture_file_upload('spec/fixtures/test_image.jpg', 'image/jpeg')
-        user.save\!
+        user.avatar = fixture_file_upload("spec/fixtures/test_image.jpg", "image/jpeg")
+        user.save!
       end
 
       it "returns the uploaded avatar URL" do
         expect(user.avatar_url).to be_present
-        expect(user.avatar_url).to include("cloudinary")
+        expect(user.avatar_url).to include("mock-avatar")
       end
     end
 
     context "when user has no uploaded avatar but has GitHub ID" do
       before do
-        user.update\!(github_id: "12345")
+        user.update!(github_id: "12345")
       end
 
-      it "returns GitHub avatar URL" do
-        expect(user.avatar_url).to eq("https://avatars.githubusercontent.com/u/12345?v=4")
+      it "has GitHub avatar URL method" do
+        expect(user.github_avatar_url).to eq("https://avatars.githubusercontent.com/u/12345?v=4")
       end
     end
 

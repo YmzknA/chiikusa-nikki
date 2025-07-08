@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe AvatarHelper, type: :helper do
   let(:user) { create(:user, username: "Test User") }
@@ -19,7 +19,7 @@ RSpec.describe AvatarHelper, type: :helper do
 
       it "accepts custom size and CSS class" do
         result = helper.avatar_image(user, size: 50, css_class: "custom-class")
-        expect(result).to include("50x50")
+        expect(result).to include("width=\"50\" height=\"50\"")
         expect(result).to include("custom-class")
       end
     end
