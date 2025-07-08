@@ -22,21 +22,19 @@ class AvatarSecurityService
     config = SECURITY_POLICIES[policy]
 
     # スキームの検証
-    unless config[:allowed_schemes].include?(uri.scheme)
-      raise SecurityError, I18n.t('avatar_security.https_required')
-    end
+    raise SecurityError, I18n.t("avatar_security.https_required") unless config[:allowed_schemes].include?(uri.scheme)
 
     # プライベートIPアドレスのブロック
     if config[:block_private_ips] && localhost?(uri.host)
-      raise SecurityError, I18n.t('avatar_security.localhost_forbidden')
+      raise SecurityError, I18n.t("avatar_security.localhost_forbidden")
     end
 
     # URLの妥当性チェック
-    raise SecurityError, I18n.t('avatar_security.invalid_url') unless valid_url?(uri, config)
+    raise SecurityError, I18n.t("avatar_security.invalid_url") unless valid_url?(uri, config)
 
     url
   rescue URI::InvalidURIError
-    raise SecurityError, I18n.t('avatar_security.invalid_url_format')
+    raise SecurityError, I18n.t("avatar_security.invalid_url_format")
   end
 
   class << self
@@ -44,17 +42,17 @@ class AvatarSecurityService
 
     def localhost?(hostname)
       return false unless hostname
-      
+
       # 基本的なローカルホスト検証
       return true if hostname.downcase.in?(%w[localhost 127.0.0.1 ::1])
-      
+
       # プライベートIPアドレス範囲の検証
       private_ip_ranges = [
-        IPAddr.new('10.0.0.0/8'),
-        IPAddr.new('172.16.0.0/12'),
-        IPAddr.new('192.168.0.0/16')
+        IPAddr.new("10.0.0.0/8"),
+        IPAddr.new("172.16.0.0/12"),
+        IPAddr.new("192.168.0.0/16")
       ]
-      
+
       begin
         ip = IPAddr.new(hostname)
         private_ip_ranges.any? { |range| range.include?(ip) }

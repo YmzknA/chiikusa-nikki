@@ -65,9 +65,11 @@ class UsersController < ApplicationController
     case provider
     when "github"
       return nil unless current_user.github_id.present?
+
       { url: current_user.github_avatar_url, provider: "github" }
     when "google"
       return nil unless current_user.google_id.present?
+
       { url: current_user.google_avatar_url, provider: "google" }
     end
   end

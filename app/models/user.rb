@@ -325,8 +325,9 @@ class User < ApplicationRecord
   # Avatar methods
   def avatar_url
     return avatar.url if avatar.present?
+
     nil
-  rescue => e
+  rescue StandardError => e
     Rails.logger.error "Avatar URL generation failed: #{e.message}"
     nil
   end

@@ -104,7 +104,7 @@ RSpec.describe AvatarUploader do
 
           expect do
             uploader.send(:check_file_type!)
-          end.to raise_error(CarrierWave::IntegrityError, I18n.t('avatar_security.invalid_file_type'))
+          end.to raise_error(CarrierWave::IntegrityError, I18n.t("avatar_security.invalid_file_type"))
         end
       end
     end

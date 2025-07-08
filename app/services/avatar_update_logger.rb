@@ -8,11 +8,9 @@ class AvatarUpdateLogger
     Rails.logger.error "Failed to fetch #{provider} avatar for user #{user_id}: #{error.message}"
   end
 
-  private
-
   def self.mask_url(url)
     return "[INVALID_URL]" unless url.is_a?(String)
-    
+
     begin
       uri = URI.parse(url)
       "#{uri.scheme}://#{uri.host}/*****"

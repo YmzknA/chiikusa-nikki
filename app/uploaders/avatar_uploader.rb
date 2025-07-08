@@ -37,12 +37,12 @@ class AvatarUploader < CarrierWave::Uploader::Base
     return unless file.present?
 
     # マジックナンバーによる厳密なファイル形式検証
-    magic_number = file.read(12)  # WebP検証のために12バイト読み取り
+    magic_number = file.read(12) # WebP検証のために12バイト読み取り
     file.rewind
 
     return if valid_file_format?(magic_number)
 
-    raise CarrierWave::IntegrityError, I18n.t('avatar_security.invalid_file_type')
+    raise CarrierWave::IntegrityError, I18n.t("avatar_security.invalid_file_type")
   end
 
   def valid_file_format?(magic_number)
@@ -57,7 +57,7 @@ class AvatarUploader < CarrierWave::Uploader::Base
   def webp_valid?(magic_number)
     return false unless magic_number.start_with?("RIFF")
     return false unless magic_number.length >= 12
-    
+
     # WebPファイルの'WEBP'シグネチャ確認
     magic_number[8..11] == "WEBP"
   end
