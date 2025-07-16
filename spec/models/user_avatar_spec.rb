@@ -39,7 +39,6 @@ RSpec.describe User, "avatar functionality", type: :model do
     end
   end
 
-
   describe "#github_avatar_url" do
     context "when GitHub ID is present" do
       before do

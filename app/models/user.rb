@@ -332,7 +332,6 @@ class User < ApplicationRecord
     nil
   end
 
-
   def github_avatar_url
     return nil unless github_id.present?
 
