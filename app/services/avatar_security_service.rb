@@ -1,5 +1,3 @@
-# 個人開発向けのシンプルなセキュリティサービス
-
 class AvatarSecurityService
   # 設定可能なセキュリティポリシー
   SECURITY_POLICIES = {
