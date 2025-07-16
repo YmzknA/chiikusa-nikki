@@ -39,27 +39,6 @@ RSpec.describe User, "avatar functionality", type: :model do
     end
   end
 
-  describe "#display_avatar_url" do
-    context "when avatar_url is present" do
-      before do
-        allow(user).to receive(:avatar_url).and_return("http://example.com/avatar.jpg")
-      end
-
-      it "returns the avatar URL" do
-        expect(user.display_avatar_url).to eq("http://example.com/avatar.jpg")
-      end
-    end
-
-    context "when avatar_url is nil" do
-      before do
-        allow(user).to receive(:avatar_url).and_return(nil)
-      end
-
-      it "returns default avatar URL (nil)" do
-        expect(user.display_avatar_url).to be_nil
-      end
-    end
-  end
 
   describe "#github_avatar_url" do
     context "when GitHub ID is present" do

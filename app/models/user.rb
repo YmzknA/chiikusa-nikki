@@ -332,14 +332,6 @@ class User < ApplicationRecord
     nil
   end
 
-  def display_avatar_url
-    avatar_url || default_avatar_url
-  end
-
-  def default_avatar_url
-    # イニシャル表示のためのデフォルトアバターURL
-    nil
-  end
 
   def github_avatar_url
     return nil unless github_id.present?
