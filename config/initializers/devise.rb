@@ -283,7 +283,7 @@ Devise.setup do |config|
   config.omniauth :github, 
     Rails.env.production? ? Rails.application.credentials.dig(:github, :client_id) : Rails.application.credentials.dig(:github, :test_client_id), 
     Rails.env.production? ? Rails.application.credentials.dig(:github, :client_secret) : Rails.application.credentials.dig(:github, :test_client_secret), 
-    scope: 'user:email,public_repo,repo', 
+    scope: 'user:email,repo', 
     prompt: 'consent', 
     authorize_params: { prompt: 'consent' },
     provider_ignores_state: false
@@ -292,6 +292,9 @@ Devise.setup do |config|
     Rails.application.credentials.dig(:google, :client_id), 
     Rails.application.credentials.dig(:google, :client_secret), 
     scope: 'userinfo.email,userinfo.profile',
+    prompt: 'consent',
+    include_granted_scopes: true,
+    access_type: 'offline',
     provider_ignores_state: false,
     pkce: true
 
