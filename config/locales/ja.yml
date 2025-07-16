@@ -1,6 +1,20 @@
 ja:
   hello: "こんにちは"
   
+  avatar_security:
+    https_required: "HTTPS URLのみ許可されています"
+    localhost_forbidden: "ローカルホストへのアクセスは禁止されています"
+    invalid_url: "無効なURLです"
+    invalid_url_format: "無効なURL形式です"
+    invalid_file_type: "不正なファイル形式です"
+    update_permission_denied: "アバター更新権限がありません"
+    update_too_soon: "アバターの変更は10分に1回までです。あと%{time}お待ちください。"
+    time_just_now: "まもなく"
+    time_hours: "%{hours}時間"
+    time_hours_minutes: "%{hours}時間%{minutes}分"
+    time_minutes: "%{minutes}分"
+    time_seconds: "%{seconds}秒"
+  
   activerecord:
     errors:
       messages:

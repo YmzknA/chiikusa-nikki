@@ -1,21 +1,21 @@
 <div class="stick-regular min-h-screen flex items-center justify-center p-4">
-  <div class="neuro-card p-8 max-w-sm w-full text-center relative">
+  <div class="neuro-card p-8 max-w-md w-full text-center relative">
 
     <%# Logo/Icon %>
-    <!-- Chart Icon -->
     <div class="mb-6">
-      <div class="neuro-icon size-40 mx-auto flex items-center justify-center">
-        <%= image_tag 'logo_with_title.png', class: 'size-28' %>
+      <div class="neuro-icon size-20 mx-auto flex items-center justify-center">
+        <%= image_tag 'logo_with_title.png', class: 'size-16' %>
       </div>
     </div>
 
-    <!-- Welcome Message -->
+    <%# Welcome Message %>
     <h2 class="text-2xl font-bold text-base-content mb-2">
       ようこそ！
     </h2>
     <p class="text-base-content/70 mb-8 text-lg">あなたのお名前を<br>教えてください 🌱</p>
 
-    <%= loading_form_with model: current_user, url: setup_username_path, method: :patch, local: true, class: "space-y-6" do |form| %>
+    <%= loading_form_with model: current_user, url: setup_username_path, method: :patch, local: true, 
+        multipart: true, class: "space-y-6" do |form| %>
       <% if current_user.errors.any? %>
         <div class="alert alert-error text-left">
           <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
@@ -48,9 +48,33 @@
         </p>
       </div>
 
-      <div class="divider my-6"></div>
+      <%# アバター設定セクション %>
+      <% if current_user.github_id.present? %>
+        <div class="w-full flex-col justify-center items-center form-control">
+          <label class="label cursor-pointer flex justify-center gap-3">
+            <%= form.check_box :fetch_github_avatar, 
+                  { class: "checkbox checkbox-primary" }, 
+                  "true", "false" %>
+                  <span class="font-bold">GitHubのプロフィール画像を使用</span>
+          </label>
+        </div>
+      <% end %>
 
-      <!-- Button -->
+      <% if current_user.google_id.present? %>
+        <div class="w-full flex-col justify-center items-center form-control">
+          <label class="label cursor-pointer flex justify-center gap-3">
+            <%= form.check_box :fetch_google_avatar, 
+                  { class: "checkbox checkbox-primary" }, 
+                  "true", "false" %>
+              <span class="font-bold">Googleのプロフィール画像を使用</span>
+
+          </label>
+        </div>
+      <% end %>
+
+      <div class="divider my-4"></div>
+
+      <%# Button %>
       <%= form.submit "草を生やし始める", class: "neuro-button w-full font-medium py-4 px-6 transition-all duration-200" %>
     <% end %>
 

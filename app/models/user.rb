@@ -5,6 +5,8 @@ class User < ApplicationRecord
 
   has_many :diaries, dependent: :destroy
   has_many :reactions, dependent: :destroy
+  # Avatar upload
+  mount_uploader :avatar, AvatarUploader
 
   # 定数定義
   DEFAULT_USERNAME = "ユーザー名🌱".freeze
@@ -118,7 +120,8 @@ class User < ApplicationRecord
         google_id: uid,
         google_email: email,
         username: user.username.presence || DEFAULT_USERNAME,
-        encrypted_google_access_token: auth.credentials.token
+        encrypted_google_access_token: auth.credentials.token,
+        google_avatar_url: auth.info.image
       )
     end
   end
@@ -164,7 +167,8 @@ class User < ApplicationRecord
         attributes.merge!(
           google_id: uid,
           google_email: email,
-          encrypted_google_access_token: auth.credentials.token
+          encrypted_google_access_token: auth.credentials.token,
+          google_avatar_url: auth.info.image
         )
         # Only set default username for new users
         attributes[:username] = DEFAULT_USERNAME if user.new_record?
@@ -316,6 +320,34 @@ class User < ApplicationRecord
 
   def username_setup_pending?
     username == DEFAULT_USERNAME
+  end
+
+  # Avatar methods
+  def avatar_url
+    return avatar.url if avatar.present?
+
+    nil
+  rescue StandardError => e
+    Rails.logger.error "Avatar URL generation failed: #{e.message}"
+    nil
+  end
+
+  def github_avatar_url
+    return nil unless github_id.present?
+
+    "https://avatars.githubusercontent.com/u/#{github_id}?v=4"
+  end
+
+  def google_avatar_url
+    return nil unless google_id.present?
+
+    read_attribute(:google_avatar_url)
+  end
+
+  def initials
+    return "U" if username.blank? || username == DEFAULT_USERNAME
+
+    username.split.map(&:first).join.upcase[0..1]
   end
 
   def total_reactions_sent

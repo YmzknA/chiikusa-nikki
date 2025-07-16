@@ -6,8 +6,18 @@
       </div>
     </div>
 
-    <div class="neuro-card p-6">
-      <%= loading_form_with model: current_user, url: profile_path, method: :patch, local: true, class: "space-y-6" do |form| %>
+    <div class="neuro-card p-6" data-controller="loading">
+      <!-- ローディングスピナー -->
+      <div data-loading-target="spinner" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-base-100/80 backdrop-blur-sm">
+        <div class="flex flex-col items-center gap-4">
+          <span class="loading loading-spinner loading-lg text-primary"></span>
+          <p class="text-base-content">アップロード中...</p>
+        </div>
+      </div>
+      
+      <%= form_with model: current_user, url: profile_path, method: :patch, local: true, 
+          multipart: true, class: "space-y-6", 
+          data: { action: "submit->loading#showOnSubmit" } do |form| %>
         <% if current_user.errors.any? %>
           <div class="alert alert-error">
             <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
@@ -24,6 +34,44 @@
           </div>
         <% end %>
 
+        <%# アバター設定セクション %>
+        <div class="form-control" data-controller="avatar-preview">
+          <label class="label">
+            <span class="label-text font-semibold text-base-content">プロフィール画像</span>
+          </label>
+          
+          <%# 現在のアバター表示 %>
+          <div class="flex items-center gap-4 mb-4">
+            <%= avatar_image(current_user, size: 64, css_class: "w-16 h-16 rounded-full object-cover") %>
+            <div class="text-sm text-base-content/70">
+              現在のプロフィール画像
+            </div>
+          </div>
+          
+          <%# ファイル選択 %>
+          <%= form.file_field :avatar, 
+                accept: "image/jpeg,image/jpg,image/png,image/webp",
+                class: "file-input file-input-bordered w-full",
+                data: { action: "change->avatar-preview#showPreview" } %>
+          
+          <%# プレビュー表示 %>
+          <div data-avatar-preview-target="previewContainer" class="hidden mt-4">
+            <div class="flex items-center gap-4">
+              <img data-avatar-preview-target="preview" class="w-16 h-16 rounded-full object-cover" />
+              <div class="text-sm text-base-content/70">
+                新しいプロフィール画像のプレビュー
+              </div>
+            </div>
+          </div>
+          
+          <div class="label">
+            <span class="label-text-alt text-base-content/60">
+              JPG、PNG、WEBP形式（最大5MB）<br>
+              アップロード後、150x150pxにリサイズされ、位置情報が削除されます
+            </span>
+          </div>
+        </div>
+
         <div class="form-control">
           <%= form.label :username, class: "label" do %>
             <span class="label-text font-semibold text-base-content">ユーザー名</span>
@@ -31,7 +79,7 @@
           <%= form.text_field :username, 
             class: "neuro-input w-full text-lg py-4 px-6 font-medium", 
             placeholder: "あなたのお名前",
-            value: "",
+            value: current_user.username,
             required: true,
             autofocus: true,
             maxlength: 50
@@ -49,7 +97,7 @@
             <% if current_user.github_connected? %>
               <div class="flex items-center gap-3 p-3 bg-base-200 rounded-lg">
                 <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                 </svg>
                 <span class="text-sm">GitHub認証 ✅</span>
               </div>
@@ -73,7 +121,9 @@
 
         <div class="form-actions flex gap-3 pt-4">
           <%= link_to "キャンセル", profile_path, class: "bg-base-300/60 hover:bg-base-300 rounded-xl flex-1 py-3 px-6 font-medium text-center" %>
-          <%= form.submit "更新する", class: "neuro-button-secondary flex-1 py-3 px-6 font-medium" %>
+          <%= form.submit "更新する", 
+              class: "neuro-button-secondary flex-1 py-3 px-6 font-medium",
+              data: { disable_with: "アップロード中..." } %>
         </div>
       <% end %>
     </div>

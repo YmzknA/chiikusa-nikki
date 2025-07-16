@@ -3,11 +3,7 @@
   <div class="border-b border-base-content/10 pb-3 mb-4 md:mb-6">
     <div class="flex items-center gap-3">
       <%# ユーザーアバター %>
-      <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/10 flex items-center justify-center">
-        <span class="text-sm md:text-lg font-bold text-primary">
-          <%= @diary.user.username.first.upcase %>
-        </span>
-      </div>
+      <%= avatar_image(@diary.user, size: 48, css_class: "rounded-full") %>
       
       <%# ユーザー情報 %>
       <div class="flex items-center gap-2">

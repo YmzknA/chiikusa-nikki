@@ -8,6 +8,10 @@ class UsersController < ApplicationController
 
   def update_username
     if current_user.update(username_params)
+      # アバター取得処理
+      handle_avatar_fetch_for_provider("github") if params[:user][:fetch_github_avatar] == "true"
+      handle_avatar_fetch_for_provider("google") if params[:user][:fetch_google_avatar] == "true"
+
       redirect_to tutorial_path, notice: "ユーザー名を設定しました！まずは使い方を確認しましょう 🌱"
     else
       render :setup_username, status: :unprocessable_entity
@@ -48,6 +52,41 @@ class UsersController < ApplicationController
 
   def username_params
     params.require(:user).permit(:username)
+  end
+
+  def handle_avatar_fetch_for_provider(provider)
+    avatar_data = get_avatar_data_for_provider(provider)
+    return unless avatar_data
+
+    update_user_avatar(avatar_data[:url], provider)
+  end
+
+  def get_avatar_data_for_provider(provider)
+    case provider
+    when "github"
+      return nil unless current_user.github_id.present?
+
+      { url: current_user.github_avatar_url, provider: "github" }
+    when "google"
+      return nil unless current_user.google_id.present?
+
+      { url: current_user.google_avatar_url, provider: "google" }
+    end
+  end
+
+  def update_user_avatar(avatar_url, provider)
+    return unless avatar_url.present?
+
+    begin
+      validated_url = AvatarSecurityService.validate_url!(avatar_url)
+      current_user.remote_avatar_url = validated_url
+      current_user.save!
+      AvatarUpdateLogger.log_success(current_user.id, provider, avatar_url)
+    rescue SecurityError => e
+      AvatarUpdateLogger.log_error(current_user.id, provider, e)
+    rescue StandardError => e
+      AvatarUpdateLogger.log_error(current_user.id, provider, e)
+    end
   end
 
   def redirect_if_username_set
