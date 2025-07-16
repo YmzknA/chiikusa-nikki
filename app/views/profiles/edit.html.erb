@@ -42,9 +42,7 @@
           
           <%# 現在のアバター表示 %>
           <div class="flex items-center gap-4 mb-4">
-            <div class="w-16 h-16 mask mask-hexagon-2">
-              <%= avatar_image(current_user, size: 64, css_class: "w-full h-full object-cover") %>
-            </div>
+            <%= avatar_image(current_user, size: 64, css_class: "w-16 h-16 rounded-full object-cover") %>
             <div class="text-sm text-base-content/70">
               現在のプロフィール画像
             </div>
@@ -59,9 +57,7 @@
           <%# プレビュー表示 %>
           <div data-avatar-preview-target="previewContainer" class="hidden mt-4">
             <div class="flex items-center gap-4">
-              <div class="w-16 h-16 mask mask-hexagon-2">
-                <img data-avatar-preview-target="preview" class="w-full h-full object-cover" />
-              </div>
+              <img data-avatar-preview-target="preview" class="w-16 h-16 rounded-full object-cover" />
               <div class="text-sm text-base-content/70">
                 新しいプロフィール画像のプレビュー
               </div>

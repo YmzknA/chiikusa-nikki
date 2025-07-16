@@ -4,9 +4,7 @@
       <!-- ユーザー情報セクション -->
       <div class="neuro-card p-4 md:p-6 animate-[scaleIn_0.4s_ease-out]">
         <div class="flex flex-col sm:flex-row items-center sm:items-start gap-3 md:gap-4 mb-4 md:mb-6">
-          <div class="w-16 h-16 mask mask-hexagon-2">
-            <%= avatar_image(current_user, size: 64, css_class: "w-full h-full object-cover") %>
-          </div>
+          <%= avatar_image(current_user, size: 64, css_class: "w-16 h-16 rounded-full object-cover") %>
           <div class="text-center sm:text-left">
             <h2 class="text-lg md:text-xl lg:text-2xl font-bold text-base-content"><%= current_user.username || "ユーザー" %></h2>
             <% if current_user.github_repo_configured? %>

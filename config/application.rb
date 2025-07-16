@@ -33,7 +33,7 @@ module Myapp
     config.i18n.default_locale = :ja
 
     # アバター更新制限の設定
-    config.avatar_update_interval_limit = 1.hour
+    config.avatar_update_interval_limit = 10.minutes
 
     # 設定値のバリデーション
     raise ArgumentError, "avatar_update_interval_limit must be positive" if config.avatar_update_interval_limit <= 0

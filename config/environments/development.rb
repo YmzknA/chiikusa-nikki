@@ -92,6 +92,5 @@ Rails.application.configure do
   # config.generators.apply_rubocop_autocorrect_after_generate!
   
   # 開発環境ではアバター更新制限を緩和（10秒）
-  config.avatar_update_account_age_limit = 0.seconds
   config.avatar_update_interval_limit = 10.seconds
 end
