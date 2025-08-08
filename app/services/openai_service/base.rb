@@ -3,6 +3,7 @@ class OpenaiService::Base
   DEFAULT_MAX_TOKENS = 200
   INPUT_MAX_LENGTH = 1000
   DEFAULT_TIMEOUT = 15
+  EFFORT_LEVEL = "minimal".freeze
 
   def initialize
     @client = OpenAI::Client.new(
@@ -45,13 +46,13 @@ class OpenaiService::Base
   def til_generation_parameters(notes)
     sanitized_notes = sanitize_user_input(notes)
     {
-      model: "gpt-4.1-nano-2025-04-14",
+      model: "gpt-5-nano",
       messages: [
         { role: "system", content: system_prompt },
         { role: "user", content: "以下の今日のメモに基づいて文章を生成してください:\n#{sanitized_notes}" }
       ],
       temperature: ai_temperature,
-      max_tokens: ai_max_tokens
+      reasoning_effort: effort_level
     }
   end
 
@@ -88,6 +89,10 @@ class OpenaiService::Base
 
   def ai_max_tokens
     DEFAULT_MAX_TOKENS # デフォルト値、サブクラスでオーバーライド可能
+  end
+
+  def effort_level
+    EFFORT_LEVEL # デフォルト値、サブクラスでオーバーライド可能
   end
 
   def openai_timeout
