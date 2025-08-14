@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui";css
 
 /* Force light mode globally */
 html[data-theme="lemonade"] {
@@ -188,6 +188,31 @@ label:has(input[type="radio"]:checked) {
     inset 6px 6px 12px rgba(58, 120, 106, 0.4),
     inset -6px -6px 12px rgba(140, 220, 150, 0.8);
 }
+
+.neuro-sidebar {
+  background: oklch(91.8% 0.018 123.72); /* lemonade base-200 */
+
+  border-radius: 24px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+
+  box-shadow: 
+    20px 20px 40px rgba(105, 169, 106, 0.3),   /* lemonade primary dark shadow - much stronger */
+    -20px -20px 40px rgba(255, 254, 213, 1); /* lemonade base-100 light shadow - max */
+  transition: all 0.3s ease;
+}
+
+.neuro-mobile-nav {
+  background: oklch(91.8% 0.018 123.72); /* lemonade base-200 */
+  border-radius: 24px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+
+  box-shadow: 
+    20px 20px 40px rgba(105, 169, 106, 0.3),   /* lemonade primary dark shadow - much stronger */
+    -20px -20px 40px rgba(255, 254, 213, 1); /* lemonade base-100 light shadow - max */
+}
+
 
 /* Simple Calendar Navigation Styling */
 .simple-calendar {
