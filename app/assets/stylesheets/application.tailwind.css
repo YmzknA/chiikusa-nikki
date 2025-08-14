@@ -14,33 +14,18 @@ html[data-theme="lemonade"] {
 }
 @import "./water_effect.css";
 
-/* Enhanced background with subtle texture */
+/* Enhanced background with subtle texture integrated */
 html, body {
   background: 
+    radial-gradient(circle at 1px 1px, rgba(255, 254, 213, 0.15) 1px, transparent 0),
     radial-gradient(circle at 20% 80%, rgba(105, 169, 106, 0.03) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(255, 254, 213, 0.05) 0%, transparent 50%),
     linear-gradient(135deg, oklch(98.71% 0.02 123.72) 0%, oklch(97.5% 0.018 123.72) 100%);
+  background-size: 20px 20px, 100% 100%, 100% 100%, 100% 100%;
   min-height: 100vh;
   /* iOS Safari viewport fix */
   min-height: 100dvh;
   overflow-x: hidden;
-  position: relative;
-}
-
-/* Subtle texture overlay */
-html::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: 
-    radial-gradient(circle at 1px 1px, rgba(255, 254, 213, 0.2) 1px, transparent 0);
-  background-size: 20px 20px;
-  pointer-events: none;
-  z-index: -1;
-  opacity: 0.3;
 }
 
 html {
@@ -78,17 +63,6 @@ input[type="radio"]:checked + label .neuro-button {
   border: 1px solid rgba(58, 120, 106, 0.2) !important;
 }
 
-/* Alternative selector for Tailwind peer-checked */
-.peer-checked\:neuro-selected {
-  background: linear-gradient(145deg, oklch(60.92% 0.22 134.6) 0%, oklch(56.92% 0.18 134.6) 100%) !important;
-  color: oklch(11.784% 0.039 134.6) !important;
-  box-shadow: 
-    inset 6px 6px 12px rgba(58, 120, 106, 0.3),
-    inset -4px -4px 8px rgba(255, 254, 213, 0.7),
-    2px 2px 4px rgba(58, 120, 106, 0.1) !important;
-  border: 1px solid rgba(58, 120, 106, 0.2) !important;
-}
-
 /* Neumorphism design with lemonade theme colors */
 .lemonade-background {
   background: oklch(91.8% 0.018 123.72); /* lemonade base-200 */
@@ -100,8 +74,8 @@ input[type="radio"]:checked + label .neuro-button {
   box-shadow: 
     25px 25px 50px rgba(105, 169, 106, 0.4),   /* より深いダークシャドウ */
     -15px -15px 30px rgba(255, 254, 213, 0.9), /* 強いライトシャドウ */
-    inset 1px 1px 2px rgba(255, 254, 213, 0.6); /* 微細なインナーハイライト */
-  border: 1px solid rgba(255, 254, 213, 0.25);
+    inset 1px 1px 2px rgba(255, 254, 213, 0.5); /* 微細なインナーハイライト */
+  border: 1px solid rgba(255, 254, 213, 0.2);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -114,18 +88,17 @@ input[type="radio"]:checked + label .neuro-button {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent 0%, rgba(255, 254, 213, 0.7) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 254, 213, 0.6) 50%, transparent 100%);
 }
-
 
 .neuro-icon {
   background: linear-gradient(145deg, oklch(94% 0.022 123.72) 0%, oklch(89% 0.012 123.72) 100%);
   border-radius: 20px;
   box-shadow: 
     12px 12px 24px rgba(105, 169, 106, 0.35),
-    -10px -10px 20px rgba(255, 254, 213, 0.9),
-    inset 2px 2px 4px rgba(255, 254, 213, 0.5);
-  border: 1px solid rgba(255, 254, 213, 0.4);
+    -10px -10px 20px rgba(255, 254, 213, 0.8),
+    inset 2px 2px 4px rgba(255, 254, 213, 0.4);
+  border: 1px solid rgba(255, 254, 213, 0.3);
   position: relative;
 }
 
@@ -137,7 +110,7 @@ input[type="radio"]:checked + label .neuro-button {
   right: 2px;
   bottom: 2px;
   border-radius: 18px;
-  background: linear-gradient(135deg, rgba(255, 254, 213, 0.15) 0%, transparent 50%);
+  background: linear-gradient(135deg, rgba(255, 254, 213, 0.1) 0%, transparent 50%);
   pointer-events: none;
 }
 
@@ -163,7 +136,7 @@ input[type="radio"]:checked + label .neuro-button {
   right: 1px;
   height: 50%;
   border-radius: 17px 17px 8px 8px;
-  background: linear-gradient(180deg, rgba(255, 254, 213, 0.25) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(255, 254, 213, 0.2) 0%, transparent 100%);
   pointer-events: none;
 }
 
@@ -203,7 +176,7 @@ input[type="radio"]:checked + label .neuro-button {
   right: 1px;
   height: 50%;
   border-radius: 17px 17px 8px 8px;
-  background: linear-gradient(180deg, rgba(255, 254, 213, 0.25) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(255, 254, 213, 0.2) 0%, transparent 100%);
   pointer-events: none;
 }
 
@@ -227,9 +200,9 @@ input[type="radio"]:checked + label .neuro-button {
   border-radius: 18px;
   box-shadow: 
     inset 6px 6px 12px rgba(105, 169, 106, 0.25),
-    inset -4px -4px 8px rgba(255, 254, 213, 0.8),
+    inset -4px -4px 8px rgba(255, 254, 213, 0.7),
     2px 2px 4px rgba(105, 169, 106, 0.1);
-  border: 1px solid rgba(255, 254, 213, 0.2);
+  border: 1px solid rgba(255, 254, 213, 0.15);
   transition: all 0.2s ease;
   position: relative;
   backdrop-filter: blur(5px);
@@ -243,7 +216,7 @@ input[type="radio"]:checked + label .neuro-button {
   right: 1px;
   height: 50%;
   border-radius: 17px 17px 8px 8px;
-  background: linear-gradient(180deg, rgba(255, 254, 213, 0.25) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(255, 254, 213, 0.2) 0%, transparent 100%);
   pointer-events: none;
 }
 
@@ -251,7 +224,7 @@ input[type="radio"]:checked + label .neuro-button {
   outline: none;
   box-shadow: 
     inset 4px 4px 8px rgba(105, 169, 106, 0.2),
-    inset -3px -3px 6px rgba(255, 254, 213, 0.9),
+    inset -3px -3px 6px rgba(255, 254, 213, 0.8),
     0 0 0 2px rgba(105, 169, 106, 0.2);
 }
 
@@ -260,9 +233,9 @@ input[type="radio"]:checked + label .neuro-button {
   border-radius: 12px;
   box-shadow: 
     6px 6px 12px rgba(105, 169, 106, 0.15),
-    -4px -4px 8px rgba(255, 254, 213, 0.7),
-    inset 1px 1px 2px rgba(255, 254, 213, 0.4);
-  border: 1px solid rgba(255, 254, 213, 0.15);
+    -4px -4px 8px rgba(255, 254, 213, 0.6),
+    inset 1px 1px 2px rgba(255, 254, 213, 0.3);
+  border: 1px solid rgba(255, 254, 213, 0.1);
   transition: all 0.2s ease;
   position: relative;
 }
@@ -271,8 +244,8 @@ input[type="radio"]:checked + label .neuro-button {
   background: linear-gradient(145deg, oklch(91% 0.018 123.72) 0%, oklch(94% 0.025 123.72) 100%);
   box-shadow: 
     8px 8px 16px rgba(105, 169, 106, 0.2),
-    -5px -5px 10px rgba(255, 254, 213, 0.8),
-    inset 1px 1px 3px rgba(255, 254, 213, 0.5);
+    -5px -5px 10px rgba(255, 254, 213, 0.7),
+    inset 1px 1px 3px rgba(255, 254, 213, 0.4);
 }
 
 .neuro-badge {
@@ -280,9 +253,9 @@ input[type="radio"]:checked + label .neuro-button {
   border-radius: 18px;
   box-shadow: 
     inset 6px 6px 12px rgba(105, 169, 106, 0.25),
-    inset -4px -4px 8px rgba(255, 254, 213, 0.8),
+    inset -4px -4px 8px rgba(255, 254, 213, 0.7),
     2px 2px 4px rgba(105, 169, 106, 0.1);
-  border: 1px solid rgba(255, 254, 213, 0.2);
+  border: 1px solid rgba(255, 254, 213, 0.15);
   position: relative;
   backdrop-filter: blur(5px);
 }
@@ -295,16 +268,32 @@ input[type="radio"]:checked + label .neuro-button {
   right: 1px;
   height: 50%;
   border-radius: 17px 17px 8px 8px;
-  background: linear-gradient(180deg, rgba(255, 254, 213, 0.25) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(255, 254, 213, 0.2) 0%, transparent 100%);
   pointer-events: none;
 }
 
 /* Success and error variants */
 .neuro-success {
-  background: oklch(86.19% 0.047 157.85); /* lemonade success */
+  background: linear-gradient(145deg, oklch(84.19% 0.042 157.85) 0%, oklch(88.19% 0.052 157.85) 100%);
   box-shadow: 
-    8px 8px 16px rgba(34, 139, 34, 0.1),
-    -8px -8px 16px rgba(144, 238, 144, 0.8);
+    inset 6px 6px 12px rgba(34, 139, 34, 0.2),
+    inset -4px -4px 8px rgba(255, 254, 213, 0.6),
+    2px 2px 4px rgba(34, 139, 34, 0.1);
+  border: 1px solid rgba(255, 254, 213, 0.2);
+  position: relative;
+  backdrop-filter: blur(5px);
+}
+
+.neuro-success::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  right: 1px;
+  height: 50%;
+  border-radius: 17px 17px 8px 8px;
+  background: linear-gradient(180deg, rgba(255, 254, 213, 0.25) 0%, transparent 100%);
+  pointer-events: none;
 }
 
 .neuro-error {
@@ -312,9 +301,9 @@ input[type="radio"]:checked + label .neuro-button {
   color: oklch(17.238% 0.009 25.85); /* lemonade error-content */
   border-radius: 18px;
   box-shadow: 
-    inset 6px 6px 12px rgba(220, 20, 60, 0.25),
-    inset -4px -4px 8px rgba(255, 254, 213, 0.7),
-    2px 2px 4px rgba(220, 20, 60, 0.1);
+    8px 8px 16px rgba(220, 20, 60, 0.3),
+    -6px -6px 12px rgba(255, 254, 213, 0.8),
+    inset 1px 1px 2px rgba(255, 254, 213, 0.4);
   border: 1px solid rgba(255, 254, 213, 0.2);
   transition: all 0.2s ease;
   position: relative;
@@ -329,15 +318,22 @@ input[type="radio"]:checked + label .neuro-button {
   right: 1px;
   height: 50%;
   border-radius: 17px 17px 8px 8px;
-  background: linear-gradient(180deg, rgba(255, 254, 213, 0.25) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(255, 254, 213, 0.2) 0%, transparent 100%);
   pointer-events: none;
 }
 
 .neuro-error:hover {
   box-shadow: 
-    inset 8px 8px 16px rgba(220, 20, 60, 0.3),
-    inset -6px -6px 12px rgba(255, 254, 213, 0.8),
-    3px 3px 6px rgba(220, 20, 60, 0.15);
+    10px 10px 20px rgba(220, 20, 60, 0.35),
+    -8px -8px 16px rgba(255, 254, 213, 0.9),
+    inset 1px 1px 3px rgba(255, 254, 213, 0.5);
+}
+
+.neuro-error:active {
+  box-shadow: 
+    inset 12px 12px 24px rgba(220, 20, 60, 0.4),
+    inset -8px -8px 16px rgba(255, 254, 213, 0.8),
+    1px 1px 2px rgba(220, 20, 60, 0.1);
 }
 
 /* Active button state for view toggles */
@@ -361,7 +357,7 @@ input[type="radio"]:checked + label .neuro-button {
   right: 1px;
   height: 50%;
   border-radius: 17px 17px 8px 8px;
-  background: linear-gradient(180deg, rgba(255, 254, 213, 0.3) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(255, 254, 213, 0.25) 0%, transparent 100%);
   pointer-events: none;
 }
 
@@ -373,22 +369,10 @@ input[type="radio"]:checked + label .neuro-button {
   box-shadow: 
     25px 25px 50px rgba(105, 169, 106, 0.4),
     -15px -15px 30px rgba(255, 254, 213, 0.9),
-    inset 1px 1px 2px rgba(255, 254, 213, 0.6);
-  border: 1px solid rgba(255, 254, 213, 0.25);
+    inset 1px 1px 2px rgba(255, 254, 213, 0.5);
+  border: 1px solid rgba(255, 254, 213, 0.2);
   border-left: none;
   transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.neuro-sidebar::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, rgba(255, 254, 213, 0.7) 50%, transparent 100%);
 }
 
 .neuro-mobile-nav {
@@ -399,21 +383,9 @@ input[type="radio"]:checked + label .neuro-button {
   box-shadow: 
     25px 25px 50px rgba(105, 169, 106, 0.4),
     -15px -15px 30px rgba(255, 254, 213, 0.9),
-    inset 1px 1px 2px rgba(255, 254, 213, 0.6);
-  border: 1px solid rgba(255, 254, 213, 0.25);
+    inset 1px 1px 2px rgba(255, 254, 213, 0.5);
+  border: 1px solid rgba(255, 254, 213, 0.2);
   border-bottom: none;
-  position: relative;
-  overflow: hidden;
-}
-
-.neuro-mobile-nav::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, rgba(255, 254, 213, 0.7) 50%, transparent 100%);
 }
 
 
