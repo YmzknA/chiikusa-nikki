@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@plugin "daisyui";css
+@plugin "daisyui";
 
 /* Force light mode globally */
 html[data-theme="lemonade"] {
