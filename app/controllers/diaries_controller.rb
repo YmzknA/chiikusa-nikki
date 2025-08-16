@@ -13,10 +13,39 @@ class DiariesController < ApplicationController
 
   def index
     @selected_month = params[:month].present? ? params[:month] : "all"
+
+    # 月別フィルタリングされた日記を取得
     @diaries = filter_diaries_by_month(
-      current_user.diaries.includes(:diary_answers, :til_candidates, :reactions, reactions: :user),
+      current_user.diaries.includes(
+        :til_candidates,
+        { diary_answers: :answer },
+        { reactions: :user }
+      ),
       @selected_month
     ).order(date: :desc, created_at: :desc)
+
+    # 現在取得している日記のIDを取得
+    diary_ids = @diaries.pluck(:id)
+
+    # emoji別カウント （diary_id => {emoji1 => count, emoji2 => count, ...}）
+    @reactions_summary_data = Reaction
+                              .joins(:diary)
+                              .where(diary_id: diary_ids)
+                              .group(:diary_id, :emoji)
+                              .count
+                              .group_by { |k, _v| k[0] } # diary_id => {[diary_id, emoji] => count}になる
+                              .transform_values do |reaction_data|
+                                reaction_data.to_h.transform_keys { |k| k[1] } # valueの形がemoji => countになる
+                              end
+
+    # 現在のユーザーのリアクションデータ（diary_id => [emoji1, emoji2, ...])
+    @current_user_reactions_data = Reaction
+                                   .joins(:diary)
+                                   .where(diary_id: diary_ids, user: current_user)
+                                   .pluck(:diary_id, :emoji)
+                                   .group_by(&:first) # diary_id => [[diary_id, emoji1], [diary_id, emoji2], ...]
+                                   .transform_values { |reaction_data| reaction_data.map(&:last) }
+
     @available_months = available_months
   end
 
