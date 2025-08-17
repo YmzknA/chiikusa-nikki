@@ -28,6 +28,7 @@ class DiariesController < ApplicationController
     diary_ids = @diaries.pluck(:id)
 
     # emoji別カウント （diary_id => {emoji1 => count, emoji2 => count, ...}）
+    emoji_order = Reaction::EMOJI_CATEGORIES.values.flat_map { |category| category[:emojis] }
     @reactions_summary_data = Reaction
                               .joins(:diary)
                               .where(diary_id: diary_ids)
@@ -35,7 +36,9 @@ class DiariesController < ApplicationController
                               .count
                               .group_by { |k, _v| k[0] } # diary_id => {[diary_id, emoji] => count}になる
                               .transform_values do |reaction_data|
-                                reaction_data.to_h.transform_keys { |k| k[1] } # valueの形がemoji => countになる
+                                summary = reaction_data.to_h.transform_keys { |k| k[1] } # valueの形がemoji => countになる
+                                # その後絵文字の順序で並び替えて返す
+                                summary.sort_by { |emoji, _count| emoji_order.index(emoji) || Float::INFINITY }.to_h
                               end
 
     # 現在のユーザーのリアクションデータ（diary_id => [emoji1, emoji2, ...])

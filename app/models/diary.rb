@@ -26,11 +26,23 @@ class Diary < ApplicationRecord
     til_candidates.find_by(index: selected_til_index)&.content
   end
 
-  def reactions_summary
-    summary = reactions.group(:emoji).count
-    # Reaction::EMOJI_CATEGORIESの順番でソート
-    emoji_order = Reaction::EMOJI_CATEGORIES.values.flat_map { |category| category[:emojis] }
-    summary.sort_by { |emoji, _count| emoji_order.index(emoji) || Float::INFINITY }.to_h
+  def reactions_summary(preloaded_data = nil)
+    # メモ化でキャッシュ、またはコントローラーからの事前計算データを使用
+    # preloaded_dataはハッシュで、キーが絵文字、値がカウントの形
+    # 例: { "😂" => 5, "😎" => 3, ... }
+    @reactions_summary ||= if preloaded_data
+                             # コントローラーで並び替え済みのデータをそのまま使用
+                             preloaded_data
+                           else
+                             # フォールバック時のソート処理
+                             summary = if reactions.loaded?
+                                         reactions.group_by(&:emoji).transform_values(&:size)
+                                       else
+                                         reactions.group(:emoji).count
+                                       end
+                             emoji_order = Reaction::EMOJI_CATEGORIES.values.flat_map { |category| category[:emojis] }
+                             summary.sort_by { |emoji, _count| emoji_order.index(emoji) || Float::INFINITY }.to_h
+                           end
   end
 
   def user_reactions(user)
@@ -39,10 +51,22 @@ class Diary < ApplicationRecord
     reactions.where(user: user).pluck(:emoji)
   end
 
-  def user_reacted?(user, emoji)
+  def user_reacted?(user, emoji, preloaded_user_reactions = nil)
     return false unless user
 
-    reactions.exists?(user: user, emoji: emoji)
+    # コントローラーから事前計算されたユーザーリアクションデータを使用
+    if preloaded_user_reactions
+      preloaded_user_reactions.include?(emoji)
+    else
+      # メモ化でキャッシュしてクエリ削減
+      @user_reactions_cache ||= {}
+      @user_reactions_cache[user.id] ||= if reactions.loaded?
+                                           reactions.select { |r| r.user_id == user.id }.map(&:emoji)
+                                         else
+                                           reactions.where(user: user).pluck(:emoji)
+                                         end
+      @user_reactions_cache[user.id].include?(emoji)
+    end
   end
 
   private
