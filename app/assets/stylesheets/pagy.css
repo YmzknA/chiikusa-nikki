@@ -1,0 +1,160 @@
+/* Pagy pagination styles - Neumorphism design with lemonade theme */
+.pagy.nav,
+#pagy-nav {
+  @apply flex items-center justify-center gap-2 flex-wrap;
+}
+
+.pagy.nav a,
+.pagy.nav span,
+#pagy-nav a,
+#pagy-nav span {
+  /* Neuro button base style */
+  background: linear-gradient(145deg, oklch(92% 0.02 123.72) 0%, oklch(89% 0.015 123.72) 100%);
+  color: oklch(19.742% 0.004 123.72); /* lemonade base-content */
+  border-radius: 18px;
+  box-shadow: 
+    8px 8px 16px rgba(105, 169, 106, 0.3),
+    -6px -6px 12px rgba(255, 254, 213, 0.8),
+    inset 1px 1px 2px rgba(255, 254, 213, 0.4);
+  border: 1px solid rgba(255, 254, 213, 0.2);
+  transition: all 0.2s ease;
+  position: relative;
+  
+  @apply inline-flex items-center justify-center min-w-[2.5rem] h-10 px-3 text-sm font-medium;
+}
+
+.pagy.nav a::before,
+.pagy.nav span::before,
+#pagy-nav a::before,
+#pagy-nav span::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  right: 1px;
+  height: 50%;
+  border-radius: 17px 17px 8px 8px;
+  background: linear-gradient(180deg, rgba(255, 254, 213, 0.2) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+/* 通常のページリンク */
+.pagy.nav a,
+#pagy-nav a {
+  @apply cursor-pointer;
+}
+
+.pagy.nav a:hover,
+#pagy-nav a:hover {
+  cursor: pointer;
+  box-shadow: 
+    10px 10px 20px rgba(105, 169, 106, 0.35),
+    -8px -8px 16px rgba(255, 254, 213, 0.9),
+    inset 1px 1px 3px rgba(255, 254, 213, 0.5);
+}
+
+.pagy.nav a:active,
+#pagy-nav a:active {
+  box-shadow: 
+    inset 8px 8px 16px rgba(105, 169, 106, 0.35),
+    inset -6px -6px 12px rgba(255, 254, 213, 0.9),
+    1px 1px 2px rgba(105, 169, 106, 0.1);
+}
+
+/* アクティブなページ */
+.pagy.nav a.current,
+.pagy.nav span.current,
+#pagy-nav a.current,
+#pagy-nav span.current {
+  /* Active button state - primaryカラー */
+  background: oklch(58.92% 0.199 134.6); /* lemonade primary */
+  color: white; /* 白色の文字 */
+  box-shadow: 
+    8px 8px 16px rgba(58, 120, 106, 0.4),
+    -6px -6px 12px rgba(255, 254, 213, 0.7),
+    inset 1px 1px 2px rgba(255, 254, 213, 0.3);
+  border: 1px solid oklch(58.92% 0.199 134.6);
+  font-weight: 600;
+  backdrop-filter: blur(5px);
+  cursor: default; /* カーソルを通常の矢印に */
+}
+
+.pagy.nav a.current::before,
+.pagy.nav span.current::before,
+#pagy-nav a.current::before,
+#pagy-nav span.current::before {
+  background: linear-gradient(180deg, rgba(255, 254, 213, 0.25) 0%, transparent 100%);
+}
+
+/* 無効化された要素（ただし現在のページは除外） */
+.pagy.nav a[aria-disabled="true"]:not(.current),
+#pagy-nav a[aria-disabled="true"]:not(.current) {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.pagy.nav a[aria-disabled="true"]:not(.current):hover,
+#pagy-nav a[aria-disabled="true"]:not(.current):hover {
+  box-shadow: 
+    8px 8px 16px rgba(105, 169, 106, 0.3),
+    -6px -6px 12px rgba(255, 254, 213, 0.8),
+    inset 1px 1px 2px rgba(255, 254, 213, 0.4);
+}
+
+/* 前へ・次へボタン */
+.pagy.nav a[aria-label="前へ"],
+.pagy.nav a[aria-label="次へ"],
+#pagy-nav a[aria-label="前へ"],
+#pagy-nav a[aria-label="次へ"] {
+  /* Secondary button style */
+  background: linear-gradient(145deg, oklch(79.75% 0.21 111.09) 0%, oklch(75.75% 0.18 111.09) 100%);
+  color: oklch(19.742% 0.004 123.72); /* lemonade base-content */
+  @apply px-4 font-medium;
+  backdrop-filter: blur(5px);
+}
+
+/* ギャップ（省略記号） */
+.pagy.nav span.gap,
+#pagy-nav span.gap {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  color: oklch(19.742% 0.004 123.72);
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+}
+
+.pagy.nav span.gap::before,
+#pagy-nav span.gap::before {
+  display: none;
+}
+
+/* ページネーション情報スタイル */
+.pagy-info {
+  /* Neuro badge style */
+  background: linear-gradient(145deg, oklch(89% 0.015 123.72) 0%, oklch(92% 0.02 123.72) 100%);
+  border-radius: 18px;
+  box-shadow: 
+    inset 6px 6px 12px rgba(105, 169, 106, 0.25),
+    inset -4px -4px 8px rgba(255, 254, 213, 0.7),
+    2px 2px 4px rgba(105, 169, 106, 0.1);
+  border: 1px solid rgba(255, 254, 213, 0.15);
+  position: relative;
+  backdrop-filter: blur(5px);
+  @apply text-sm px-4 py-2;
+  color: oklch(19.742% 0.004 123.72);
+}
+
+.pagy-info::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  right: 1px;
+  height: 50%;
+  border-radius: 17px 17px 8px 8px;
+  background: linear-gradient(180deg, rgba(255, 254, 213, 0.2) 0%, transparent 100%);
+  pointer-events: none;
+}

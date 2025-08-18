@@ -13,6 +13,7 @@ html[data-theme="lemonade"] {
   }
 }
 @import "./water_effect.css";
+@import "./pagy.css";
 
 /* Enhanced background with subtle texture integrated */
 html, body {
