@@ -1,0 +1,121 @@
+<div class="min-h-screen p-2 sm:p-4 animate-[fadeIn_0.5s_ease-out]">
+
+  <!-- Mobile Header with Logo -->
+  <div class="relative z-10 sm:hidden neuro-card p-4 mb-4 flex justify-center items-center animate-[fadeInDown_0.6s_ease-out]">
+    <%= link_to root_path do %>
+      <%= image_tag "logo.png", alt: "Neuro Logo", class: "h-10 w-auto transition-all duration-200 hover:scale-110" %>
+    <% end %>
+    <div class="h-10 flex items-center ml-3">
+      <%= render 'shared/watering' %>
+    </div>
+  </div>
+
+  <!-- Navigation Header -->
+  <div class="flex justify-between items-center mb-4 animate-[slideInLeft_0.5s_ease-out_0.2s_both]">
+    <div class="tabs tabs-box tabs-sm" aria-label="日記表示切り替え">
+      <%= link_to diaries_path, class: "tab" do %>
+        📅 カレンダー
+      <% end %>
+      <%= link_to list_diaries_path, class: "tab tab-active" do %>
+        📋 リスト
+      <% end %>
+    </div>
+
+    <!-- Month Filter -->
+    <div class="flex justify-center mx-auto md:mx-2" data-controller="month-filter">
+      <%= form_with url: list_diaries_path, method: :get, class: "flex items-center gap-2", local: true do |form| %>
+        <%= form.select :month, options_for_select(@available_months, @selected_month), 
+          { selected: @selected_month }, 
+          { data: { "month-filter-target": "select", "action": "change->month-filter#change" },
+            class: "neuro-input px-3 py-2 text-sm rounded-lg border-none", 
+            "aria-label": "月で絞り込み" } %>
+        <%= form.hidden_field :page, value: 1 %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Pagination Info -->
+  <% if @pagy.count > 0 %>
+    <div class="text-center text-sm text-base-content/60 mb-4">
+      <%== pagy_info(@pagy) %>
+    </div>
+  <% end %>
+
+  <!-- List View -->
+  <div class="grid gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <% @diaries.each_with_index do |diary, index| %>
+      <div class="neuro-card p-4 md:p-6 <%= 'ring-1 ring-accent/20 bg-gradient-to-br from-base-100 via-base-100 to-accent/5' if diary.is_public? %>" style="animation: fadeInUp 0.6s ease-out <%= (index * 0.1).round(1) %>s both;">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 mb-3">
+          <span class="text-base md:text-lg font-semibold text-primary"><%= diary.date.strftime("%Y/%m/%d") %></span>
+          <% if diary.is_public? %>
+            <div class="flex items-center gap-1 text-xs text-primary/70">
+              <span class="material-symbols-outlined text-sm">public</span>
+              <span class="hidden sm:inline">公開中</span>
+            </div>
+          <% end %>
+        </div>
+        
+        <% if diary.til_text.present? %>
+          <%= render 'truncated_text', 
+              text: diary.til_text, 
+              title: 'Today I Learned', 
+              title_class: 'text-primary' %>
+        <% elsif diary.notes.present? %>
+          <%= render 'truncated_text', 
+              text: diary.notes, 
+              title: '今日のメモ', 
+              title_class: 'text-secondary' %>
+        <% end %>
+
+        <div class="flex gap-1 md:gap-2 mb-3 md:mb-6 flex-wrap">
+          <% diary.diary_answers.each_with_index do |diary_answer, badge_index| %>
+            <div class="neuro-badge py-1 px-2 text-xs font-medium flex items-center gap-1 hover:scale-110 transition-all duration-200" style="animation: bounceIn 0.6s ease-out <%= ((index + badge_index + 1) * 0.1).round(1) %>s both;">
+              <span class="text-xl animate-[heartBeat_1.5s_ease-in-out_infinite]"><%= diary_answer.answer.emoji %></span>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- リアクション表示（公開日記のみ） -->
+        <% if diary.is_public? %>
+          <div class="mb-3 md:mb-4">
+            <%= render 'shared/reactions', diary: diary %>
+          </div>
+        <% end %>
+
+        <div class="flex justify-end">
+          <%= link_to diary_path(diary), class: "neuro-button py-2 px-3 md:px-4 text-xs md:text-sm font-medium transition-all duration-200 hover:scale-105" do %>
+            詳細を見る
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @diaries.empty? %>
+    <div class="neuro-card p-6 md:p-8 text-center animate-[scaleIn_0.4s_ease-out]">
+      <h2 class="text-lg md:text-xl font-bold text-base-content mb-2">日記がありません</h2>
+      <p class="text-sm md:text-base text-base-content/60">
+        <% if @selected_month == "all" %>
+          まだ日記を書いていません。最初の日記を書いてみましょう。
+        <% else %>
+          この月の日記はありません。
+        <% end %>
+      </p>
+      <%= link_to new_diary_path, class: "neuro-button py-2 px-4 text-sm font-medium mt-4 inline-block transition-all duration-200 hover:scale-105 hover:animate-[wiggle_0.5s_ease-in-out]" do %>
+        日記を書く
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- Pagination Navigation -->
+  <% if @pagy.count > 0 %>
+    <div class="flex justify-center mt-8">
+      <div class="neuro-card p-4">
+        <%== pagy_nav(@pagy, id: 'pagy-nav', class: 'pagy-nav', aria_label: 'ページネーション') %>
+      </div>
+    </div>
+  <% end %>
+
+  <%= render 'shared/mobile_reaction_modal' %>
+</div>
+

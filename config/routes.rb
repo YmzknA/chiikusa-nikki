@@ -22,6 +22,7 @@ Rails.application.routes.draw do
       get :reaction_modal_content
     end
     collection do
+      get :list
       post :increment_seed
       post :share_on_x
       get :search_by_date

@@ -78,3 +78,6 @@ application.register("reaction-stats", ReactionStatsController)
 
 import AvatarPreviewController from "./avatar_preview_controller"
 application.register("avatar-preview", AvatarPreviewController)
+
+import MonthFilterController from "./month_filter_controller"
+application.register("month-filter", MonthFilterController)
