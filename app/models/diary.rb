@@ -30,19 +30,7 @@ class Diary < ApplicationRecord
     # メモ化でキャッシュ、またはコントローラーからの事前計算データを使用
     # preloaded_dataはハッシュで、キーが絵文字、値がカウントの形
     # 例: { "😂" => 5, "😎" => 3, ... }
-    @reactions_summary ||= if preloaded_data
-                             # コントローラーで並び替え済みのデータをそのまま使用
-                             preloaded_data
-                           else
-                             # フォールバック時のソート処理
-                             summary = if reactions.loaded?
-                                         reactions.group_by(&:emoji).transform_values(&:size)
-                                       else
-                                         reactions.group(:emoji).count
-                                       end
-                             emoji_order = Reaction::EMOJI_CATEGORIES.values.flat_map { |category| category[:emojis] }
-                             summary.sort_by { |emoji, _count| emoji_order.index(emoji) || Float::INFINITY }.to_h
-                           end
+    @reactions_summary ||= preloaded_data || generate_reactions_summary
   end
 
   def user_reactions(user)
@@ -55,21 +43,42 @@ class Diary < ApplicationRecord
     return false unless user
 
     # コントローラーから事前計算されたユーザーリアクションデータを使用
-    if preloaded_user_reactions
-      preloaded_user_reactions.include?(emoji)
-    else
-      # メモ化でキャッシュしてクエリ削減
-      @user_reactions_cache ||= {}
-      @user_reactions_cache[user.id] ||= if reactions.loaded?
-                                           reactions.select { |r| r.user_id == user.id }.map(&:emoji)
-                                         else
-                                           reactions.where(user: user).pluck(:emoji)
-                                         end
-      @user_reactions_cache[user.id].include?(emoji)
-    end
+    return preloaded_user_reactions.include?(emoji) if preloaded_user_reactions
+
+    # メモ化でキャッシュしてクエリ削減
+    cached_user_reactions(user).include?(emoji)
   end
 
   private
+
+  def generate_reactions_summary
+    summary = build_reactions_count
+    sort_reactions_by_emoji_order(summary)
+  end
+
+  # ["😂" => 5, "😎" => 3, ... ]の形が返る
+  def build_reactions_count
+    if reactions.loaded?
+      reactions.group_by(&:emoji).transform_values(&:size)
+    else
+      reactions.group(:emoji).count
+    end
+  end
+
+  def sort_reactions_by_emoji_order(summary)
+    emoji_order = Reaction::EMOJI_CATEGORIES.values.flat_map { |category| category[:emojis] }
+    summary.sort_by { |emoji, _count| emoji_order.index(emoji) || Float::INFINITY }.to_h
+  end
+
+  def cached_user_reactions(user)
+    @user_reactions_cache ||= {}
+    @user_reactions_cache[user.id] ||= if reactions.loaded?
+                                         reactions.select { |r| r.user_id == user.id }.map(&:emoji)
+                                       else
+                                         reactions.where(user: user).pluck(:emoji)
+                                       end
+    @user_reactions_cache[user.id]
+  end
 
   def clear_stats_cache
     # ハッシュ化されたuser_idを使用してキャッシュクリア
