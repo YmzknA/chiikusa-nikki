@@ -1,6 +1,6 @@
-<div class="min-h-screen p-4">
+<div class="min-h-screen p-4 animate-[fadeIn_0.5s_ease-out]">
   <div class="container mx-auto max-w-2xl">
-    <div class="neuro-card p-4 md:p-6">
+    <div class="neuro-card p-4 md:p-6 animate-[scaleIn_0.4s_ease-out_0.2s_both]">
       <%= loading_form_with(model: @diary, local: true, class: "space-y-4 md:space-y-6", data: { controller: "ai-type-selection", "ai-type-selection-trigger-checkbox-id-value": "regenerate_ai_checkbox" }) do |form| %>
         <% if @diary.errors.any? %>
           <div class="neuro-error p-4 mb-4 rounded-2xl">
@@ -23,8 +23,8 @@
           <%= form.date_field :date, class: "neuro-input py-2 md:py-3 px-3 md:px-4 w-full max-w-48 text-sm md:text-base", required: true %>
         </div>
 
-        <% @questions.each do |question| %>
-          <div class="form-control">
+        <% @questions.each_with_index do |question, index| %>
+          <div class="form-control animate-[fadeInUp_0.6s_ease-out_<%= ((index + 1) * 0.2).round(1) %>s_both]">
             <div class="mb-2 md:mb-3">
               <span class="block text-base-content font-semibold mb-2 text-sm md:text-base"><%= question.label %></span>
             </div>
@@ -34,7 +34,7 @@
                 <label class="cursor-pointer">
                   <%= radio_button_tag "diary_answers[#{question.identifier}]", answer.id, 
                       is_selected, { class: "peer sr-only" } %>
-                  <div class="neuro-button py-2 md:py-3 px-3 md:px-4 text-xl md:text-2xl peer-checked:!bg-primary peer-checked:!text-primary-content peer-checked:!shadow-inner">
+                  <div class="neuro-button py-2 md:py-3 px-3 md:px-4 text-xl md:text-2xl peer-checked:!bg-primary peer-checked:!text-primary-content peer-checked:!shadow-inner transition-all duration-200">
                     <%= answer.emoji %>
                   </div>
                 </label>
@@ -43,9 +43,9 @@
           </div>
         <% end %>
 
-        <div class="form-control">
+        <div class="form-control animate-[fadeInUp_0.6s_ease-out_0.7s_both]">
           <%= form.label :notes, "今日やったこと・感じたこと", class: "block text-base-content font-semibold mb-2 text-sm md:text-base" %>
-          <%= form.text_area :notes, placeholder: "・今日やったことについて\n・つまずいた問題や解決方法\n・新しい発見や気づき\n   など", class: "neuro-input w-full h-28 md:h-32 py-3 md:py-4 px-3 md:px-4 resize-none text-sm md:text-base", rows: 6 %>
+          <%= form.text_area :notes, placeholder: "・今日やったことについて\n・つまずいた問題や解決方法\n・新しい発見や気づき\n   など", class: "neuro-input w-full h-28 md:h-32 py-3 md:py-4 px-3 md:px-4 resize-none text-sm md:text-base transition-all duration-200 focus:scale-[1.02]", rows: 6 %>
         </div>
 
         <!-- TIL Selection Section -->
@@ -100,40 +100,42 @@
           </div>
 
           <% if @diary.til_candidates.any? %>
-            <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-badge py-2 md:py-3 px-3 md:px-4">
-              <%= check_box_tag "regenerate_ai", "1", false, class: "checkbox checkbox-secondary bg-gray-100", id: "regenerate_ai_checkbox", data: { action: "change->ai-type-selection#updateState" } %>
+            <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-button py-2 md:py-3 px-3 md:px-4 hover:scale-99 transition-transform">
+              <%= check_box_tag "regenerate_ai", "1", false, class: "toggle toggle-primary checked:bg-secondary/30", id: "regenerate_ai_checkbox", data: { action: "change->ai-type-selection#updateState" } %>
               <span class="text-base-content font-semibold text-sm md:text-base">AIでTIL候補を再生成する（タネを1つ消費）</span>
             </label>
           <% else %>
-            <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-badge py-2 md:gap-3 px-3 md:px-4">
-              <%= check_box_tag "regenerate_ai", "1", false, class: "checkbox checkbox-secondary bg-gray-100", id: "regenerate_ai_checkbox", data: { action: "change->ai-type-selection#updateState" } %>
+            <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-button py-2 md:py-3 px-3 md:px-4 hover:scale-99 transition-transform">
+              <%= check_box_tag "regenerate_ai", "1", false, class: "toggle toggle-primary checked:bg-secondary/30", id: "regenerate_ai_checkbox", data: { action: "change->ai-type-selection#updateState" } %>
               <span class="text-base-content font-semibold text-sm md:text-base">AIでTIL候補を生成する（タネを1つ消費）</span>
             </label>
           <% end %>
         </div>
 
-        <%= render 'shared/ai_type_selection' %>
+        <div class="animate-[fadeInUp_0.6s_ease-out_0.7s_both]">
+          <%= render 'shared/ai_type_selection' %>
+        </div>
 
         <div class="divider my-4 md:my-6 mx-auto"></div>
 
         <div class="form-control">
-          <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-badge py-2 md:py-3 px-3 md:px-4">
-            <%= form.check_box :is_public, class: "checkbox checkbox-secondary bg-gray-100" %>
-            <span class="text-base-content font-semibold text-sm md:text-base">この日記を公開する</span>
+          <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-button py-2 md:py-3 px-3 md:px-4 hover:scale-99 transition-transform">
+            <%= form.check_box :is_public, class: "toggle toggle-primary checked:bg-secondary/30" %>
+            <span class="text-base-content font-semibold text-sm md:text-base">この日記を公開</span>
           </label>
         </div>
 
         <div class="divider my-4 md:my-6 mx-auto"></div>
 
-        <div class="form-control mt-6 md:mt-8">
-          <%= form.submit "日記を更新 ✓", class: "neuro-button w-full py-3 md:py-4 px-4 md:px-6 font-bold text-base md:text-lg hover:bg-primary-focus transition-colors hover:cursor-pointer", onclick: "console.log('🚀 Submit button clicked'); const result = checkSeedCountBeforeAction(event, 'regenerate_ai_checkbox'); if(result) { const needsAi = document.getElementById('regenerate_ai_checkbox')?.checked && document.querySelector('#diary_notes')?.value.trim(); if(!needsAi && window.loadingController) { console.log('🎯 Manually calling normal loading'); window.loadingController.showDelayed(); } } return result;" %>
+        <div class="form-control mt-6 md:mt-8 animate-[fadeInUp_0.6s_ease-out_0.8s_both]">
+          <%= form.submit "日記を更新 ✓", class: "neuro-button w-full py-3 md:py-4 px-4 md:px-6 font-bold text-base md:text-lg hover:cursor-pointer transition-all duration-200 hover:scale-102", onclick: "console.log('🚀 Submit button clicked'); const result = checkSeedCountBeforeAction(event, 'regenerate_ai_checkbox'); if(result) { const needsAi = document.getElementById('regenerate_ai_checkbox')?.checked && document.querySelector('#diary_notes')?.value.trim(); if(!needsAi && window.loadingController) { console.log('🎯 Manually calling normal loading'); window.loadingController.showDelayed(); } } return result;" %>
         </div>
       <% end %>
     </div>
   </div>
 
   <% content_for :continue_button do %>
-    <button onclick="continueUpdate()" class="btn btn-secondary flex-1">
+    <button onclick="continueUpdate()" class="btn btn-primary flex-1 text-white">
       AI生成無しで続ける
     </button>
   <% end %>

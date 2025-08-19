@@ -41,7 +41,7 @@
                 <label class="cursor-pointer">
                   <%= radio_button_tag "diary_answers[#{question.identifier}]", answer.id, 
                       is_selected, { class: "peer sr-only" } %>
-                  <div class="neuro-button py-2 md:py-3 px-3 md:px-4 text-xl md:text-2xl peer-checked:!bg-primary peer-checked:!text-primary-content peer-checked:!shadow-inner transition-all duration-200 hover:scale-110 hover:animate-[heartBeat_1.5s_ease-in-out_infinite]">
+                  <div class="neuro-button py-2 md:py-3 px-3 md:px-4 text-xl md:text-2xl peer-checked:!bg-primary peer-checked:!text-primary-content peer-checked:!shadow-inner transition-all duration-200">
                     <%= answer.emoji %>
                   </div>
                 </label>
@@ -97,7 +97,7 @@
 </div>
 
   <% content_for :continue_button do %>
-    <button onclick="continueDiaryCreation()" class="btn btn-primary flex-1">
+    <button onclick="continueDiaryCreation()" class="btn btn-primary flex-1 text-white">
       AI生成無しで続ける
     </button>
   <% end %>
