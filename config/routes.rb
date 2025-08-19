@@ -22,7 +22,6 @@ Rails.application.routes.draw do
       get :reaction_modal_content
     end
     collection do
-      get :list
       post :increment_seed
       post :share_on_x
       get :search_by_date
@@ -30,6 +29,9 @@ Rails.application.routes.draw do
 
     resources :reactions, only: [:create, :destroy]
   end
+
+  # 日記リスト表示（ページネーション付き）
+  resources :diary_lists, only: [:index]
 
   # Public diary listing
   get "/public_diaries", to: "diaries#public_index"

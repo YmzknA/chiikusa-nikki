@@ -14,12 +14,12 @@
           </div>
           
           <% if diary.til_text.present? %>
-            <%= render 'truncated_text', 
+            <%= render 'diary_lists/truncated_text', 
                 text: diary.til_text, 
                 title: 'Today I Learned', 
                 title_class: 'text-primary' %>
           <% elsif diary.notes.present? %>
-            <%= render 'truncated_text', 
+            <%= render 'diary_lists/truncated_text', 
                 text: diary.notes, 
                 title: '今日のメモ', 
                 title_class: 'text-secondary' %>
