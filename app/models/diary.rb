@@ -8,6 +8,11 @@ class Diary < ApplicationRecord
 
   scope :public_diaries, -> { where(is_public: true) }
   scope :private_diaries, -> { where(is_public: false) }
+  scope :calendar_range, lambda { |start_date, end_date|
+    includes(diary_answers: :answer)
+      .where(date: start_date..end_date)
+      .order(date: :desc)
+  }
 
   # 統計チャートのキャッシュを無効化
   after_commit :clear_stats_cache

@@ -12,12 +12,16 @@ class DiariesController < ApplicationController
                 only: [:edit, :update, :destroy, :upload_to_github, :select_til, :update_til_selection]
 
   def index
-    # カレンダー表示用の軽量クエリ
-    # 学習強度計算に必要な最小限のデータのみ取得
-    @diaries = current_user.diaries
-                           .includes(diary_answers: :answer)
-                           .select(:id, :date, :user_id)
-                           .order(date: :desc)
+    display_date = params[:start_date].present? ? Date.parse(params[:start_date]) : Date.current
+
+    calendar_start = display_date.beginning_of_month - 2.weeks
+    calendar_end = display_date.end_of_month + 2.weeks
+
+    @diaries = current_user.diaries.calendar_range(calendar_start, calendar_end)
+  rescue Date::Error
+    # 無効な日付の場合は今月にフォールバック
+    @display_date = Date.current
+    retry
   end
 
   def show
