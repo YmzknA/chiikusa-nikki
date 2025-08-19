@@ -3,6 +3,7 @@ class DiariesController < ApplicationController
   include SeedManagement
   include GithubIntegration
   include DiaryErrorHandling
+  include ReactionDataSetup
 
   ORIGINAL_NOTES_INDEX = -1
 
@@ -33,6 +34,8 @@ class DiariesController < ApplicationController
       return
     end
 
+    setup_reaction_data
+
     @share_content = "🌱#{@diary.date.strftime('%Y年%m月%d日')}のちいくさ日記🌱%0A%0A" \
                      "%23ちいくさ日記%0A%23毎日1分簡単日記%0A&url=#{diary_url(@diary)}"
   end
@@ -42,6 +45,8 @@ class DiariesController < ApplicationController
                     .includes(:user, diary_answers: [:answer], reactions: :user)
                     .order(date: :desc, created_at: :desc)
                     .limit(20)
+
+    setup_reaction_data
   end
 
   def new
