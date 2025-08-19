@@ -1,5 +1,6 @@
 class DiaryListsController < ApplicationController
   include DiaryFiltering
+  include ReactionDataSetup
 
   before_action :authenticate_user!
 
@@ -23,15 +24,5 @@ class DiaryListsController < ApplicationController
     setup_reaction_data
 
     @available_months = available_months
-  end
-
-  private
-
-  def setup_reaction_data
-    return if @diaries.empty?
-
-    diary_ids = @diaries.map(&:id)
-    @reactions_summary_data = Reaction.emoji_summary_by_diary(diary_ids)
-    @current_user_reactions_data = Reaction.user_reactions_by_diary(diary_ids, current_user)
   end
 end
