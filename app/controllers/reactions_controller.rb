@@ -1,4 +1,6 @@
 class ReactionsController < ApplicationController
+  include ReactionDataSetup
+
   before_action :authenticate_user!
   before_action :set_diary
 
@@ -7,6 +9,10 @@ class ReactionsController < ApplicationController
     @reaction.user = current_user
 
     if @reaction.save
+      # データをリフレッシュ
+      @diary.reload
+      setup_reaction_data
+
       render turbo_stream: [
         turbo_stream.replace("reactions_#{@diary.id}", partial: "shared/reactions",
                                                        locals: { diary: @diary, current_user: current_user }),
@@ -23,6 +29,10 @@ class ReactionsController < ApplicationController
     @reaction = @diary.reactions.find_by(user: current_user, emoji: params[:id])
     if @reaction
       @reaction.destroy
+      # データをリフレッシュ
+      @diary.reload
+      setup_reaction_data
+
       render turbo_stream: [
         turbo_stream.replace("reactions_#{@diary.id}", partial: "shared/reactions",
                                                        locals: { diary: @diary, current_user: current_user }),
