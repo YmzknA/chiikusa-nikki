@@ -20,28 +20,6 @@ class DiariesController < ApplicationController
                            .order(date: :desc)
   end
 
-  def list
-    @selected_month = params[:month].present? ? params[:month] : "all"
-
-    # リスト表示用の詳細クエリ（ページネーション付き）
-    base_query = filter_diaries_by_month(
-      current_user.diaries.includes(
-        :til_candidates,
-        { diary_answers: :answer },
-        { reactions: :user }
-      ),
-      @selected_month
-    ).order(date: :desc, created_at: :desc)
-
-    # Pagyでページネーション
-    @pagy, @diaries = pagy(base_query, limit: 31)
-
-    # リアクション集計データの設定（リスト表示のみ）
-    setup_reaction_data
-
-    @available_months = available_months
-  end
-
   def show
     check_github_repository_status if user_signed_in?
 
@@ -158,43 +136,6 @@ class DiariesController < ApplicationController
   end
 
   private
-
-  def setup_reaction_data
-    return if @diaries.empty?
-
-    # 現在取得している日記のIDを取得
-    diary_ids = @diaries.map(&:id)
-
-    # emoji別カウント（diary_id => {emoji1 => count, emoji2 => count, ...}）
-    emoji_order = Reaction::EMOJI_CATEGORIES.values.flat_map { |category| category[:emojis] }
-    test_data = Reaction
-                .joins(:diary)
-                .where(diary_id: diary_ids)
-                .group(:diary_id, :emoji)
-                .count
-                .group_by { |k, _v| k[0] } # diary_id => {[diary_id, emoji] => count}になる
-    logger.swim(test_data.inspect)
-
-    @reactions_summary_data = Reaction
-                              .joins(:diary)
-                              .where(diary_id: diary_ids)
-                              .group(:diary_id, :emoji)
-                              .count # [diary_id, emoji] => count の形で集計
-                              .group_by { |k, _v| k[0] } # diary_id => {[diary_id, emoji] => count}になる
-                              .transform_values do |reaction_data|
-                                summary = reaction_data.to_h.transform_keys { |k| k[1] } # valueの形でemoji => countになる
-                                # その後絵文字の順序で並び替えて返す
-                                summary.sort_by { |emoji, _count| emoji_order.index(emoji) || Float::INFINITY }.to_h
-                              end
-
-    # 現在のユーザーのリアクションデータ（diary_id => [emoji1, emoji2, ...]）
-    @current_user_reactions_data = Reaction
-                                   .joins(:diary)
-                                   .where(diary_id: diary_ids, user: current_user)
-                                   .pluck(:diary_id, :emoji)
-                                   .group_by(&:first) # diary_id => [[diary_id, emoji1], [diary_id, emoji2], ...]
-                                   .transform_values { |reaction_data| reaction_data.map(&:last) }
-  end
 
   def process_til_selection?(selected_index)
     if selected_index == ORIGINAL_NOTES_INDEX
