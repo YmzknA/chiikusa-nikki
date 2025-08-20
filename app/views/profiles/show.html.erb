@@ -198,6 +198,25 @@
       <div class="neuro-card p-4 md:p-6">
         <h3 class="text-lg md:text-xl font-bold text-base-content mb-3 md:mb-4">アカウント</h3>
         <div class="space-y-3">
+          <!-- 利用規約・プライバシーポリシーリンク -->
+          <div class="space-y-2">
+            <%= link_to terms_of_service_path, class: "text-sm flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary/10 transition-colors" do %>
+              <span class="material-symbols-outlined">
+                gavel
+              </span>
+              <span>利用規約</span>
+            <% end %>
+            
+            <%= link_to privacy_policy_path, class: "text-sm flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary/10 transition-colors" do %>
+              <span class="material-symbols-outlined">
+                privacy_tip
+              </span>
+              <span>プライバシーポリシー</span>
+            <% end %>
+          </div>
+
+          <div class="divider my-3"></div>
+
           <%= button_to destroy_user_session_path, method: :delete, 
               data: { turbo_confirm: "本当にログアウトしますか？" },
               class: "neuro-button-secondary w-full py-2 md:py-3 px-3 md:px-4 font-medium flex items-center justify-center gap-2 text-sm md:text-base" do %>
