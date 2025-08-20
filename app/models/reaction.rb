@@ -33,10 +33,12 @@ class Reaction < ApplicationRecord
   end
 
   def self.emoji_summary_by_diary(diary_ids)
+    return {} if diary_ids.empty?
+
     emoji_order = emoji_display_order
 
     Reaction
-      .joins(:diary)
+      .select(:diary_id, :emoji)
       .where(diary_id: diary_ids)
       .group(:diary_id, :emoji)
       .count
