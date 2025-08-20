@@ -117,7 +117,13 @@
           </svg>
           リアクション
         </h2>
-        <%= render 'shared/reactions', diary: @diary, current_user: current_user %>
+
+        <% if @diary.is_public? %>
+          <%= render 'shared/reactions', diary: @diary, current_user: current_user %>
+        <% else %>
+          <p class="text-base-content/60 text-sm md:text-base">この日記は非公開のため、リアクションは表示されません。</p>
+        <% end %>
+
       </div>
 
       <%# Actions Section %>

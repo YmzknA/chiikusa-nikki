@@ -30,9 +30,6 @@ application.register("calendar", CalendarController)
 import ChartPeriodController from "./chart_period_controller"
 application.register("chart-period", ChartPeriodController)
 
-import DiaryViewController from "./diary_view_controller"
-application.register("diary-view", DiaryViewController)
-
 import TutorialController from "./tutorial_controller"
 application.register("tutorial", TutorialController)
 
@@ -78,3 +75,6 @@ application.register("reaction-stats", ReactionStatsController)
 
 import AvatarPreviewController from "./avatar_preview_controller"
 application.register("avatar-preview", AvatarPreviewController)
+
+import MonthFilterController from "./month_filter_controller"
+application.register("month-filter", MonthFilterController)

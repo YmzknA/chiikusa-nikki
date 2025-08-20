@@ -2,9 +2,11 @@
      data-controller="reaction">
   
   <!-- 既存のリアクション表示 -->
-  <% diary.reactions_summary.each do |emoji, count| %>
+  <% reactions_summary = @reactions_summary_data&.dig(diary.id) || {} %>
+  <% current_user_reactions = @current_user_reactions_data&.dig(diary.id) || [] %>
+  <% diary.reactions_summary(reactions_summary).each do |emoji, count| %>
     <% if user_signed_in? %>
-      <% if diary.user_reacted?(current_user, emoji) %>
+      <% if diary.user_reacted?(current_user, emoji, current_user_reactions) %>
         <!-- ユーザーが既にリアクション済み：クリックで削除 -->
         <%= button_to diary_reaction_path(diary, emoji), method: :delete, local: false, 
               class: "flex items-center gap-1 px-2 py-1 bg-primary/20 ring-2 ring-primary/50 rounded-full text-sm transition-colors border-0 hover:cursor-pointer hover:bg-primary/30" do %>
@@ -53,7 +55,7 @@
             <h4 class="text-sm font-medium text-base-content/70 mb-2"><%= category_data[:label] %></h4>
             <div class="flex flex-wrap gap-2">
               <% category_data[:emojis].each do |emoji| %>
-                <% if diary.user_reacted?(current_user, emoji) %>
+                <% if diary.user_reacted?(current_user, emoji, current_user_reactions) %>
                   <!-- リアクション済み：削除フォーム -->
                   <%= button_to diary_reaction_path(diary, emoji), method: :delete, local: false, 
                         class: "inline",

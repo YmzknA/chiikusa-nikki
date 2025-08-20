@@ -1,0 +1,12 @@
+ja:
+  pagy:
+    nav:
+      prev: "&lsaquo;&nbsp;前"
+      next: "次&nbsp;&rsaquo;"
+      gap: "&hellip;"
+    info:
+      no_items: "項目が見つかりません"
+      single_page: "<b>%{count}</b>件の日記"
+      multiple_pages: "全<b>%{count}</b>件の日記中 <b>%{from}-%{to}</b>件を表示"
+    limit:
+      title: "ページごとの表示件数"

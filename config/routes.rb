@@ -30,6 +30,9 @@ Rails.application.routes.draw do
     resources :reactions, only: [:create, :destroy]
   end
 
+  # 日記リスト表示（ページネーション付き）
+  resources :diary_lists, only: [:index]
+
   # Public diary listing
   get "/public_diaries", to: "diaries#public_index"
   resource :profile, only: [:show, :edit, :update]

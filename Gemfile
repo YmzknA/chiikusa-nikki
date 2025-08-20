@@ -86,6 +86,7 @@ gem "octokit", "~> 10.0"
 gem "simple_calendar", "~> 3.1"
 gem "swimming_fish"
 gem "meta-tags"
+gem "pagy"
 
 gem "carrierwave"
 gem "cloudinary"

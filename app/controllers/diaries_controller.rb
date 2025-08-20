@@ -3,6 +3,8 @@ class DiariesController < ApplicationController
   include SeedManagement
   include GithubIntegration
   include DiaryErrorHandling
+  include ReactionDataSetup
+  include DateParameterHandler
 
   ORIGINAL_NOTES_INDEX = -1
 
@@ -12,12 +14,16 @@ class DiariesController < ApplicationController
                 only: [:edit, :update, :destroy, :upload_to_github, :select_til, :update_til_selection]
 
   def index
-    @selected_month = params[:month].present? ? params[:month] : "all"
-    @diaries = filter_diaries_by_month(
-      current_user.diaries.includes(:diary_answers, :til_candidates, :reactions, reactions: :user),
-      @selected_month
-    ).order(date: :desc, created_at: :desc)
-    @available_months = available_months
+    display_date = safe_parse_date(params[:start_date], show_flash: true)
+
+    calendar_start = display_date.beginning_of_month - 2.weeks
+    calendar_end = display_date.end_of_month + 2.weeks
+
+    @diaries = current_user.diaries.calendar_range(calendar_start, calendar_end)
+
+    # simple_calendarが無効なstart_dateパラメータを使わないよう、安全な値で上書き
+    # simple_calendarがstart_dateを使用するため、ここで設定
+    params[:start_date] = display_date.strftime("%Y-%m-%d")
   end
 
   def show
@@ -29,6 +35,8 @@ class DiariesController < ApplicationController
       return
     end
 
+    setup_reaction_data
+
     @share_content = "🌱#{@diary.date.strftime('%Y年%m月%d日')}のちいくさ日記🌱%0A%0A" \
                      "%23ちいくさ日記%0A%23毎日1分簡単日記%0A&url=#{diary_url(@diary)}"
   end
@@ -38,6 +46,8 @@ class DiariesController < ApplicationController
                     .includes(:user, diary_answers: [:answer], reactions: :user)
                     .order(date: :desc, created_at: :desc)
                     .limit(20)
+
+    setup_reaction_data
   end
 
   def new
@@ -188,7 +198,7 @@ class DiariesController < ApplicationController
 
   def set_diary_for_show
     @diary = if user_signed_in?
-               current_user.diaries.includes(:user, :diary_answers, :til_candidates)
+               current_user.diaries.includes(:user, :diary_answers, :til_candidates, reactions: :user)
                            .find_by(id: params[:id]) || public_diary_scope.find(params[:id])
              else
                public_diary_scope.find(params[:id])

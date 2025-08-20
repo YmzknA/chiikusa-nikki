@@ -41,7 +41,7 @@
                 <label class="cursor-pointer">
                   <%= radio_button_tag "diary_answers[#{question.identifier}]", answer.id, 
                       is_selected, { class: "peer sr-only" } %>
-                  <div class="neuro-button py-2 md:py-3 px-3 md:px-4 text-xl md:text-2xl peer-checked:!bg-primary peer-checked:!text-primary-content peer-checked:!shadow-inner transition-all duration-200 hover:scale-110 hover:animate-[heartBeat_1.5s_ease-in-out_infinite]">
+                  <div class="neuro-button py-2 md:py-3 px-3 md:px-4 text-xl md:text-2xl peer-checked:!bg-primary peer-checked:!text-primary-content peer-checked:!shadow-inner transition-all duration-200">
                     <%= answer.emoji %>
                   </div>
                 </label>
@@ -67,9 +67,9 @@
             </div>
           </div>
 
-          <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-badge py-2 md:py-3 px-3 md:px-4 hover:scale-99 transition-transform">
-            <%= check_box_tag "use_ai_generation", "1", true, class: "checkbox checkbox-secondary bg-gray-100", id: "use_ai_generation_checkbox", data: { action: "change->ai-type-selection#updateState" } %>
-            <span class="text-base-content font-semibold text-sm md:text-base">AI生成を使用する（タネを1つ消費）</span>
+          <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-button py-2 md:py-3 px-3 md:px-4 hover:scale-99 transition-transform">
+            <%= check_box_tag "use_ai_generation", "1", true, class: "toggle toggle-primary checked:bg-secondary/30", id: "use_ai_generation_checkbox", data: { action: "change->ai-type-selection#updateState" } %>
+            <span class="text-base-content font-semibold text-sm md:text-base">AI生成を使用（タネを1つ消費）</span>
           </label>
         </div>
 
@@ -80,9 +80,9 @@
         <div class="divider my-4 md:my-6 mx-auto"></div>
 
         <div class="form-control">
-          <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-badge py-2 md:py-3 px-3 md:px-4 hover:scale-99 transition-transform">
-            <%= form.check_box :is_public, class: "checkbox checkbox-secondary bg-gray-100 " %>
-            <span class="text-base-content font-semibold text-sm md:text-base">この日記を公開する</span>
+          <label class="flex items-center gap-2 md:gap-3 cursor-pointer neuro-button py-2 md:py-3 px-3 md:px-4 hover:scale-99 transition-transform">
+            <%= form.check_box :is_public, class: "toggle toggle-primary checked:bg-secondary/30" %>
+            <span class="text-base-content font-semibold text-sm md:text-base">この日記を公開</span>
           </label>
         </div>
 
@@ -97,7 +97,7 @@
 </div>
 
   <% content_for :continue_button do %>
-    <button onclick="continueDiaryCreation()" class="btn btn-primary flex-1">
+    <button onclick="continueDiaryCreation()" class="btn btn-primary flex-1 text-white">
       AI生成無しで続ける
     </button>
   <% end %>
