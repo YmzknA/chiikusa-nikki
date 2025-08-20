@@ -17,8 +17,8 @@
     <div class="divider my-2"></div>
 
     <!-- Navigation Links -->
-    <nav class="flex-1 p-4">
-      <div class="space-y-2">
+    <nav class="flex-1 px-4 py-2">
+      <div class="space-y-1">
         <%= loading_link_to diaries_path, class: "flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary/10 transition-colors #{'bg-primary/10 text-primary font-semibold' if controller_name == 'diaries' && action_name == 'index'}", data: { turbo_action: "replace" } do %>
           <span class="material-symbols-outlined">
             calendar_month
@@ -70,20 +70,6 @@
     <!-- Footer with User Info -->
     <div class="p-4 border-t border-base-300">
 
-      <%= loading_link_to privacy_policy_path, class: "text-sm flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary/10 transition-colors #{'bg-primary/10 text-primary font-semibold' if current_page?(privacy_policy_path)}" do %>
-        <span class="material-symbols-outlined">
-          privacy_tip
-        </span>
-        <span>プライバシーポリシー</span>
-      <% end %>
-
-      <%= loading_link_to terms_of_service_path, class: "text-sm flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary/10 transition-colors #{'bg-primary/10 text-primary font-semibold' if current_page?(terms_of_service_path)}" do %>
-        <span class="material-symbols-outlined">
-          gavel
-        </span>
-        <span>利用規約</span>
-      <% end %>
-      <div class="divider my-2"></div>
 
       <% if current_user %>
         <div class="flex items-center gap-3">
