@@ -38,7 +38,7 @@ class Reaction < ApplicationRecord
     emoji_order = emoji_display_order
 
     Reaction
-      .select(:diary_id, :emoji)
+      .joins(:diary)
       .where(diary_id: diary_ids)
       .group(:diary_id, :emoji)
       .count
