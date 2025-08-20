@@ -4,6 +4,7 @@ class DiariesController < ApplicationController
   include GithubIntegration
   include DiaryErrorHandling
   include ReactionDataSetup
+  include DateParameterHandler
 
   ORIGINAL_NOTES_INDEX = -1
 
@@ -13,16 +14,16 @@ class DiariesController < ApplicationController
                 only: [:edit, :update, :destroy, :upload_to_github, :select_til, :update_til_selection]
 
   def index
-    display_date = params[:start_date].present? ? Date.parse(params[:start_date]) : Date.current
+    display_date = safe_parse_date(params[:start_date], show_flash: true)
 
     calendar_start = display_date.beginning_of_month - 2.weeks
     calendar_end = display_date.end_of_month + 2.weeks
 
     @diaries = current_user.diaries.calendar_range(calendar_start, calendar_end)
-  rescue Date::Error
-    # 無効な日付の場合は今月にフォールバック
-    @display_date = Date.current
-    retry
+
+    # simple_calendarが無効なstart_dateパラメータを使わないよう、安全な値で上書き
+    # simple_calendarがstart_dateを使用するため、ここで設定
+    params[:start_date] = display_date.strftime("%Y-%m-%d")
   end
 
   def show
