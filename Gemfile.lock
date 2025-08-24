@@ -309,13 +309,13 @@ GEM
     rdoc (6.14.1)
       erb
       psych (>= 4.0.0)
-    redis (5.4.0)
+    redis (5.4.1)
       redis-client (>= 0.22.0)
     redis-actionpack (5.5.0)
       actionpack (>= 5)
       redis-rack (>= 2.1.0, < 4)
       redis-store (>= 1.1.0, < 2)
-    redis-client (0.25.0)
+    redis-client (0.25.1)
       connection_pool
     redis-rack (3.0.0)
       rack-session (>= 0.2.0)
@@ -480,7 +480,7 @@ DEPENDENCIES
   rails (~> 7.2.2, >= 7.2.2.1)
   rails-controller-testing
   rails-i18n
-  redis (~> 5.0)
+  redis (~> 5.4)
   redis-actionpack
   rspec-rails (~> 6.0)
   rubocop-performance
