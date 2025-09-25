@@ -14,8 +14,7 @@ module ContentSecurityPolicyConfig
   end
 
   def self.setup_script_and_style(policy)
-    # TODO: unsafe-inlineは段階的に削除し、すべてStimulusコントローラーに移行する
-    policy.script_src :self, :unsafe_inline, "https://apis.google.com"
+    policy.script_src :self, :unsafe_inline, "https://apis.google.com", "https://www.googletagmanager.com"
     policy.style_src :self, :unsafe_inline, "https://fonts.googleapis.com"
   end
 
