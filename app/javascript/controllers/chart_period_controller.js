@@ -7,9 +7,7 @@ export default class extends Controller {
   connect() {
     this.updateMonthControlsVisibility()
     
-    // レイアウト自動修正を無効化 - HTMLの初期設定のみに依存
-    // this.setupTurboFrameListeners()
-    // this.preserveResponsiveLayout()
+    // レイアウト調整はHTMLの初期設定に委ねる
   }
 
   updateChart(event) {
@@ -20,11 +18,6 @@ export default class extends Controller {
     const frame = document.getElementById(frameId)
     if (frame) {
       frame.src = url
-      
-      // レスポンシブクラス強制適用を無効化
-      // frame.addEventListener('turbo:frame-load', () => {
-      //   this.ensureResponsiveClasses()
-      // }, { once: true })
     }
     
     // 月選択コントロールの表示更新（日毎推移チャートの場合）
@@ -120,17 +113,17 @@ export default class extends Controller {
   }
 
   ensureResponsiveClasses() {
-    // 完全に無効化 - HTMLクラスに干渉しない
+    // HTMLクラスを変更しないため空実装のまま
     return
   }
 
   setupTurboFrameListeners() {
-    // 完全に無効化 - Turbo Frameに干渉しない
+    // Turbo Frameの挙動に干渉しないため空実装のまま
     return
   }
 
   preserveResponsiveLayout() {
-    // 完全に無効化 - HTMLクラスに干渉しない
+    // レスポンシブ設定はテンプレート側で制御
     return
   }
 
