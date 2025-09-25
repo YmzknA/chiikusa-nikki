@@ -1,6 +1,6 @@
 module GithubContentGenerator
   def generate_til_content(diary)
-    # CLAUDE.mdルール準拠: TIL候補から選択されたものを使用
+    # TIL候補から選択されたものを使用
     selected_til = diary.til_candidates.find_by(index: diary.selected_til_index)
     til_content = selected_til&.content || diary.til_text
 
@@ -18,7 +18,7 @@ module GithubContentGenerator
     content_sections = build_content_sections(diary, til_section)
     content_sections << "## 今日やったこと\n今日も頑張りました。\n" if content_sections.empty?
 
-    # CLAUDE.mdの指示に従い、日付などの基本情報を含める
+    # 日付などの基本情報を含める
     <<~MARKDOWN
       # TIL - #{diary.date.strftime('%Y年%m月%d日')}
 

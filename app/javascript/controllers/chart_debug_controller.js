@@ -118,6 +118,5 @@ export default class extends Controller {
     }
   }
 
-  // preserveContainerClasses メソッドを削除
-  // HTMLテンプレートで定義されたレスポンシブクラスに干渉しないようにする
+  // レイアウト制御はテンプレート側で完結するため追加メソッドは不要
 }
