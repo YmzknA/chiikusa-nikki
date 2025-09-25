@@ -64,15 +64,15 @@ class GithubService
   end
 
   def push_til(diary)
-    # CLAUDE.mdルール準拠: リポジトリが設定されていない場合はボタンを無効化
+    # リポジトリが設定されていない場合はボタンを無効化
     return { success: false, message: "GitHubリポジトリが設定されていません" } if @user.github_repo_name.blank?
-    # CLAUDE.mdルール準拠: 既にアップロード済みの場合はボタンを無効化
+    # 既にアップロード済みの場合はボタンを無効化
     return { success: false, message: "すでにGitHubにアップロード済みです" } if diary.github_uploaded?
     return { success: false, message: "GitHubクライアントが利用できません" } unless client_available?
     return { success: false, message: "GitHubユーザー名が取得できません" } if @user.github_username.blank?
 
     repo_full_name = "#{@user.github_username}/#{@user.github_repo_name}"
-    # CLAUDE.mdルール準拠: ファイル名は「yymmdd_til」形式
+    # ファイル名は「yymmdd_til」形式
     file_path = "#{diary.date.strftime('%y%m%d')}_til.md"
     content = generate_til_content(diary)
     commit_message = "Add TIL for #{diary.date.strftime('%Y年%m月%d日')}"
@@ -83,8 +83,8 @@ class GithubService
     result = create_or_update_file(repo_full_name, file_path, content, commit_message)
 
     if result[:success]
-      # CLAUDE.mdルール準拠: アップロード後に記録カラムに保存
       file_url = "https://github.com/#{repo_full_name}/blob/main/#{file_path}"
+      # アップロード後に記録カラムに保存
       audit_data = {
         github_uploaded: true,
         github_uploaded_at: Time.current,
@@ -128,7 +128,7 @@ class GithubService
   end
 
   def reset_all_diaries_upload_status
-    # CLAUDE.mdルール準拠: リポジトリが無くなった場合は全ての日記のGitHubアップロード記録をfalseにする
+    # リポジトリが無くなった場合は全ての日記のGitHubアップロード記録をfalseにする
     affected_count = @user.diaries.where(github_uploaded: true).count
     @user.diaries.update_all(
       github_uploaded: false,
