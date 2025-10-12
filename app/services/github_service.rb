@@ -5,6 +5,7 @@ class GithubService
   include GithubContentGenerator
   include GithubRepositoryCreator
   include GithubErrorHandler
+
   attr_reader :user, :client
 
   def initialize(user)

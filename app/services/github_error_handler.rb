@@ -1,6 +1,7 @@
 module GithubErrorHandler
   include GithubRateLimitHandler
   include GithubRepositoryValidator
+
   def handle_repository_exists_error(repo_name)
     Rails.logger.warn "Repository creation failed - already exists: #{repo_name}"
     { success: false, message: "リポジトリ名「#{repo_name}」は既に存在します" }

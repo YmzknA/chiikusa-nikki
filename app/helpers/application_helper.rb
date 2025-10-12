@@ -1,5 +1,6 @@
 module ApplicationHelper
   include Pagy::Frontend
+
   # サイドバーとモバイルナビゲーションを非表示にするページかどうかを判定
   def hide_navigation?
     (controller_name == "home" && action_name == "index") ||
