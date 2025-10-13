@@ -89,7 +89,22 @@
         <div class="divider my-4 md:my-6 mx-auto"></div>
 
         <div class="form-control mt-6 md:mt-8 animate-[fadeInUp_0.6s_ease-out_0.8s_both]">
-          <%= form.submit "日記を作成 ✓", class: "neuro-button w-full py-3 md:py-4 px-4 md:px-6 font-bold text-base md:text-lg hover:cursor-pointer transition-all duration-200 hover:scale-102", onclick: "console.log('🚀 Submit button clicked'); const result = checkSeedCountBeforeAction(event, 'use_ai_generation_checkbox'); if(result) { const hasNotes = document.querySelector('#diary_notes')?.value.trim(); const checkbox = document.getElementById('use_ai_generation_checkbox'); const needsAi = checkbox && checkbox.checked && hasNotes; if(!needsAi && window.loadingController) { console.log('🎯 Manually calling normal loading'); window.loadingController.showDelayed(); } } return result;" %>
+          <%= form.submit "日記を作成 ✓", 
+           class: "neuro-button w-full py-3 md:py-4 px-4 md:px-6 font-bold text-base md:text-lg hover:cursor-pointer transition-all duration-200 hover:scale-102", 
+            onclick: "
+              const result = checkSeedCountBeforeAction(event, 'use_ai_generation_checkbox'); 
+              if(result) { 
+                  const hasNotes = document.querySelector('#diary_notes')?.value.trim(); 
+                  const checkbox = document.getElementById('use_ai_generation_checkbox'); 
+                  const needsAi = checkbox && checkbox.checked && hasNotes; 
+
+                  if(!needsAi && window.loadingController) { 
+                      window.loadingController.showDelayed(); 
+                  } 
+              } 
+              return result;
+            " 
+          %>
         </div>
       <% end %>
     </div>

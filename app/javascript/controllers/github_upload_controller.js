@@ -13,6 +13,7 @@ export default class extends Controller {
 
   confirm() {
     this.formTarget.submit()
+    this.modalTarget.close()
   }
 
   cancel() {
