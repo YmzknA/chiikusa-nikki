@@ -106,6 +106,23 @@ RSpec.describe Diary, type: :model do
       end
     end
 
+    describe "#github_file_path" do
+      it "returns correct file path format" do
+        diary = create(:diary, user: user, date: Date.new(2025, 1, 22))
+        expect(diary.github_file_path).to eq("2025/01/250122_til.md")
+      end
+
+      it "handles different months correctly" do
+        diary = create(:diary, user: user, date: Date.new(2025, 12, 31))
+        expect(diary.github_file_path).to eq("2025/12/251231_til.md")
+      end
+
+      it "handles year boundary correctly" do
+        diary = create(:diary, user: user, date: Date.new(2026, 1, 1))
+        expect(diary.github_file_path).to eq("2026/01/260101_til.md")
+      end
+    end
+
     describe "#selected_til_content" do
       let(:diary_with_tils) { create(:diary, :with_til_candidates, user: user) }
 
