@@ -22,7 +22,7 @@
         <p class="mb-6">
           この日記のTILをGitHubリポジトリにアップロードしますか？<br>
           <span class="text-sm text-base-content/60">
-            ファイル名: <%= @diary.date.strftime('%y%m%d') %>_til.md
+            ファイルパス: <%= @diary.github_file_path %>
           </span>
         </p>
         <div class="modal-action w-full text-sm flex justify-end gap-2 h-10">

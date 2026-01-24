@@ -25,6 +25,10 @@ class Diary < ApplicationRecord
     !github_uploaded? && user.github_repo_name.present?
   end
 
+  def github_file_path
+    "#{date.strftime('%Y/%m')}/#{date.strftime('%y%m%d')}_til.md"
+  end
+
   def selected_til_content
     return nil unless selected_til_index.present?
 

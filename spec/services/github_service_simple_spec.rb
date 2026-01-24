@@ -65,6 +65,34 @@ RSpec.describe GithubService, type: :service do
         expect(result[:success]).to be true
         expect(diary.reload.github_uploaded?).to be true
       end
+
+      it "creates file in YYYY/MM directory format" do
+        diary = create(:diary, :with_selected_til, user: user, date: Date.new(2025, 1, 22))
+        allow(service).to receive(:create_or_update_file)
+          .and_return({ success: true, commit_sha: "abc123" })
+
+        result = service.push_til(diary)
+
+        expect(result[:success]).to be true
+        expect(diary.reload.github_file_path).to eq("2025/01/250122_til.md")
+      end
+
+      it "organizes files by year and month" do
+        diary_jan = create(:diary, :with_selected_til, user: user, date: Date.new(2025, 1, 15))
+        diary_feb = create(:diary, :with_selected_til, user: user, date: Date.new(2025, 2, 20))
+        diary_next_year = create(:diary, :with_selected_til, user: user, date: Date.new(2026, 1, 10))
+
+        allow(service).to receive(:create_or_update_file)
+          .and_return({ success: true, commit_sha: "abc123" })
+
+        service.push_til(diary_jan)
+        service.push_til(diary_feb)
+        service.push_til(diary_next_year)
+
+        expect(diary_jan.reload.github_file_path).to eq("2025/01/250115_til.md")
+        expect(diary_feb.reload.github_file_path).to eq("2025/02/250220_til.md")
+        expect(diary_next_year.reload.github_file_path).to eq("2026/01/260110_til.md")
+      end
     end
 
     context "when diary already uploaded" do
