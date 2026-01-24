@@ -73,8 +73,8 @@ class GithubService
     return { success: false, message: "GitHubユーザー名が取得できません" } if @user.github_username.blank?
 
     repo_full_name = "#{@user.github_username}/#{@user.github_repo_name}"
-    # ファイル名は「yymmdd_til」形式
-    file_path = "#{diary.date.strftime('%y%m%d')}_til.md"
+    # ファイルパスは「YYYY/MM/yymmdd_til.md」形式
+    file_path = diary.github_file_path
     content = generate_til_content(diary)
     commit_message = "Add TIL for #{diary.date.strftime('%Y年%m月%d日')}"
 
