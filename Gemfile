@@ -59,7 +59,7 @@ group :development, :test do
   gem "shoulda-matchers", "~> 6.5"
   gem "factory_bot_rails", "~> 6.5"
   gem "webmock", "~> 3.0"
-  gem "vcr", "~> 6.0"
+  gem "vcr", "~> 6.4"
   gem "rails-controller-testing"
 end
 
